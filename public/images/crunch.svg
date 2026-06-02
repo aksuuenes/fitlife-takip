@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e2a3a"/><stop offset="100%" style="stop-color:#162030"/></linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="#212e3e" stroke="#00d4ff22" stroke-width="1.5"/>
+  <rect x="410" y="10" width="380" height="380" rx="12" fill="#253447" stroke="#00d4ff22" stroke-width="1.5"/>
+
+  <!-- LEFT: Crunch start - lying on back, knees bent -->
+  <!-- Mat -->
+  <rect x="30" y="285" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <!-- Head on ground -->
+  <circle cx="80" cy="265" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="80" cy="252" rx="18" ry="10" fill="#3a2a1a"/>
+  <!-- Torso flat -->
+  <rect x="97" y="270" width="115" height="24" rx="10" fill="#4a90d9"/>
+  <!-- Abs (relaxed) -->
+  <ellipse cx="155" cy="282" rx="45" ry="9" fill="#00d4ff" opacity="0.2"/>
+  <!-- Arms behind head -->
+  <line x1="100" y1="275" x2="72" y2="258" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <line x1="100" y1="278" x2="68" y2="262" stroke="#3a80c9" stroke-width="9" stroke-linecap="round"/>
+  <!-- Bent legs -->
+  <line x1="210" y1="278" x2="258" y2="240" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="258" y1="240" x2="262" y2="286" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="218" y1="285" x2="266" y2="247" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="266" y1="247" x2="270" y2="286" stroke="#3a80c9" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="263" cy="288" rx="13" ry="7" fill="#2a2a2a"/>
+  <ellipse cx="271" cy="288" rx="13" ry="7" fill="#2a2a2a"/>
+  <!-- Ground -->
+  <line x1="20" y1="296" x2="380" y2="296" stroke="#2a3f55" stroke-width="2"/>
+
+  <!-- RIGHT: Crunch working - upper body raised, curled up -->
+  <!-- Mat -->
+  <rect x="430" y="315" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <!-- Lower back still on ground -->
+  <circle cx="488" cy="278" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="488" cy="265" rx="18" ry="10" fill="#3a2a1a"/>
+  <!-- Upper torso curled up - tilted -->
+  <rect x="502" y="282" width="80" height="22" rx="8" fill="#4a90d9" transform="rotate(-30 540 290)"/>
+  <!-- ABS ACTIVE (cyan) -->
+  <ellipse cx="530" cy="288" rx="35" ry="14" fill="#00d4ff" opacity="0.55" filter="url(#glow)" transform="rotate(-25 530 288)"/>
+  <!-- Rectus abdominis lines -->
+  <line x1="520" y1="278" x2="515" y2="298" stroke="#00d4ff" stroke-width="1.5" opacity="0.7" transform="rotate(-25 518 288)"/>
+  <line x1="530" y1="278" x2="525" y2="298" stroke="#00d4ff" stroke-width="1.5" opacity="0.7" transform="rotate(-25 528 288)"/>
+  <line x1="540" y1="278" x2="535" y2="298" stroke="#00d4ff" stroke-width="1.5" opacity="0.7" transform="rotate(-25 538 288)"/>
+  <!-- Arms reaching up near head -->
+  <line x1="505" y1="285" x2="480" y2="268" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <line x1="508" y1="289" x2="476" y2="273" stroke="#3a80c9" stroke-width="9" stroke-linecap="round"/>
+  <!-- Chin to chest motion glow -->
+  <ellipse cx="520" cy="290" rx="45" ry="20" fill="#00d4ff" opacity="0.25" filter="url(#glow)"/>
+  <!-- Bent legs (same) -->
+  <line x1="588" y1="308" x2="638" y2="270" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="638" y1="270" x2="642" y2="318" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="597" y1="315" x2="646" y2="277" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="646" y1="277" x2="650" y2="318" stroke="#3a80c9" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="643" cy="320" rx="13" ry="7" fill="#2a2a2a"/>
+  <ellipse cx="651" cy="320" rx="13" ry="7" fill="#2a2a2a"/>
+  <!-- Ground -->
+  <line x1="420" y1="326" x2="780" y2="326" stroke="#2a3f55" stroke-width="2"/>
+</svg>

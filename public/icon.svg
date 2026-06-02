@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#311042" />
+    </linearGradient>
+    
+    <!-- Accent Emerald Glow -->
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+
+    <!-- Glass Overlay -->
+    <linearGradient id="glass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Canvas Backplate -->
+  <rect width="512" height="512" rx="128" fill="url(#g)" />
+  
+  <!-- Outer Tech Border Ring -->
+  <rect x="24" y="24" width="464" height="464" rx="104" fill="none" stroke="url(#glow)" stroke-width="4" stroke-opacity="0.4" />
+  <rect x="36" y="36" width="440" height="440" rx="92" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.08" />
+
+  <!-- Abstract Ambient Glow Behind Graphic -->
+  <circle cx="256" cy="256" r="140" fill="#10b981" opacity="0.15" filter="blur(60px)" />
+  <circle cx="280" cy="240" r="100" fill="#6366f1" opacity="0.15" filter="blur(40px)" />
+
+  <!-- Monogram F Character merged with Heartbeat/Pulse Wave -->
+  <g transform="translate(4, -8)">
+    <!-- Heartbeat Line Wave Background Glow -->
+    <path d="M 120 280 L 190 280 L 210 200 L 235 340 L 260 250 L 280 295 L 305 285 L 320 280 L 390 280" 
+          fill="none" stroke="url(#glow)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.3" filter="blur(4px)" />
+
+    <!-- Heartbeat Line Wave Main Active Path -->
+    <path d="M 120 280 L 190 280 L 210 200 L 235 340 L 260 250 L 280 295 L 305 285 L 320 280 L 390 280" 
+          fill="none" stroke="#10b981" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Monogram 'F' in Display Serif-Italic style layered over the center -->
+    <path d="M 235 150 
+             C 215 150, 190 160, 185 190 
+             L 170 290 
+             L 165 320 
+             C 160 350, 175 365, 205 365
+             C 215 365, 222 362, 225 360
+             L 220 375
+             C 205 382, 190 385, 175 385
+             C 135 385, 115 360, 122 320
+             L 142 195
+             C 148 155, 175 125, 220 120
+             C 240 118, 275 122, 290 135
+             L 280 155
+             C 270 150, 250 150, 235 150 Z" 
+          fill="#ffffff" opacity="0.95" />
+
+    <!-- Horizontal Bar of 'F' stylized as an arrow pointing forward -->
+    <path d="M 155 235 L 265 235 C 275 235, 285 235, 290 230 L 285 245 C 280 250, 270 250, 260 250 L 150 250 Z" 
+          fill="#ffffff" opacity="0.95" />
+
+    <!-- Active Energy Particle on the Heartbeat Path -->
+    <circle cx="280" cy="295" r="7" fill="#ffffff" filter="drop-shadow(0 0 8px #10b981)" />
+  </g>
+
+  <!-- Elegant Glass Diagonal Reflection Overlay -->
+  <path d="M 0 0 L 512 0 L 256 512 Z" fill="url(#glass)" pointer-events="none" />
+</svg>

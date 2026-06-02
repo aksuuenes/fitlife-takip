@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net: Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+    
+    // --- Validation Helpers ---
+    function isValidUserProfile(data) {
+      return data.email is string &&
+             data.email.size() <= 256;
+    }
+
+    function isValidHealthRecord(data) {
+      return data.id is string &&
+             data.userId is string &&
+             data.weight is number &&
+             data.height is number;
+    }
+
+    function isValidWorkoutStatus(data) {
+      return data.completed is bool;
+    }
+
+    function isValidNote(data) {
+      return data.id is string &&
+             data.title is string &&
+             data.content is string &&
+             data.category is string;
+    }
+
+    // --- Rules ---
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProfile(incoming());
+      allow update: if isOwner(userId); // Owner can update their own profile fields
+
+      match /profiles/{profileId} {
+        allow read, write: if isOwner(userId);
+
+        match /records/{recordId} {
+          allow read: if isOwner(userId);
+          allow create, update: if isOwner(userId) && isValidHealthRecord(incoming());
+          allow delete: if isOwner(userId);
+        }
+
+        match /water/{date} {
+          allow read, write: if isOwner(userId);
+        }
+
+        match /workouts/{date} {
+          allow read: if isOwner(userId);
+          allow create, update: if isOwner(userId) && isValidWorkoutStatus(incoming());
+        }
+
+        match /routines/{routineId} {
+          allow read, write: if isOwner(userId);
+        }
+
+        match /notes/{noteId} {
+          allow read: if isOwner(userId);
+          allow create, update: if isOwner(userId) && isValidNote(incoming());
+          allow delete: if isOwner(userId);
+        }
+      }
+    }
+  }
+}

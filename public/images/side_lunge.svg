@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e2a3a"/><stop offset="100%" style="stop-color:#162030"/></linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="#212e3e" stroke="#00d4ff22" stroke-width="1.5"/>
+  <rect x="410" y="10" width="380" height="380" rx="12" fill="#253447" stroke="#00d4ff22" stroke-width="1.5"/>
+
+  <!-- LEFT: Side lunge start - standing, feet together -->
+  <circle cx="200" cy="100" r="22" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="200" cy="86" rx="19" ry="11" fill="#3a2a1a"/>
+  <rect x="192" y="120" width="16" height="14" rx="4" fill="#c8a06a"/>
+  <rect x="177" y="133" width="46" height="78" rx="12" fill="#4a90d9"/>
+  <!-- Arms at sides -->
+  <line x1="179" y1="148" x2="160" y2="205" stroke="#4a90d9" stroke-width="12" stroke-linecap="round"/>
+  <line x1="223" y1="148" x2="240" y2="205" stroke="#4a90d9" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="157" cy="208" rx="10" ry="7" fill="#c8a06a"/>
+  <ellipse cx="243" cy="208" rx="10" ry="7" fill="#c8a06a"/>
+  <!-- Legs together -->
+  <line x1="195" y1="211" x2="193" y2="330" stroke="#4a90d9" stroke-width="16" stroke-linecap="round"/>
+  <line x1="205" y1="211" x2="207" y2="330" stroke="#3a80c9" stroke-width="16" stroke-linecap="round"/>
+  <ellipse cx="190" cy="334" rx="15" ry="9" fill="#2a2a2a"/>
+  <ellipse cx="210" cy="334" rx="15" ry="9" fill="#2a2a2a"/>
+  <line x1="20" y1="345" x2="380" y2="345" stroke="#2a3f55" stroke-width="2"/>
+
+  <!-- RIGHT: Side lunge working - step to side, one leg bent deep -->
+  <!-- Body shifted to side, torso upright over bent leg -->
+  <circle cx="548" cy="120" r="22" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="548" cy="106" rx="19" ry="11" fill="#3a2a1a"/>
+  <rect x="540" y="140" width="16" height="14" rx="4" fill="#c8a06a"/>
+  <rect x="524" y="153" width="46" height="75" rx="12" fill="#4a90d9"/>
+  <!-- Arms extended for balance -->
+  <line x1="526" y1="168" x2="497" y2="180" stroke="#4a90d9" stroke-width="12" stroke-linecap="round"/>
+  <line x1="570" y1="168" x2="598" y2="178" stroke="#4a90d9" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="493" cy="182" rx="10" ry="7" fill="#c8a06a"/>
+  <ellipse cx="602" cy="180" rx="10" ry="7" fill="#c8a06a"/>
+  <!-- BENT leg (left) - deep side squat (CYAN) -->
+  <line x1="534" y1="228" x2="485" y2="268" stroke="#00d4ff" stroke-width="17" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="485" y1="268" x2="480" y2="335" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <!-- Knee highlight -->
+  <circle cx="486" cy="269" r="15" fill="#00d4ff" opacity="0.5" filter="url(#glow)"/>
+  <!-- Inner thigh / adductor glow -->
+  <ellipse cx="510" cy="248" rx="30" ry="22" fill="#00d4ff" opacity="0.3" filter="url(#glow)"/>
+  <!-- EXTENDED leg (right) - straight out to side -->
+  <line x1="562" y1="228" x2="655" y2="240" stroke="#4a90d9" stroke-width="16" stroke-linecap="round"/>
+  <line x1="655" y1="240" x2="700" y2="243" stroke="#3a80c9" stroke-width="14" stroke-linecap="round"/>
+  <!-- Glute/hip on extended side -->
+  <ellipse cx="615" cy="238" rx="30" ry="14" fill="#00d4ff" opacity="0.2" filter="url(#glow)"/>
+  <!-- Feet -->
+  <ellipse cx="477" cy="339" rx="16" ry="9" fill="#2a2a2a"/>
+  <ellipse cx="703" cy="246" rx="16" ry="9" fill="#2a2a2a"/>
+  <!-- Ground -->
+  <line x1="420" y1="345" x2="780" y2="345" stroke="#2a3f55" stroke-width="2"/>
+</svg>

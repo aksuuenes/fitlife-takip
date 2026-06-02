@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e2a3a"/><stop offset="100%" style="stop-color:#162030"/></linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="#212e3e" stroke="#00d4ff22" stroke-width="1.5"/>
+  <rect x="410" y="10" width="380" height="380" rx="12" fill="#253447" stroke="#00d4ff22" stroke-width="1.5"/>
+
+  <!-- LEFT: Glute bridge start - lying on back, knees bent -->
+  <!-- Floor mat indication -->
+  <rect x="30" y="290" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.6"/>
+  <!-- Body flat -->
+  <!-- Head -->
+  <circle cx="80" cy="268" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="80" cy="255" rx="18" ry="10" fill="#3a2a1a"/>
+  <!-- Torso flat on ground -->
+  <rect x="97" y="276" width="110" height="24" rx="10" fill="#4a90d9"/>
+  <!-- Arms at sides -->
+  <line x1="100" y1="282" x2="80" y2="295" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <line x1="204" y1="282" x2="224" y2="295" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <!-- Bent legs - feet flat on floor -->
+  <!-- Upper legs -->
+  <line x1="205" y1="285" x2="248" y2="248" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="213" y1="292" x2="256" y2="255" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <!-- Lower legs vertical to feet -->
+  <line x1="248" y1="248" x2="252" y2="295" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="256" y1="255" x2="260" y2="295" stroke="#3a80c9" stroke-width="12" stroke-linecap="round"/>
+  <!-- Feet -->
+  <ellipse cx="252" cy="297" rx="14" ry="7" fill="#2a2a2a"/>
+  <ellipse cx="262" cy="297" rx="14" ry="7" fill="#2a2a2a"/>
+  <!-- Ground line -->
+  <line x1="20" y1="300" x2="380" y2="300" stroke="#2a3f55" stroke-width="2"/>
+
+  <!-- RIGHT: Glute bridge working - hips raised high -->
+  <!-- Mat -->
+  <rect x="430" y="330" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.6"/>
+  <!-- Head on ground -->
+  <circle cx="478" cy="310" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="478" cy="297" rx="18" ry="10" fill="#3a2a1a"/>
+  <!-- Upper back on ground -->
+  <rect x="495" y="317" width="60" height="22" rx="8" fill="#4a90d9"/>
+  <!-- Torso RAISED (hips up - diagonal) -->
+  <line x1="553" y1="325" x2="605" y2="265" stroke="#00d4ff" stroke-width="20" stroke-linecap="round" filter="url(#glow)"/>
+  <!-- Glute/hip highlight (most activated) -->
+  <circle cx="605" cy="262" r="22" fill="#00d4ff" opacity="0.55" filter="url(#glow)"/>
+  <ellipse cx="582" cy="288" rx="40" ry="22" fill="#00d4ff" opacity="0.3" filter="url(#glow)"/>
+  <!-- Arms pressing on ground -->
+  <line x1="497" y1="325" x2="475" y2="338" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <line x1="600" y1="310" x2="628" y2="330" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <!-- Bent legs to feet on ground -->
+  <line x1="605" y1="268" x2="645" y2="308" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="617" y1="272" x2="657" y2="312" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="645" y1="308" x2="648" y2="338" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="657" y1="312" x2="660" y2="338" stroke="#3a80c9" stroke-width="12" stroke-linecap="round"/>
+  <!-- Feet -->
+  <ellipse cx="648" cy="340" rx="14" ry="7" fill="#2a2a2a"/>
+  <ellipse cx="660" cy="340" rx="14" ry="7" fill="#2a2a2a"/>
+  <!-- Hamstring glow -->
+  <ellipse cx="625" cy="290" rx="25" ry="15" fill="#00d4ff" opacity="0.2" filter="url(#glow)"/>
+  <!-- Ground line -->
+  <line x1="420" y1="345" x2="780" y2="345" stroke="#2a3f55" stroke-width="2"/>
+</svg>

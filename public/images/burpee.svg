@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e2a3a"/><stop offset="100%" style="stop-color:#162030"/></linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="#212e3e" stroke="#00d4ff22" stroke-width="1.5"/>
+  <rect x="410" y="10" width="380" height="380" rx="12" fill="#253447" stroke="#00d4ff22" stroke-width="1.5"/>
+
+  <!-- LEFT: Standing upright (start) -->
+  <!-- Head -->
+  <circle cx="200" cy="105" r="22" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="200" cy="91" rx="20" ry="11" fill="#3a2a1a"/>
+  <!-- Neck -->
+  <rect x="193" y="125" width="14" height="14" rx="4" fill="#c8a06a"/>
+  <!-- Torso -->
+  <rect x="172" y="138" width="56" height="75" rx="12" fill="#4a90d9"/>
+  <!-- Muscle chest lines -->
+  <line x1="200" y1="145" x2="200" y2="200" stroke="#00d4ff" stroke-width="1.5" opacity="0.4"/>
+  <!-- Arms down -->
+  <line x1="175" y1="150" x2="160" y2="210" stroke="#4a90d9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="225" y1="150" x2="240" y2="210" stroke="#4a90d9" stroke-width="13" stroke-linecap="round"/>
+  <!-- Hands -->
+  <ellipse cx="158" cy="213" rx="10" ry="7" fill="#c8a06a"/>
+  <ellipse cx="242" cy="213" rx="10" ry="7" fill="#c8a06a"/>
+  <!-- Legs -->
+  <line x1="192" y1="213" x2="178" y2="300" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="208" y1="213" x2="222" y2="300" stroke="#3a80c9" stroke-width="14" stroke-linecap="round"/>
+  <!-- Feet -->
+  <ellipse cx="175" cy="305" rx="14" ry="8" fill="#2a2a2a"/>
+  <ellipse cx="225" cy="305" rx="14" ry="8" fill="#2a2a2a"/>
+  <!-- Ground -->
+  <line x1="20" y1="315" x2="380" y2="315" stroke="#2a3f55" stroke-width="2"/>
+
+  <!-- RIGHT: Jump position (working) -->
+  <!-- Head raised -->
+  <circle cx="600" cy="80" r="22" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="600" cy="66" rx="20" ry="11" fill="#3a2a1a"/>
+  <rect x="593" y="100" width="14" height="14" rx="4" fill="#c8a06a"/>
+  <!-- Torso -->
+  <rect x="572" y="113" width="56" height="70" rx="12" fill="#4a90d9"/>
+  <line x1="600" y1="120" x2="600" y2="170" stroke="#00d4ff" stroke-width="1.5" opacity="0.4"/>
+  <!-- Arms UP (cyan highlight - explosive) -->
+  <line x1="575" y1="125" x2="535" y2="75" stroke="#00d4ff" stroke-width="14" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="625" y1="125" x2="665" y2="75" stroke="#00d4ff" stroke-width="14" stroke-linecap="round" filter="url(#glow)"/>
+  <!-- Hands up -->
+  <ellipse cx="532" cy="72" rx="11" ry="8" fill="#c8a06a"/>
+  <ellipse cx="668" cy="72" rx="11" ry="8" fill="#c8a06a"/>
+  <!-- Arms glow -->
+  <ellipse cx="553" cy="100" rx="20" ry="30" fill="#00d4ff" opacity="0.2" filter="url(#glow)"/>
+  <ellipse cx="647" cy="100" rx="20" ry="30" fill="#00d4ff" opacity="0.2" filter="url(#glow)"/>
+  <!-- Legs bent/jumping -->
+  <line x1="590" y1="183" x2="565" y2="240" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="610" y1="183" x2="635" y2="240" stroke="#3a80c9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="565" y1="240" x2="555" y2="285" stroke="#4a90d9" stroke-width="12" stroke-linecap="round"/>
+  <line x1="635" y1="240" x2="645" y2="285" stroke="#3a80c9" stroke-width="12" stroke-linecap="round"/>
+  <!-- Feet off ground -->
+  <ellipse cx="552" cy="290" rx="14" ry="8" fill="#2a2a2a"/>
+  <ellipse cx="648" cy="290" rx="14" ry="8" fill="#2a2a2a"/>
+  <!-- Jump glow aura -->
+  <ellipse cx="600" cy="200" rx="80" ry="120" fill="#00d4ff" opacity="0.06" filter="url(#glow)"/>
+  <!-- Ground -->
+  <line x1="420" y1="315" x2="780" y2="315" stroke="#2a3f55" stroke-width="2"/>
+</svg>

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e2a3a"/><stop offset="100%" style="stop-color:#162030"/></linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="#212e3e" stroke="#00d4ff22" stroke-width="1.5"/>
+  <rect x="410" y="10" width="380" height="380" rx="12" fill="#253447" stroke="#00d4ff22" stroke-width="1.5"/>
+
+  <!-- LEFT: Russian Twist start - seated 45deg, hands together front -->
+  <!-- Mat -->
+  <rect x="30" y="298" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <!-- Head -->
+  <circle cx="185" cy="168" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="185" cy="155" rx="18" ry="10" fill="#3a2a1a"/>
+  <rect x="177" y="186" width="16" height="12" rx="4" fill="#c8a06a"/>
+  <!-- Torso leaned back 45deg -->
+  <rect x="160" y="197" width="40" height="75" rx="10" fill="#4a90d9" transform="rotate(20 180 240)"/>
+  <!-- Oblique highlight (both sides resting) -->
+  <ellipse cx="185" cy="230" rx="18" ry="35" fill="#00d4ff" opacity="0.2" transform="rotate(20 185 230)"/>
+  <!-- Arms extended holding together -->
+  <line x1="175" y1="215" x2="130" y2="205" stroke="#4a90d9" stroke-width="12" stroke-linecap="round"/>
+  <line x1="175" y1="215" x2="125" y2="200" stroke="#3a80c9" stroke-width="10" stroke-linecap="round"/>
+  <!-- Hands clasped -->
+  <ellipse cx="122" cy="200" rx="14" ry="9" fill="#c8a06a"/>
+  <!-- Legs bent slightly raised -->
+  <line x1="197" y1="268" x2="248" y2="248" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="248" y1="248" x2="285" y2="270" stroke="#4a90d9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="207" y1="275" x2="258" y2="255" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="258" y1="255" x2="295" y2="277" stroke="#3a80c9" stroke-width="11" stroke-linecap="round"/>
+  <ellipse cx="287" cy="272" rx="13" ry="8" fill="#2a2a2a"/>
+  <ellipse cx="297" cy="279" rx="13" ry="8" fill="#2a2a2a"/>
+  <!-- Sitting point -->
+  <line x1="20" y1="305" x2="380" y2="305" stroke="#2a3f55" stroke-width="2"/>
+
+  <!-- RIGHT: Russian Twist working - twisted to side -->
+  <!-- Mat -->
+  <rect x="430" y="298" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <!-- Head (turned) -->
+  <circle cx="585" cy="168" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="585" cy="155" rx="18" ry="10" fill="#3a2a1a"/>
+  <rect x="577" y="186" width="16" height="12" rx="4" fill="#c8a06a"/>
+  <!-- Torso leaned back 45deg rotated -->
+  <rect x="560" y="197" width="40" height="75" rx="10" fill="#4a90d9" transform="rotate(20 580 240)"/>
+  <!-- Oblique ACTIVE (cyan - twisted side) -->
+  <ellipse cx="568" cy="228" rx="20" ry="32" fill="#00d4ff" opacity="0.5" filter="url(#glow)" transform="rotate(20 568 228)"/>
+  <!-- Arms twisted to the right side (cyan) -->
+  <line x1="572" y1="218" x2="635" y2="195" stroke="#00d4ff" stroke-width="13" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="572" y1="218" x2="640" y2="190" stroke="#00d4ff" stroke-width="11" stroke-linecap="round" filter="url(#glow)"/>
+  <!-- Hands on the side -->
+  <ellipse cx="643" cy="190" rx="14" ry="9" fill="#c8a06a"/>
+  <!-- Rotation glow -->
+  <ellipse cx="600" cy="210" rx="55" ry="30" fill="#00d4ff" opacity="0.15" filter="url(#glow)"/>
+  <!-- Oblique highlight -->
+  <ellipse cx="575" cy="215" rx="15" ry="28" fill="#00d4ff" opacity="0.4" filter="url(#glow)" transform="rotate(-10 575 215)"/>
+  <!-- Legs same position -->
+  <line x1="597" y1="268" x2="648" y2="248" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="648" y1="248" x2="685" y2="270" stroke="#4a90d9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="607" y1="275" x2="658" y2="255" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="658" y1="255" x2="695" y2="277" stroke="#3a80c9" stroke-width="11" stroke-linecap="round"/>
+  <ellipse cx="687" cy="272" rx="13" ry="8" fill="#2a2a2a"/>
+  <ellipse cx="697" cy="279" rx="13" ry="8" fill="#2a2a2a"/>
+  <!-- Ground -->
+  <line x1="420" y1="305" x2="780" y2="305" stroke="#2a3f55" stroke-width="2"/>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e2a3a"/><stop offset="100%" style="stop-color:#162030"/></linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="#212e3e" stroke="#00d4ff22" stroke-width="1.5"/>
+  <rect x="410" y="10" width="380" height="380" rx="12" fill="#253447" stroke="#00d4ff22" stroke-width="1.5"/>
+
+  <!-- LEFT: Leg raise start - lying flat, legs down -->
+  <!-- Mat -->
+  <rect x="30" y="255" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <!-- Head -->
+  <circle cx="78" cy="237" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="78" cy="224" rx="18" ry="10" fill="#3a2a1a"/>
+  <!-- Torso flat -->
+  <rect x="95" y="242" width="120" height="22" rx="10" fill="#4a90d9"/>
+  <!-- Lower abs (relaxed) -->
+  <ellipse cx="155" cy="253" rx="50" ry="8" fill="#00d4ff" opacity="0.15"/>
+  <!-- Arms at sides -->
+  <line x1="98" y1="248" x2="75" y2="258" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <line x1="213" y1="248" x2="235" y2="258" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <!-- Legs flat/down -->
+  <line x1="213" y1="252" x2="295" y2="255" stroke="#4a90d9" stroke-width="16" stroke-linecap="round"/>
+  <line x1="295" y1="255" x2="365" y2="257" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="213" y1="261" x2="295" y2="263" stroke="#3a80c9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="295" y1="263" x2="365" y2="265" stroke="#3a80c9" stroke-width="12" stroke-linecap="round"/>
+  <!-- Feet -->
+  <ellipse cx="368" cy="258" rx="13" ry="8" fill="#2a2a2a"/>
+  <ellipse cx="368" cy="266" rx="13" ry="8" fill="#2a2a2a"/>
+  <!-- Ground -->
+  <line x1="20" y1="267" x2="380" y2="267" stroke="#2a3f55" stroke-width="2"/>
+
+  <!-- RIGHT: Leg raise working - legs raised 90 degrees -->
+  <!-- Mat -->
+  <rect x="430" y="285" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <!-- Head -->
+  <circle cx="478" cy="267" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="478" cy="254" rx="18" ry="10" fill="#3a2a1a"/>
+  <!-- Torso flat -->
+  <rect x="495" y="272" width="120" height="22" rx="10" fill="#4a90d9"/>
+  <!-- Lower abs ACTIVE (cyan - working hard!) -->
+  <ellipse cx="555" cy="283" rx="50" ry="9" fill="#00d4ff" opacity="0.55" filter="url(#glow)"/>
+  <!-- Arms gripping ground -->
+  <line x1="498" y1="278" x2="475" y2="288" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <line x1="613" y1="278" x2="635" y2="288" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <!-- Legs raised to 90 degrees (CYAN) -->
+  <line x1="613" y1="280" x2="618" y2="188" stroke="#00d4ff" stroke-width="17" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="625" y1="282" x2="630" y2="190" stroke="#00d4ff" stroke-width="15" stroke-linecap="round" filter="url(#glow)"/>
+  <!-- Feet at top -->
+  <ellipse cx="618" cy="185" rx="13" ry="8" fill="#2a2a2a"/>
+  <ellipse cx="630" cy="187" rx="13" ry="8" fill="#2a2a2a"/>
+  <!-- Lower abs + hip flexor glow -->
+  <ellipse cx="618" cy="230" rx="20" ry="50" fill="#00d4ff" opacity="0.3" filter="url(#glow)"/>
+  <!-- Ground -->
+  <line x1="420" y1="295" x2="780" y2="295" stroke="#2a3f55" stroke-width="2"/>
+</svg>

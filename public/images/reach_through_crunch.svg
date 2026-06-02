@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e2a3a"/><stop offset="100%" style="stop-color:#162030"/></linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="#212e3e" stroke="#00d4ff22" stroke-width="1.5"/>
+  <rect x="410" y="10" width="380" height="380" rx="12" fill="#253447" stroke="#00d4ff22" stroke-width="1.5"/>
+
+  <!-- LEFT: Reach-Through Crunch start - lying, knees bent -->
+  <rect x="30" y="285" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <circle cx="78" cy="265" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="78" cy="252" rx="18" ry="10" fill="#3a2a1a"/>
+  <rect x="95" y="270" width="120" height="22" rx="10" fill="#4a90d9"/>
+  <ellipse cx="155" cy="281" rx="48" ry="9" fill="#00d4ff" opacity="0.2"/>
+  <!-- Arms resting -->
+  <line x1="98" y1="276" x2="72" y2="262" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <!-- Bent knees -->
+  <line x1="213" y1="278" x2="262" y2="240" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="262" y1="240" x2="268" y2="286" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="222" y1="285" x2="270" y2="248" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="270" y1="248" x2="276" y2="286" stroke="#3a80c9" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="269" cy="288" rx="13" ry="7" fill="#2a2a2a"/>
+  <ellipse cx="277" cy="288" rx="13" ry="7" fill="#2a2a2a"/>
+  <line x1="20" y1="297" x2="380" y2="297" stroke="#2a3f55" stroke-width="2"/>
+
+  <!-- RIGHT: Reach-Through Crunch working - arms reaching through knees -->
+  <rect x="430" y="310" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <!-- Lower back on ground -->
+  <rect x="450" y="295" width="80" height="20" rx="8" fill="#4a90d9"/>
+  <!-- Upper body curled up -->
+  <circle cx="488" cy="262" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="488" cy="249" rx="18" ry="10" fill="#3a2a1a"/>
+  <!-- Torso angled up -->
+  <rect x="502" y="268" width="70" height="20" rx="8" fill="#4a90d9" transform="rotate(-30 537 275)"/>
+  <!-- Abs active (cyan) -->
+  <ellipse cx="528" cy="275" rx="30" ry="12" fill="#00d4ff" opacity="0.55" filter="url(#glow)" transform="rotate(-25 528 275)"/>
+  <!-- ARMS reaching STRAIGHT between knees (cyan!) -->
+  <line x1="505" y1="277" x2="575" y2="272" stroke="#00d4ff" stroke-width="13" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="508" y1="285" x2="578" y2="280" stroke="#00d4ff" stroke-width="11" stroke-linecap="round" filter="url(#glow)"/>
+  <!-- Hands reaching through -->
+  <ellipse cx="580" cy="274" rx="14" ry="9" fill="#c8a06a"/>
+  <!-- Serratus glow -->
+  <ellipse cx="540" cy="278" rx="45" ry="18" fill="#00d4ff" opacity="0.2" filter="url(#glow)"/>
+  <!-- Knees bent (through which arms reach) -->
+  <line x1="568" y1="295" x2="618" y2="255" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="618" y1="255" x2="625" y2="307" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="578" y1="302" x2="628" y2="262" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="628" y1="262" x2="635" y2="307" stroke="#3a80c9" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="626" cy="309" rx="13" ry="7" fill="#2a2a2a"/>
+  <ellipse cx="636" cy="309" rx="13" ry="7" fill="#2a2a2a"/>
+  <!-- Ground -->
+  <line x1="420" y1="320" x2="780" y2="320" stroke="#2a3f55" stroke-width="2"/>
+</svg>

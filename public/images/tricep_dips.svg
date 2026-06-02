@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e2a3a"/><stop offset="100%" style="stop-color:#162030"/></linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="#212e3e" stroke="#00d4ff22" stroke-width="1.5"/>
+  <rect x="410" y="10" width="380" height="380" rx="12" fill="#253447" stroke="#00d4ff22" stroke-width="1.5"/>
+
+  <!-- LEFT: Tricep dips start - arms straight, elevated on chair/bench -->
+  <!-- Bench/chair -->
+  <rect x="150" y="240" width="100" height="18" rx="6" fill="#5a4030"/>
+  <rect x="155" y="258" width="10" height="40" rx="3" fill="#4a3020"/>
+  <rect x="235" y="258" width="10" height="40" rx="3" fill="#4a3020"/>
+  <!-- Body - sitting elevated, arms straight -->
+  <circle cx="200" cy="135" r="22" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="200" cy="121" rx="19" ry="11" fill="#3a2a1a"/>
+  <rect x="184" y="155" width="32" height="75" rx="10" fill="#4a90d9"/>
+  <!-- Arms straight down to bench -->
+  <line x1="186" y1="165" x2="162" y2="238" stroke="#4a90d9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="214" y1="165" x2="238" y2="238" stroke="#4a90d9" stroke-width="13" stroke-linecap="round"/>
+  <!-- Hands on bench -->
+  <ellipse cx="160" cy="241" rx="13" ry="8" fill="#c8a06a"/>
+  <ellipse cx="240" cy="241" rx="13" ry="8" fill="#c8a06a"/>
+  <!-- Legs extended forward -->
+  <line x1="195" y1="230" x2="145" y2="238" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="145" y1="238" x2="95" y2="242" stroke="#4a90d9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="205" y1="238" x2="155" y2="246" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="155" y1="246" x2="105" y2="250" stroke="#3a80c9" stroke-width="11" stroke-linecap="round"/>
+  <!-- Feet -->
+  <ellipse cx="90" cy="244" rx="13" ry="8" fill="#2a2a2a"/>
+  <ellipse cx="100" cy="252" rx="13" ry="8" fill="#2a2a2a"/>
+  <!-- Ground -->
+  <line x1="20" y1="300" x2="380" y2="300" stroke="#2a3f55" stroke-width="2"/>
+
+  <!-- RIGHT: Tricep dips working - elbows bent, body lowered -->
+  <!-- Bench -->
+  <rect x="550" y="220" width="100" height="18" rx="6" fill="#5a4030"/>
+  <rect x="555" y="238" width="10" height="40" rx="3" fill="#4a3020"/>
+  <rect x="635" y="238" width="10" height="40" rx="3" fill="#4a3020"/>
+  <!-- Body lowered -->
+  <circle cx="600" cy="158" r="22" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="600" cy="144" rx="19" ry="11" fill="#3a2a1a"/>
+  <rect x="584" y="178" width="32" height="38" rx="10" fill="#4a90d9"/>
+  <!-- Arms BENT (triceps working - cyan highlight) -->
+  <line x1="586" y1="185" x2="562" y2="222" stroke="#00d4ff" stroke-width="14" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="614" y1="185" x2="638" y2="222" stroke="#00d4ff" stroke-width="14" stroke-linecap="round" filter="url(#glow)"/>
+  <!-- Hands on bench -->
+  <ellipse cx="560" cy="224" rx="13" ry="8" fill="#c8a06a"/>
+  <ellipse cx="640" cy="224" rx="13" ry="8" fill="#c8a06a"/>
+  <!-- Tricep glow effect -->
+  <ellipse cx="565" cy="205" rx="20" ry="18" fill="#00d4ff" opacity="0.4" filter="url(#glow)"/>
+  <ellipse cx="635" cy="205" rx="20" ry="18" fill="#00d4ff" opacity="0.4" filter="url(#glow)"/>
+  <!-- Elbow caps glowing -->
+  <circle cx="565" cy="215" r="10" fill="#00d4ff" opacity="0.5" filter="url(#glow)"/>
+  <circle cx="635" cy="215" r="10" fill="#00d4ff" opacity="0.5" filter="url(#glow)"/>
+  <!-- Legs extended -->
+  <line x1="595" y1="215" x2="545" y2="222" stroke="#4a90d9" stroke-width="15" stroke-linecap="round"/>
+  <line x1="545" y1="222" x2="495" y2="226" stroke="#4a90d9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="605" y1="223" x2="555" y2="230" stroke="#3a80c9" stroke-width="13" stroke-linecap="round"/>
+  <line x1="555" y1="230" x2="505" y2="234" stroke="#3a80c9" stroke-width="11" stroke-linecap="round"/>
+  <ellipse cx="490" cy="228" rx="13" ry="8" fill="#2a2a2a"/>
+  <ellipse cx="500" cy="236" rx="13" ry="8" fill="#2a2a2a"/>
+  <!-- Ground -->
+  <line x1="420" y1="280" x2="780" y2="280" stroke="#2a3f55" stroke-width="2"/>
+</svg>

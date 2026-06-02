@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Basic user information and initial physical stats.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "birthDate": { "type": "string" },
+        "gender": { "type": "string", "enum": ["male", "female", "other"] },
+        "initialHeight": { "type": "number" },
+        "initialWeight": { "type": "number" }
+      },
+      "required": ["uid", "email"]
+    },
+    "HealthRecord": {
+      "title": "Health Record",
+      "description": "A single point-in-time health measurement.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "date": { "type": "string" },
+        "weight": { "type": "number" },
+        "height": { "type": "number" },
+        "bmi": { "type": "number" },
+        "age": { "type": "number" },
+        "sleepHours": { "type": "number" },
+        "sleepQuality": { "type": "number" },
+        "injuries": { "type": "string" },
+        "healthStatus": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "userId", "date", "weight", "height", "bmi"]
+    },
+    "WorkoutStatus": {
+      "title": "Workout Status",
+      "description": "Daily workout completion status.",
+      "type": "object",
+      "properties": {
+        "completed": { "type": "boolean" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["completed"]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "Personal health, fitness, or general wellness note.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string", "enum": ["workout", "nutrition", "health", "general"] },
+        "date": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "content", "category", "date"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents"
+    },
+    "users/{userId}/profiles/{profileId}": {
+      "schema": "object",
+      "description": "Profile within a user account"
+    },
+    "users/{userId}/profiles/{profileId}/records/{recordId}": {
+      "schema": "HealthRecord",
+      "description": "Health history records"
+    },
+    "users/{userId}/profiles/{profileId}/water/{date}": {
+      "schema": "object",
+      "description": "Daily water intake"
+    },
+    "users/{userId}/profiles/{profileId}/workouts/{date}": {
+      "schema": "WorkoutStatus",
+      "description": "Daily workout completion"
+    },
+    "users/{userId}/profiles/{profileId}/notes/{noteId}": {
+      "schema": "Note",
+      "description": "Fitness and health related notes"
+    }
+  }
+}

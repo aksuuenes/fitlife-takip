@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e2a3a"/><stop offset="100%" style="stop-color:#162030"/></linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="#212e3e" stroke="#00d4ff22" stroke-width="1.5"/>
+  <rect x="410" y="10" width="380" height="380" rx="12" fill="#253447" stroke="#00d4ff22" stroke-width="1.5"/>
+
+  <!-- LEFT: Knee-in Crunch - lying start -->
+  <!-- Mat -->
+  <rect x="30" y="285" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <!-- Head on ground -->
+  <circle cx="78" cy="267" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="78" cy="254" rx="18" ry="10" fill="#3a2a1a"/>
+  <!-- Body flat -->
+  <rect x="95" y="272" width="130" height="22" rx="10" fill="#4a90d9"/>
+  <!-- Legs flat -->
+  <line x1="223" y1="278" x2="310" y2="278" stroke="#4a90d9" stroke-width="16" stroke-linecap="round"/>
+  <line x1="310" y1="278" x2="368" y2="280" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="223" y1="287" x2="310" y2="287" stroke="#3a80c9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="310" y1="287" x2="368" y2="289" stroke="#3a80c9" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="371" cy="281" rx="12" ry="7" fill="#2a2a2a"/>
+  <ellipse cx="371" cy="291" rx="12" ry="7" fill="#2a2a2a"/>
+  <line x1="20" y1="297" x2="380" y2="297" stroke="#2a3f55" stroke-width="2"/>
+
+  <!-- RIGHT: Knee-in Crunch HOLD - knees to chest, upper body raised, isometric hold -->
+  <!-- Mat -->
+  <rect x="430" y="315" width="340" height="8" rx="4" fill="#1a3a2a" opacity="0.5"/>
+  <!-- Head raised -->
+  <circle cx="490" cy="265" r="20" fill="#c8a06a" stroke="#e0b87a" stroke-width="1.5"/>
+  <ellipse cx="490" cy="252" rx="18" ry="10" fill="#3a2a1a"/>
+  <!-- Torso curled, lower back on ground -->
+  <!-- Upper body raised diagonally -->
+  <rect x="502" y="270" width="75" height="22" rx="8" fill="#4a90d9" transform="rotate(-28 540 278)"/>
+  <!-- ABS held isometrically (strong cyan glow) -->
+  <ellipse cx="535" cy="276" rx="33" ry="13" fill="#00d4ff" opacity="0.65" filter="url(#glow)" transform="rotate(-22 535 276)"/>
+  <!-- Abs segment lines -->
+  <line x1="527" y1="268" x2="522" y2="284" stroke="#00d4ff" stroke-width="1.5" opacity="0.8"/>
+  <line x1="535" y1="266" x2="530" y2="282" stroke="#00d4ff" stroke-width="1.5" opacity="0.8"/>
+  <line x1="543" y1="266" x2="538" y2="282" stroke="#00d4ff" stroke-width="1.5" opacity="0.8"/>
+  <!-- Hands behind head -->
+  <line x1="505" y1="273" x2="480" y2="258" stroke="#4a90d9" stroke-width="10" stroke-linecap="round"/>
+  <line x1="508" y1="278" x2="477" y2="264" stroke="#3a80c9" stroke-width="9" stroke-linecap="round"/>
+  <!-- KNEES pulled to chest (cyan) - 90 deg bent, hips flexed -->
+  <line x1="568" y1="290" x2="600" y2="258" stroke="#00d4ff" stroke-width="16" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="600" y1="258" x2="625" y2="272" stroke="#00d4ff" stroke-width="14" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="578" y1="298" x2="608" y2="265" stroke="#4a90d9" stroke-width="14" stroke-linecap="round"/>
+  <line x1="608" y1="265" x2="633" y2="279" stroke="#4a90d9" stroke-width="12" stroke-linecap="round"/>
+  <!-- Knee glow -->
+  <circle cx="600" cy="258" r="14" fill="#00d4ff" opacity="0.5" filter="url(#glow)"/>
+  <!-- Hip flexor glow -->
+  <ellipse cx="580" cy="278" rx="30" ry="22" fill="#00d4ff" opacity="0.3" filter="url(#glow)"/>
+  <!-- Hold tension field -->
+  <ellipse cx="540" cy="282" rx="60" ry="25" fill="#00d4ff" opacity="0.1" filter="url(#glow)"/>
+  <!-- Ground -->
+  <line x1="420" y1="325" x2="780" y2="325" stroke="#2a3f55" stroke-width="2"/>
+</svg>
