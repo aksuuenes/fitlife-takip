@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { User as UserIcon, Mail, Lock, ShieldCheck, Activity, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
-import firebaseConfig from '../../firebase-applet-config.json';
+import { app } from '../firebase';
 
 interface AuthGateProps {
   onEnterGuestMode: () => void;
@@ -46,7 +46,7 @@ export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
               <li>"E-posta/Şifre" (Email/Password) seçeneğini seçin, aktif edin ("Etkinleştir" seçeneğini açın) ve "Kaydet" butonuna tıklayın.</li>
             </ol>
             <a 
-              href={`https://console.firebase.google.com/project/${firebaseConfig.projectId}/authentication/providers`} 
+              href={`https://console.firebase.google.com/project/${app.options.projectId}/authentication/providers`} 
               target="_blank" 
               referrerPolicy="no-referrer"
               className="inline-flex items-center justify-center gap-2 w-full mt-2 py-2.5 px-4 bg-red-650 hover:bg-red-700 text-white font-display font-black text-[10px] uppercase tracking-wider rounded-xl transition-all cursor-pointer text-center shadow-sm"
@@ -84,11 +84,11 @@ export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
             <ol className="list-decimal list-inside text-[11px] text-slate-550 dark:text-slate-400 space-y-1 font-semibold pl-1">
               <li>Aşağıdaki butona tıklayarak Firebase Konsolunu açın.</li>
               <li>"Yetkilendirilmiş etki alanları" (Authorized domains) bölümüne gelin.</li>
-              <li>"Etki alanı ekle" (Add domain) butonuna basıp <strong>localhost</strong> yazın ve kaydedin.</li>
+              <li>"Etki alanı ekle" (Add domain) butonuna basıp <strong>localhost</strong> veya <strong>vercel</strong> domaininizi yazın ve kaydedin.</li>
             </ol>
             <div className="flex flex-col sm:flex-row gap-2 pt-2">
               <a 
-                href={`https://console.firebase.google.com/project/${firebaseConfig.projectId}/authentication/settings`} 
+                href={`https://console.firebase.google.com/project/${app.options.projectId}/authentication/settings`} 
                 target="_blank" 
                 referrerPolicy="no-referrer"
                 className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 bg-red-600 hover:bg-red-700 text-white font-display font-black text-[9px] uppercase tracking-wider rounded-xl transition-all cursor-pointer text-center shadow-sm"
