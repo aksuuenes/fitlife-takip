@@ -21,7 +21,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: '2', 
-    name: 'Dağ Tırmanışı (Mountain Climber)', 
+    name: 'Mountain Climber', 
     duration: 40, 
     reps: '40 Sn', 
     category: 'cardio', 
@@ -74,7 +74,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   // --- UPPER BODY (Vücut Ağırlığı) ---
   { 
     id: '3', 
-    name: 'Şınav (Push-ups)', 
+    name: 'Push-ups', 
     duration: 45, 
     reps: '15-20 Tekrar', 
     category: 'upper', 
@@ -91,7 +91,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: '32', 
-    name: 'Arka Kol Süzülme (Tricep Dips)', 
+    name: 'Tricep Dips', 
     duration: 45, 
     reps: '15 Tekrar', 
     category: 'upper', 
@@ -106,6 +106,24 @@ export const EXERCISE_DATABASE: Exercise[] = [
       'Dirsekleri yanlara açma; hareket boyunca arkaya doğru kıvrılmalı.',
     ]
   },
+  { 
+    id: '34', 
+    name: 'Seated Lateral Raise', 
+    duration: 45, 
+    reps: '12-15 Tekrar', 
+    category: 'upper', 
+    equipment: ['dumbbell'], 
+    image: '/images/seated_lateral_raise.png',
+    description: 'Orta omuz (lateral deltoid) kaslarını izole ederek omuzları genişleten ve yuvarlak bir görünüm kazandıran etkili bir egzersiz.',
+    howTo: [
+      'Bir sehpaya dik bir şekilde oturun ve ayaklarınızı yere sağlam basın.',
+      'Dambılları yan tarafınızda, avuç içleriniz vücudunuza bakacak şekilde tutun.',
+      'Dirseklerinizde hafif bir bükülme olmalıdır. Bu açıyı hareket boyunca koruyun.',
+      'Ağırlıkları yanlara doğru, kollarınız yere paralel olana kadar (omuz hizasına kadar) kaldırın.',
+      'Ağırlığı kontrollü ve yavaş bir şekilde başlangıç pozisyonuna indirin.'
+    ] 
+  },
+
 
   // --- LOWER BODY ---
   { 
@@ -178,7 +196,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: '33', 
-    name: 'Yanal Lunge (Side Lunge)', 
+    name: 'Side Lunge', 
     duration: 45, 
     reps: '12 Tekrar', 
     category: 'lower', 
@@ -226,7 +244,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   // --- YOGA & FLEXIBILITY ---
   { 
     id: '40', 
-    name: 'Kobra Duruşu (Cobra Pose)', 
+    name: 'Cobra Pose', 
     duration: 45, 
     reps: '45 Sn Tut', 
     category: 'yoga', 
@@ -236,7 +254,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: '42', 
-    name: 'Aşağı Bakan Köpek (Downward-Facing Dog)', 
+    name: 'Downward-Facing Dog', 
     duration: 45, 
     reps: '45 Sn Tut', 
     category: 'yoga', 
@@ -246,7 +264,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: '45', 
-    name: 'Çocuk Pozu (Child\'s Pose)', 
+    name: 'Child\'s Pose', 
     duration: 60, 
     reps: '60 Sn Tut', 
     category: 'yoga', 
@@ -256,7 +274,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: 'y_easy_sitting', 
-    name: 'Kolay Oturuş (Easy Sukhasana)', 
+    name: 'Easy Sukhasana', 
     duration: 45, 
     reps: '45 Sn Tut', 
     category: 'yoga', 
@@ -266,7 +284,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: 'y_lotus', 
-    name: 'Lotus Pozu (Lotus Padmasana)', 
+    name: 'Lotus Padmasana', 
     duration: 45, 
     reps: '45 Sn Tut', 
     category: 'yoga', 
@@ -276,7 +294,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: 'y_low_lunge', 
-    name: 'Alçak Fente Pozu (Low Lunge Anjaneyasana)', 
+    name: 'Low Lunge Anjaneyasana', 
     duration: 45, 
     reps: '45 Sn Tut', 
     category: 'yoga', 
@@ -286,7 +304,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: 'y_calf_stretch_block', 
-    name: 'Blok Üzerinde Baldır Germe (Calf Stretch on Block)', 
+    name: 'Calf Stretch on Block', 
     duration: 45, 
     reps: '45 Sn Tut', 
     category: 'yoga', 
@@ -296,7 +314,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
   },
   { 
     id: 'y_half_forward_fold', 
-    name: 'Yarı Yol Açılma - Eller Kaval Kemiğinde (Half Forward Fold)', 
+    name: 'Half Forward Fold', 
     duration: 45, 
     reps: '45 Sn Tut', 
     category: 'yoga', 
