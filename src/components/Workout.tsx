@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Exercise } from '../types';
 import ExerciseAnimation from './ExerciseAnimation';
 import AnatomyAtlas from './AnatomyAtlas';
+import BreathingAnimation from './BreathingAnimation';
 import { useAuth } from '../contexts/AuthContext';
 import { firebaseService } from '../services/firebaseService';
 import { storageService } from '../services/storageService';
@@ -288,7 +289,9 @@ export default function Workout() {
                   
                   {/* Animation Container */}
                   <div className="w-full aspect-square md:aspect-[16/9] bg-slate-950 rounded-[28px] overflow-hidden flex items-center justify-center relative shadow-inner">
-                    {phase !== 'REST' && currentExercise.image ? (
+                    {phase === 'REST' ? (
+                      <BreathingAnimation />
+                    ) : currentExercise.image ? (
                       <img
                         src={currentExercise.image}
                         alt={currentExercise.name}
@@ -298,7 +301,7 @@ export default function Workout() {
                         decoding="async"
                       />
                     ) : (
-                      <ExerciseAnimation type={phase === 'REST' ? 'Rest' : currentExercise.name} />
+                      <ExerciseAnimation type={currentExercise.name} />
                     )}
                   </div>
 
