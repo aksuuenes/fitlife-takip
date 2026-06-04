@@ -84,6 +84,14 @@ service cloud.firestore {
           allow create, update: if isOwner(userId) && isValidNote(incoming());
           allow delete: if isOwner(userId);
         }
+
+        match /supplements/{date} {
+          allow read, write: if isOwner(userId);
+        }
+
+        match /supplementSettings/{document=**} {
+          allow read, write: if isOwner(userId);
+        }
       }
     }
   }

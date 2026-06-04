@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, User as UserIcon, ClipboardList, BarChart3, Settings, Calendar, Users, Loader2, Trash2, Sun, Moon, StickyNote } from 'lucide-react';
+import { Activity, User as UserIcon, ClipboardList, BarChart3, Settings, Calendar, Users, Loader2, Trash2, Sun, Moon, StickyNote, LogOut } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -211,6 +211,16 @@ export default function Layout({ children }: LayoutProps) {
                   {user ? 'KİNETİK PRO' : 'MİSAFİR SEVİYE'}
                 </div>
               </div>
+              
+              {user && (
+                <button
+                  onClick={logout}
+                  className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-all cursor-pointer"
+                  title="Hesap Değiştir / Çıkış Yap"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              )}
             </div>
 
             {!user && (

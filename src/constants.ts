@@ -112,7 +112,7 @@ export const EXERCISE_DATABASE: Exercise[] = [
     duration: 45, 
     reps: '12-15 Tekrar', 
     category: 'upper', 
-    equipment: ['dumbbell'], 
+    equipment: ['dumbbells'], 
     image: '/images/seated_lateral_raise.png',
     description: 'Orta omuz (lateral deltoid) kaslarını izole ederek omuzları genişleten ve yuvarlak bir görünüm kazandıran etkili bir egzersiz.',
     howTo: [

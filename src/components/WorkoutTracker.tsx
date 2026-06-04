@@ -11,6 +11,7 @@ export default function WorkoutTracker() {
   const navigate = useNavigate();
   const [isCompleted, setIsCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -28,6 +29,27 @@ export default function WorkoutTracker() {
 
     checkStatus();
   }, [user, activeProfileId, today]);
+
+  useEffect(() => {
+    if (!isCompleted) return;
+
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setHours(24, 0, 0, 0);
+      let diff = tomorrow.getTime() - now.getTime();
+      if (diff < 0) diff = 0;
+      
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) || 0;
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)) || 0;
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000) || 0;
+      setTimeLeft({ hours, minutes, seconds });
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(timer);
+  }, [isCompleted]);
 
   if (loading) return (
     <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-sm animate-pulse transition-colors duration-200">
@@ -88,6 +110,15 @@ export default function WorkoutTracker() {
         <div className="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-indigo-300 animate-ping" />
             <p className="text-[9px] font-extrabold text-indigo-200 uppercase tracking-widest">Bugün henüz spor yapmadın</p>
+        </div>
+      )}
+
+      {isCompleted && (
+        <div className="mt-5 pt-5 border-t border-emerald-900/10 dark:border-emerald-100/10 flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300 uppercase tracking-widest tabular-nums">
+              Sonraki Antrenmana: {timeLeft.hours} saat {timeLeft.minutes} dk {timeLeft.seconds} saniye
+            </p>
         </div>
       )}
     </div>
