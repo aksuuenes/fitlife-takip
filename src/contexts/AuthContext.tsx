@@ -23,6 +23,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
   updateActiveSubProfile: (data: Partial<SubProfile>) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   switchProfile: (id: string) => Promise<void>;
   addProfile: (name: string) => Promise<void>;
   deleteProfile: (id: string) => Promise<void>;
@@ -172,6 +173,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('fitlife_guest_mode');
   };
 
+  const resetPassword = async (email: string) => {
+    const { sendPasswordResetEmail } = await import('firebase/auth');
+    await sendPasswordResetEmail(auth, email);
+  };
+
   const updateProfile = async (data: Partial<UserProfile>) => {
     const sanitizedData = sanitizeData(data);
     if (user) {
@@ -236,7 +242,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider value={{ 
       user, profile, activeProfileId, currentProfile, loading, login, logout, 
-      updateProfile, updateActiveSubProfile, signUpWithEmail, loginWithEmail, switchProfile, addProfile, deleteProfile 
+      updateProfile, updateActiveSubProfile, signUpWithEmail, loginWithEmail, switchProfile, addProfile, deleteProfile, resetPassword 
     }}>
       {children}
     </AuthContext.Provider>

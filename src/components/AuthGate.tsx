@@ -9,12 +9,34 @@ interface AuthGateProps {
 }
 
 export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
-  const { login, signUpWithEmail, loginWithEmail } = useAuth();
+  const { login, signUpWithEmail, loginWithEmail, resetPassword } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [authData, setAuthData] = useState({ email: '', password: '', name: '' });
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<React.ReactNode | string>('');
+  const [resetMessage, setResetMessage] = useState('');
 
+  const handleResetPassword = async () => {
+    if (!authData.email) {
+      setAuthError('Şifre sıfırlama bağlantısı için lütfen yukarıya e-posta adresinizi girin.');
+      return;
+    }
+    setAuthLoading(true);
+    setAuthError('');
+    setResetMessage('');
+    try {
+      await resetPassword(authData.email);
+      setResetMessage('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen gelen kutunuzu (ve spam klasörünü) kontrol edin.');
+    } catch (error: any) {
+      if (error.code === 'auth/user-not-found') {
+        setAuthError('Bu e-posta adresiyle kayıtlı bir kullanıcı bulunamadı.');
+      } else {
+        setAuthError(error.message || 'Şifre sıfırlama bağlantısı gönderilirken bir hata oluştu.');
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthLoading(true);
@@ -251,6 +273,29 @@ export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
                     />
                   </div>
                 </div>
+
+                {!isSignUp && (
+                  <div className="flex justify-end pt-1">
+                    <button 
+                      type="button" 
+                      onClick={handleResetPassword}
+                      disabled={authLoading}
+                      className="text-[10px] font-bold text-indigo-600 dark:text-emerald-400 hover:text-indigo-700 dark:hover:text-emerald-300 transition-colors"
+                    >
+                      Şifremi Unuttum
+                    </button>
+                  </div>
+                )}
+
+                {resetMessage && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-emerald-600 dark:text-emerald-400 text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/20 p-3.5 rounded-xl border border-emerald-100 dark:border-emerald-900/30 leading-relaxed"
+                  >
+                    {resetMessage}
+                  </motion.p>
+                )}
 
                 {authError && (
                   <motion.p 
