@@ -46,91 +46,102 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        const docRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          const data = docSnap.data() as UserProfile;
+      try {
+        setUser(user);
+        if (user) {
+          const docRef = doc(db, 'users', user.uid);
+          const docSnap = await getDoc(docRef);
           
-          if (!data.profiles || data.profiles.length === 0) {
-            const defaultSubProfile: SubProfile = {
-              id: 'main',
-              name: data.displayName || 'Asıl Profil',
-              createdAt: new Date().toISOString(),
-              initialHeight: data.initialHeight,
-              initialWeight: data.initialWeight
-            };
-            data.profiles = [defaultSubProfile];
-            data.activeProfileId = 'main';
-            await setDoc(docRef, data, { merge: true });
-          }
-          
-          setProfile(data);
-          
-          const savedId = localStorage.getItem('activeProfileId') || data.activeProfileId;
-          const isValidId = data.profiles.some(p => p.id === savedId);
-          
-          if (isValidId && savedId) {
-            setActiveProfileId(savedId);
-          } else if (data.profiles.length > 0) {
-            const firstId = data.profiles[0].id;
-            setActiveProfileId(firstId);
-            localStorage.setItem('activeProfileId', firstId);
-          }
-        } else {
-          const initialProfile: UserProfile = {
-            uid: user.uid,
-            email: user.email || '',
-            displayName: user.displayName || '',
-            profiles: [{
-              id: 'main',
-              name: user.displayName || 'Asıl Profil',
-              createdAt: new Date().toISOString()
-            }]
-          };
-          await setDoc(docRef, initialProfile);
-          setProfile(initialProfile);
-          setActiveProfileId('main');
-          localStorage.setItem('activeProfileId', 'main');
-        }
-      } else {
-        // Handle Local Multi-Profile
-        const savedData = localStorage.getItem('fitlife_profile');
-        if (savedData) {
-          const data = JSON.parse(savedData) as UserProfile;
-          setProfile(data);
-          
-          const savedId = localStorage.getItem('activeProfileId');
-          const isValidId = data.profiles?.some(p => p.id === savedId);
-          if (isValidId && savedId) {
-            setActiveProfileId(savedId);
-          } else if (data.profiles && data.profiles.length > 0) {
-            const firstId = data.profiles[0].id;
-            setActiveProfileId(firstId);
-            localStorage.setItem('activeProfileId', firstId);
+          if (docSnap.exists()) {
+            const data = docSnap.data() as UserProfile;
+            
+            if (!data.profiles || data.profiles.length === 0) {
+              const defaultSubProfile: SubProfile = {
+                id: 'main',
+                name: data.displayName || 'Asıl Profil',
+                createdAt: new Date().toISOString(),
+                initialHeight: data.initialHeight,
+                initialWeight: data.initialWeight
+              };
+              data.profiles = [defaultSubProfile];
+              data.activeProfileId = 'main';
+              await setDoc(docRef, data, { merge: true });
+            }
+            
+            setProfile(data);
+            
+            const savedId = localStorage.getItem('activeProfileId') || data.activeProfileId;
+            const isValidId = data.profiles.some(p => p.id === savedId);
+            
+            if (isValidId && savedId) {
+              setActiveProfileId(savedId);
+            } else if (data.profiles.length > 0) {
+              const firstId = data.profiles[0].id;
+              setActiveProfileId(firstId);
+              localStorage.setItem('activeProfileId', firstId);
+            }
           } else {
-            setActiveProfileId('local');
+            const initialProfile: UserProfile = {
+              uid: user.uid,
+              email: user.email || '',
+              displayName: user.displayName || '',
+              profiles: [{
+                id: 'main',
+                name: user.displayName || 'Asıl Profil',
+                createdAt: new Date().toISOString()
+              }]
+            };
+            await setDoc(docRef, initialProfile);
+            setProfile(initialProfile);
+            setActiveProfileId('main');
+            localStorage.setItem('activeProfileId', 'main');
           }
         } else {
-          const initialLocal: UserProfile = {
-            uid: 'local',
-            email: '',
-            displayName: 'Misafir',
-            profiles: [{
-              id: 'local',
-              name: 'Misafir',
-              createdAt: new Date().toISOString()
-            }]
-          };
-          setProfile(initialLocal);
-          setActiveProfileId('local');
-          localStorage.setItem('fitlife_profile', JSON.stringify(initialLocal));
-          localStorage.setItem('activeProfileId', 'local');
+          // Handle Local Multi-Profile
+          const savedData = localStorage.getItem('fitlife_profile');
+          if (savedData) {
+            try {
+              const data = JSON.parse(savedData) as UserProfile;
+              setProfile(data);
+              
+              const savedId = localStorage.getItem('activeProfileId');
+              const isValidId = data.profiles?.some(p => p.id === savedId);
+              if (isValidId && savedId) {
+                setActiveProfileId(savedId);
+              } else if (data.profiles && data.profiles.length > 0) {
+                const firstId = data.profiles[0].id;
+                setActiveProfileId(firstId);
+                localStorage.setItem('activeProfileId', firstId);
+              } else {
+                setActiveProfileId('local');
+              }
+            } catch (e) {
+              console.error("Local data parsing error", e);
+              localStorage.removeItem('fitlife_profile');
+              throw e; // will be caught by outer catch
+            }
+          } else {
+            const initialLocal: UserProfile = {
+              uid: 'local',
+              email: '',
+              displayName: 'Misafir',
+              profiles: [{
+                id: 'local',
+                name: 'Misafir',
+                createdAt: new Date().toISOString()
+              }]
+            };
+            setProfile(initialLocal);
+            setActiveProfileId('local');
+            localStorage.setItem('fitlife_profile', JSON.stringify(initialLocal));
+            localStorage.setItem('activeProfileId', 'local');
+          }
         }
+      } catch (error) {
+        console.error("Error in onAuthStateChanged:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return unsubscribe;
