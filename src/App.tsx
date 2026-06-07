@@ -18,6 +18,7 @@ import Notes from './components/Notes';
 import AuthGate from './components/AuthGate';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import ReloadPrompt from './components/ReloadPrompt';
 
 export default function App() {
   return (
@@ -66,8 +67,10 @@ function AppContent() {
   }
 
   return (
-    <Routes>
-      <Route path="/workout-active" element={<Workout />} />
+    <>
+      <ReloadPrompt />
+      <Routes>
+        <Route path="/workout-active" element={<Workout />} />
       <Route path="*" element={
         <Layout>
           <Routes>
@@ -81,6 +84,7 @@ function AppContent() {
           </Routes>
         </Layout>
       } />
-    </Routes>
+      </Routes>
+    </>
   );
 }

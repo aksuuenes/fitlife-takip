@@ -139,7 +139,7 @@ export const firebaseService = {
       const docRef = doc(db, path);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        const data = docSnap.data();
+        const data = docSnap.data() as any;
         return !!data.completed;
       }
       return false;
@@ -155,7 +155,7 @@ export const firebaseService = {
       const docRef = doc(db, path);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        const data = docSnap.data();
+        const data = docSnap.data() as any;
         return {
           completed: !!data.completed,
           mood: data.mood || '',
@@ -176,7 +176,7 @@ export const firebaseService = {
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(doc => ({
         date: doc.id,
-        ...doc.data()
+        ...(doc.data() as any)
       })).sort((a, b) => b.date.localeCompare(a.date));
     } catch (error) {
       handleFirestoreError(error, OperationType.GET, path);
@@ -226,7 +226,7 @@ export const firebaseService = {
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...(doc.data() as any)
       }));
     } catch (error) {
       handleFirestoreError(error, OperationType.GET, path);
