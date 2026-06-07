@@ -53,7 +53,6 @@ export default function SupplementTracker() {
         }
       } catch (error: any) {
         console.error("Supplement fetch error:", error);
-        alert("FETCH HATASI: " + (error.message || String(error)));
       } finally {
         setLoading(false);
       }
@@ -80,7 +79,6 @@ export default function SupplementTracker() {
       }
     } catch (error: any) {
       console.error("Supplement update error:", error);
-      alert("HATA (Lütfen bunu kopyalayıp bana atın): " + (error.message || String(error)));
     } finally {
       setPendingUpdate(false);
     }
