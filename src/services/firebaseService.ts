@@ -1,8 +1,8 @@
 import { 
   collection, 
   doc, 
-  getDocs, 
-  getDoc, 
+  getDocs as firebaseGetDocs, 
+  getDoc as firebaseGetDoc, 
   setDoc, 
   query, 
   where, 
@@ -12,6 +12,20 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
 import { HealthRecord, UserProfile, Note } from '../types';
+
+const TIMEOUT_MS = 4000;
+
+const withTimeout = <T>(promise: Promise<T>, ms: number = TIMEOUT_MS): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => 
+      setTimeout(() => reject(new Error("Firebase ağ isteği zaman aşımına uğradı (offline veya engelli).")), ms)
+    )
+  ]);
+};
+
+const getDoc = (ref: any) => withTimeout(firebaseGetDoc(ref));
+const getDocs = (ref: any) => withTimeout(firebaseGetDocs(ref));
 
 enum OperationType {
   CREATE = 'create',
