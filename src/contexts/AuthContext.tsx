@@ -45,7 +45,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setActiveProfileId(savedProfileId);
     }
 
+    const fallbackTimer = setTimeout(() => {
+      console.warn("Firebase Auth timeout. Forcing loading to false.");
+      setLoading(false);
+    }, 3000);
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      clearTimeout(fallbackTimer);
       try {
         setUser(user);
         if (user) {
@@ -144,7 +150,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    return unsubscribe;
+    return () => {
+      clearTimeout(fallbackTimer);
+      unsubscribe();
+    };
   }, []);
 
   const login = async () => {
