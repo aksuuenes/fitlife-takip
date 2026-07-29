@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
 import { Dumbbell, CheckCircle2, ChevronRight, Play } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { firebaseService } from '../services/firebaseService';
@@ -18,13 +17,18 @@ export default function WorkoutTracker() {
   useEffect(() => {
     const checkStatus = async () => {
       setLoading(true);
-      if (user && activeProfileId) {
-        const completed = await firebaseService.getWorkoutStatus(user.uid, activeProfileId, today);
-        setIsCompleted(completed);
-      } else if (activeProfileId) {
-        setIsCompleted(storageService.getWorkoutStatus(today, activeProfileId));
+      try {
+        if (user && activeProfileId) {
+          const completed = await firebaseService.getWorkoutStatus(user.uid, activeProfileId, today);
+          setIsCompleted(completed);
+        } else if (activeProfileId) {
+          setIsCompleted(storageService.getWorkoutStatus(today, activeProfileId));
+        }
+      } catch (error) {
+        console.error("Failed to check workout status:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkStatus();

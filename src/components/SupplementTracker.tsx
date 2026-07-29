@@ -137,7 +137,7 @@ export default function SupplementTracker() {
   if (loading) {
     return (
       <div className="bg-white dark:bg-slate-900 p-12 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center h-full min-h-[340px]">
-        <Loader2 className="w-8 h-8 text-indigo-550 dark:text-indigo-400 animate-spin mb-4" />
+        <Loader2 className="w-8 h-8 text-indigo-500 dark:text-indigo-400 animate-spin mb-4" />
         <p className="text-slate-400 dark:text-slate-500 font-extrabold text-[10px] uppercase tracking-wider">Takviye bilgileri yükleniyor...</p>
       </div>
     );
@@ -157,7 +157,7 @@ export default function SupplementTracker() {
           <div>
             <h2 className="text-xl font-display font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
               Günlük Takviyeler
-              {isAllTaken && <CheckCircle2 className="text-emerald-500 w-5.5 h-5.5" />}
+              {isAllTaken && <CheckCircle2 className="text-emerald-500 w-6 h-6" />}
             </h2>
             <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
               Besin desteklerinizi tek tıkla işaretleyin
@@ -196,7 +196,7 @@ export default function SupplementTracker() {
                 className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all text-left group/item active:scale-[0.99] cursor-pointer select-none ${
                   isTaken 
                     ? 'bg-emerald-50/5 dark:bg-emerald-950/10 border-emerald-50/30 dark:border-emerald-50/20' 
-                    : 'bg-slate-50/50 hover:bg-slate-50 dark:bg-slate-950/20 dark:hover:bg-slate-850 border-slate-100 hover:border-slate-200 dark:border-slate-800/80 dark:hover:border-slate-700/80'
+                    : 'bg-slate-50/50 hover:bg-slate-50 dark:bg-slate-950/20 dark:hover:bg-slate-800 border-slate-100 hover:border-slate-200 dark:border-slate-800/80 dark:hover:border-slate-700/80'
                 }`}
               >
                 <div className="flex items-center gap-3.5 flex-1 min-w-0">
@@ -212,7 +212,7 @@ export default function SupplementTracker() {
                   <div className="flex-1 min-w-0">
                     <span className={`text-xs font-bold transition-all block truncate ${
                       isTaken 
-                        ? 'text-slate-850 dark:text-slate-200 line-through opacity-70' 
+                        ? 'text-slate-800 dark:text-slate-200 line-through opacity-70' 
                         : 'text-slate-900 dark:text-white'
                     }`}>
                       {item.name}
@@ -263,7 +263,7 @@ export default function SupplementTracker() {
                 <div className={`p-1.5 rounded-lg border-2 transition-all shrink-0 ml-3 ${
                   isTaken 
                     ? 'bg-emerald-500 border-emerald-500 text-white scale-105 shadow-sm' 
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 group-hover/item:border-slate-350 text-transparent'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 group-hover/item:border-slate-300 text-transparent'
                 }`}>
                   <CheckCircle2 className="w-3.5 h-3.5 fill-current" />
                 </div>

@@ -94,7 +94,7 @@ export default function WaterTracker() {
   if (loading) {
     return (
       <div className="bg-white dark:bg-slate-900 p-12 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center h-full min-h-[340px]">
-        <Loader2 className="w-8 h-8 text-indigo-550 dark:text-indigo-400 animate-spin mb-4" />
+        <Loader2 className="w-8 h-8 text-indigo-500 dark:text-indigo-400 animate-spin mb-4" />
         <p className="text-slate-400 dark:text-slate-500 font-extrabold text-[10px] uppercase tracking-wider">Su bilgileri yükleniyor...</p>
       </div>
     );
@@ -103,14 +103,14 @@ export default function WaterTracker() {
   return (
     <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm shadow-slate-100/40 dark:shadow-none border border-slate-100 dark:border-slate-800 relative overflow-hidden group h-full flex flex-col justify-between transition-colors duration-200">
       <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform duration-700 pointer-events-none">
-        <Droplet className="w-36 h-36 text-indigo-600 dark:text-indigo-450" />
+        <Droplet className="w-36 h-36 text-indigo-600 dark:text-indigo-400" />
       </div>
 
       <div className="flex justify-between items-start mb-6 relative z-10">
         <div>
           <h2 className="text-xl font-display font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             Su Tüketimi
-            {isGoalReached && <CheckCircle2 className="text-emerald-500 w-5.5 h-5.5" />}
+            {isGoalReached && <CheckCircle2 className="text-emerald-500 w-6 h-6" />}
           </h2>
           <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
             Kişisel Hedef: <span className="text-slate-700 dark:text-slate-300 font-bold">{(dailyGoal / 1000).toFixed(1)}L</span> 
@@ -124,7 +124,7 @@ export default function WaterTracker() {
              <span className="text-3xl font-display font-black tracking-tight">{amount}</span>
              <span className="text-xs font-bold ml-1 uppercase">ml</span>
            </div>
-           {pendingUpdate && <div className="text-[8px] font-black text-indigo-400 dark:text-indigo-550 animate-pulse uppercase tracking-widest mt-1">Kaydediliyor...</div>}
+           {pendingUpdate && <div className="text-[8px] font-black text-indigo-400 dark:text-indigo-500 animate-pulse uppercase tracking-widest mt-1">Kaydediliyor...</div>}
         </div>
       </div>
 
@@ -160,7 +160,7 @@ export default function WaterTracker() {
                onClick={() => updateWater(amount - glassSize)}
                disabled={pendingUpdate}
                aria-label="Water decrease"
-               className="w-12 h-12 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl flex items-center justify-center hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-450 hover:border-rose-100 dark:hover:border-rose-900/40 border border-slate-100 dark:border-slate-800 active:scale-95 transition-all disabled:opacity-40 cursor-pointer"
+               className="w-12 h-12 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl flex items-center justify-center hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-100 dark:hover:border-rose-900/40 border border-slate-100 dark:border-slate-800 active:scale-95 transition-all disabled:opacity-40 cursor-pointer"
              >
                <Minus className="w-5 h-5" />
              </button>
@@ -169,7 +169,7 @@ export default function WaterTracker() {
                disabled={isGoalReached || pendingUpdate}
                className={`w-16 h-12 rounded-xl flex flex-col items-center justify-center transition-all relative overflow-hidden cursor-pointer ${
                  isGoalReached 
-                   ? 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-650 border border-slate-100 dark:border-slate-800 cursor-not-allowed opacity-50' 
+                   ? 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-600 border border-slate-100 dark:border-slate-800 cursor-not-allowed opacity-50' 
                    : 'bg-indigo-600 text-white hover:scale-102 hover:bg-indigo-700 active:scale-98 shadow-md shadow-indigo-100 dark:shadow-none'
                }`}
              >

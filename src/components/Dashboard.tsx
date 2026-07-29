@@ -23,16 +23,21 @@ export default function Dashboard() {
   const [latestRecord, setLatestRecord] = useState<HealthRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [workoutHistory, setWorkoutHistory] = useState<any[]>([]);
+  const [chartPeriod, setChartPeriod] = useState<7 | 30>(7);
 
   useEffect(() => {
     const fetchHistory = async () => {
-      if (activeProfileId) {
-        if (user) {
-          const history = await firebaseService.getWorkoutHistory(user.uid, activeProfileId);
-          setWorkoutHistory(history);
-        } else {
-          setWorkoutHistory(storageService.getWorkoutHistory(activeProfileId));
+      try {
+        if (activeProfileId) {
+          if (user) {
+            const history = await firebaseService.getWorkoutHistory(user.uid, activeProfileId);
+            setWorkoutHistory(history);
+          } else {
+            setWorkoutHistory(storageService.getWorkoutHistory(activeProfileId));
+          }
         }
+      } catch (error) {
+        console.error("Error fetching history:", error);
       }
     };
     fetchHistory();
@@ -68,27 +73,36 @@ export default function Dashboard() {
     fetchRecords();
   }, [user, activeProfileId]);
 
-  const chartData = React.useMemo(() => records.map(r => ({
-    date: new Date(r.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
-    weight: r.weight,
-    bmi: parseNumber(r.bmi)
-  })), [records]);
+  const chartData = React.useMemo(() => {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - chartPeriod);
+    return records
+      .filter(r => new Date(r.date) >= cutoffDate)
+      .map(r => ({
+        date: new Date(r.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
+        weight: r.weight,
+        bmi: parseNumber(r.bmi)
+      }));
+  }, [records, chartPeriod]);
 
+  const weightChange = React.useMemo(() => {
+    return records.length > 1 
+      ? records[records.length - 1].weight - records[records.length - 2].weight
+      : 0;
+  }, [records]);
 
-  const weightChange = records.length > 1 
-    ? (records[records.length - 1].weight - records[records.length - 2].weight).toFixed(1)
-    : 0;
+  const activeHeight = React.useMemo(() => currentProfile?.initialHeight || latestRecord?.height || profile?.initialHeight, [currentProfile, latestRecord, profile]);
+  const activeWeight = React.useMemo(() => currentProfile?.initialWeight || latestRecord?.weight || profile?.initialWeight, [currentProfile, latestRecord, profile]);
 
-  const activeHeight = currentProfile?.initialHeight || latestRecord?.height || profile?.initialHeight;
-  const activeWeight = currentProfile?.initialWeight || latestRecord?.weight || profile?.initialWeight;
-
-  let activeBmi: number | null = null;
-  if (activeHeight && activeWeight) {
-    const hM = activeHeight / 100;
-    activeBmi = activeWeight / (hM * hM);
-  } else if (latestRecord?.bmi) {
-    activeBmi = parseNumber(latestRecord.bmi);
-  }
+  const activeBmi = React.useMemo(() => {
+    if (activeHeight && activeWeight) {
+      const hM = activeHeight / 100;
+      return activeWeight / (hM * hM);
+    } else if (latestRecord?.bmi) {
+      return parseNumber(latestRecord.bmi);
+    }
+    return null;
+  }, [activeHeight, activeWeight, latestRecord]);
 
 
   return (
@@ -100,7 +114,7 @@ export default function Dashboard() {
                Hoş Geldin, {currentProfile?.name || profile?.displayName?.split(' ')[0] || user?.displayName?.split(' ')[0] || 'Sporcu'} 👋
             </h1>
             {profile?.profiles && profile.profiles.length > 1 && (
-              <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase rounded-lg border border-blue-105 dark:border-blue-900/30">
+              <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase rounded-lg border border-blue-100 dark:border-blue-900/30">
                 {currentProfile?.name} PROFİLİ
               </span>
             )}
@@ -138,7 +152,7 @@ export default function Dashboard() {
             </Link>
             <Link 
               to="/add" 
-              className="px-4 py-2 bg-blue-600 dark:bg-indigo-600 text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-blue-700 dark:hover:bg-indigo-705 transition-colors flex items-center h-10 cursor-pointer"
+              className="px-4 py-2 bg-blue-600 dark:bg-indigo-600 text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-blue-700 dark:hover:bg-indigo-700 transition-colors flex items-center h-10 cursor-pointer"
             >
               <Plus className="mr-2 h-4 w-4" />
               Yeni Giriş
@@ -165,11 +179,11 @@ export default function Dashboard() {
             {activeWeight || '--'} <span className="text-sm font-sans font-medium text-slate-400">kg</span>
           </div>
           {weightChange !== 0 ? (
-            <div className={`text-[11px] mt-3 flex items-center gap-1 font-bold px-2 py-1 rounded-lg w-max ${Number(weightChange) > 0 ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400' : 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400'}`}>
-              {Number(weightChange) > 0 ? '▲' : '▼'} {Math.abs(Number(weightChange))} kg <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500 font-sans">(Geçen Hafta)</span>
+            <div className={`text-[11px] mt-3 flex items-center gap-1 font-bold px-2 py-1 rounded-lg w-max ${weightChange > 0 ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400' : 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400'}`}>
+              {weightChange > 0 ? '▲' : '▼'} {Math.abs(weightChange).toFixed(1)} kg <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500 font-sans">(Geçen Hafta)</span>
             </div>
           ) : (
-            <div className="text-[10px] mt-4 text-slate-400 dark:text-slate-550 font-semibold uppercase tracking-wider">Haftalık Değişim Yok</div>
+            <div className="text-[10px] mt-4 text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">Haftalık Değişim Yok</div>
           )}
         </div>
 
@@ -192,9 +206,9 @@ export default function Dashboard() {
           })()}
         </div>
 
-        <div className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.01] hover:shadow-md dark:shadow-none duration-200 ${latestRecord?.injuries ? 'ring-2 ring-amber-500/20 shadow-amber-50 dark:ring-amber-550/20' : ''}`}>
+        <div className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.01] hover:shadow-md dark:shadow-none duration-200 ${latestRecord?.injuries ? 'ring-2 ring-amber-500/20 shadow-amber-50 dark:ring-amber-500/20' : ''}`}>
           <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold mb-1.5 block">FİZİKSEL DURUM</div>
-          <div className={`text-lg font-display font-black ${latestRecord?.injuries ? 'text-amber-600 dark:text-amber-405' : 'text-slate-900 dark:text-slate-100'}`}>
+          <div className={`text-lg font-display font-black ${latestRecord?.injuries ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-slate-100'}`}>
             {latestRecord?.injuries ? 'Sakatlık/Hassasiyet ⚠️' : 'Tamamen Aktif ⚡'}
           </div>
           <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium leading-relaxed">
@@ -226,9 +240,13 @@ export default function Dashboard() {
               <h2 className="font-display font-black text-lg text-slate-900 dark:text-white">Haftalık Ağırlık Analizi</h2>
               <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Zaman içindeki kilo dalgalanma grafiğiniz</p>
             </div>
-            <select className="text-xs border border-slate-100 dark:border-slate-850 bg-slate-50 dark:bg-slate-800 rounded-lg px-3 py-1.5 outline-none text-slate-500 dark:text-slate-400 font-bold transition-all hover:border-slate-200 dark:hover:border-slate-700 cursor-pointer">
-              <option>Son 7 Gün</option>
-              <option>Son 30 Gün</option>
+            <select 
+              value={chartPeriod}
+              onChange={(e) => setChartPeriod(Number(e.target.value) as 7 | 30)}
+              className="text-xs border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 rounded-lg px-3 py-1.5 outline-none text-slate-500 dark:text-slate-400 font-bold transition-all hover:border-slate-200 dark:hover:border-slate-700 cursor-pointer"
+            >
+              <option value={7}>Son 7 Gün</option>
+              <option value={30}>Son 30 Gün</option>
             </select>
           </div>
           <div className="flex-1 w-full">
@@ -284,7 +302,7 @@ export default function Dashboard() {
         </section>
 
         {/* AI Recommendations Banner */}
-        <section className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-1000 rounded-2xl text-white p-7 shadow-xl shadow-indigo-950/20 dark:shadow-none flex flex-col justify-between overflow-hidden relative">
+        <section className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-950 rounded-2xl text-white p-7 shadow-xl shadow-indigo-950/20 dark:shadow-none flex flex-col justify-between overflow-hidden relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
           
           <div>
@@ -299,7 +317,7 @@ export default function Dashboard() {
                 <div className="text-sm font-bold text-slate-100 mb-1">Gelişim Seviyesi</div>
                 <p className="text-xs text-slate-300 leading-relaxed font-medium">
                   {latestRecord 
-                    ? `Ağırlık trendinizin ${weightChange === 0 ? 'stabil' : Number(weightChange) > 0 ? 'yukarı' : 'aşağı'} yönde seyrettiği gözlemleniyor. Kalori dengenizi korumaya odaklanın.`
+                    ? `Ağırlık trendinizin ${weightChange === 0 ? 'stabil' : weightChange > 0 ? 'yukarı' : 'aşağı'} yönde seyrettiği gözlemleniyor. Kalori dengenizi korumaya odaklanın.`
                     : 'Henüz sağlık kaydı yapmadınız. İlk ölçümünüzü kaydederek kişisel analizleri alabilirsiniz.'}
                 </p>
               </div>

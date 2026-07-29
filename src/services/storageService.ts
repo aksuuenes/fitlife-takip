@@ -10,11 +10,16 @@ export const storageService = {
   getRecords: (profileId: string = 'local'): HealthRecord[] => {
     const key = `${STORAGE_KEY_RECORDS}_${profileId}`;
     const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
+    try { return data ? JSON.parse(data) : []; } catch (e) { return []; }
   },
   saveRecord: (record: HealthRecord, profileId: string = 'local') => {
     const records = storageService.getRecords(profileId);
-    records.push(record);
+    const existingIndex = records.findIndex(r => r.id === record.id);
+    if (existingIndex > -1) {
+      records[existingIndex] = record;
+    } else {
+      records.push(record);
+    }
     localStorage.setItem(`${STORAGE_KEY_RECORDS}_${profileId}`, JSON.stringify(records));
   },
   deleteRecord: (id: string, profileId: string = 'local') => {
@@ -23,25 +28,28 @@ export const storageService = {
   },
   getProfile: (): UserProfile | null => {
     const data = localStorage.getItem(STORAGE_KEY_PROFILE);
-    return data ? JSON.parse(data) : null;
+    try { return data ? JSON.parse(data) : null; } catch (e) { return null; }
   },
   saveProfile: (profile: UserProfile) => {
     localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profile));
   },
   getWaterIntake: (date: string, profileId: string = 'local'): number => {
     const key = `${STORAGE_KEY_WATER}_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     return all[date] || 0;
   },
   saveWaterIntake: (date: string, amount: number, profileId: string = 'local') => {
     const key = `${STORAGE_KEY_WATER}_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     all[date] = amount;
     localStorage.setItem(key, JSON.stringify(all));
   },
   getWorkoutStatus: (date: string, profileId: string = 'local'): boolean => {
     const key = `${STORAGE_KEY_WORKOUT}_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     const entry = all[date];
     if (typeof entry === 'object' && entry !== null) {
       return !!entry.completed;
@@ -50,7 +58,8 @@ export const storageService = {
   },
   getWorkoutDetails: (date: string, profileId: string = 'local'): { completed: boolean; mood?: string; note?: string } | null => {
     const key = `${STORAGE_KEY_WORKOUT}_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     const entry = all[date];
     if (typeof entry === 'object' && entry !== null) {
       return entry;
@@ -61,7 +70,8 @@ export const storageService = {
   },
   getWorkoutHistory: (profileId: string = 'local'): any[] => {
     const key = `${STORAGE_KEY_WORKOUT}_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     return Object.entries(all).map(([date, val]: [string, any]) => {
       if (typeof val === 'object' && val !== null) {
         return { date, ...val };
@@ -71,7 +81,8 @@ export const storageService = {
   },
   saveWorkoutStatus: (date: string, completed: boolean, profileId: string = 'local', mood?: string, note?: string, workoutTitle?: string, exercises?: string[]) => {
     const key = `${STORAGE_KEY_WORKOUT}_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     all[date] = { 
       completed, 
       mood: mood || '', 
@@ -84,7 +95,7 @@ export const storageService = {
   },
   getCustomWorkoutRoutines: (profileId: string = 'local'): any[] => {
     const key = `fitlife_custom_routines_${profileId}`;
-    return JSON.parse(localStorage.getItem(key) || '[]');
+    try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { return []; }
   },
   saveCustomWorkoutRoutine: (profileId: string = 'local', routine: any) => {
     const key = `fitlife_custom_routines_${profileId}`;
@@ -104,18 +115,20 @@ export const storageService = {
   },
   getSupplements: (date: string, profileId: string = 'local'): { [key: string]: boolean } => {
     const key = `fitlife_supplements_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     return all[date] || {};
   },
   saveSupplements: (date: string, supplements: { [key: string]: boolean }, profileId: string = 'local') => {
     const key = `fitlife_supplements_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     all[date] = supplements;
     localStorage.setItem(key, JSON.stringify(all));
   },
   getSupplementDosages: (profileId: string = 'local'): { [key: string]: string } => {
     const key = `fitlife_supplement_dosages_${profileId}`;
-    return JSON.parse(localStorage.getItem(key) || '{}');
+    try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; }
   },
   saveSupplementDosages: (dosages: { [key: string]: string }, profileId: string = 'local') => {
     const key = `fitlife_supplement_dosages_${profileId}`;
@@ -124,7 +137,7 @@ export const storageService = {
   getNotes: (profileId: string = 'local'): Note[] => {
     const key = `fitlife_notes_${profileId}`;
     const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
+    try { return data ? JSON.parse(data) : []; } catch (e) { return []; }
   },
   saveNote: (note: Note, profileId: string = 'local') => {
     const notes = storageService.getNotes(profileId);
@@ -142,7 +155,7 @@ export const storageService = {
   },
   getMedicationList: (profileId: string = 'local'): { id: string, name: string, dosage: string }[] => {
     const key = `fitlife_medication_list_${profileId}`;
-    return JSON.parse(localStorage.getItem(key) || '[]');
+    try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { return []; }
   },
   saveMedicationList: (list: { id: string, name: string, dosage: string }[], profileId: string = 'local') => {
     const key = `fitlife_medication_list_${profileId}`;
@@ -150,12 +163,14 @@ export const storageService = {
   },
   getMedicationLogs: (date: string, profileId: string = 'local'): { [key: string]: boolean } => {
     const key = `fitlife_medication_logs_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     return all[date] || {};
   },
   saveMedicationLogs: (date: string, logs: { [key: string]: boolean }, profileId: string = 'local') => {
     const key = `fitlife_medication_logs_${profileId}`;
-    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     all[date] = logs;
     localStorage.setItem(key, JSON.stringify(all));
   }

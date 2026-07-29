@@ -96,14 +96,14 @@ function SwipeableMedRow({
           className="p-3 bg-sky-500 active:bg-sky-600 text-white rounded-xl shadow-lg active:scale-95 transition-transform"
           title="Düzenle"
         >
-          <Edit2 className="w-4.5 h-4.5" />
+          <Edit2 className="w-5 h-5" />
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
           className="p-3 bg-red-500 active:bg-red-600 text-white rounded-xl shadow-lg active:scale-95 transition-transform"
           title="Sil"
         >
-          <Trash2 className="w-4.5 h-4.5" />
+          <Trash2 className="w-5 h-5" />
         </button>
       </div>
 
@@ -347,7 +347,7 @@ export default function MedicationTracker() {
           <div>
             <h2 className="text-xl font-display font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
               Günlük İlaçlar
-              {isAllTaken && <CheckCircle2 className="text-emerald-500 w-5.5 h-5.5" />}
+              {isAllTaken && <CheckCircle2 className="text-emerald-500 w-6 h-6" />}
             </h2>
             <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
               ← sola kaydırarak düzenle/sil
