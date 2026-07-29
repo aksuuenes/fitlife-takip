@@ -53,7 +53,7 @@ export default function BreathingAnimation() {
             duration: 4,
             ease: "easeInOut"
           }}
-          className="relative z-10 w-36 h-36 bg-slate-900/80 backdrop-blur-md rounded-full border border-slate-700 flex flex-col items-center justify-center shadow-2xl"
+          className="relative z-10 w-36 h-36 bg-slate-900/80 md:backdrop-blur- rounded-full border border-slate-700 flex flex-col items-center justify-center shadow-2xl"
         >
           <AnimatePresence mode="wait">
             <motion.span

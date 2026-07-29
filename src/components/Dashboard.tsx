@@ -42,31 +42,36 @@ export default function Dashboard() {
       setRecords([]);
       setLatestRecord(null);
       setLoading(true);
-      if (user && activeProfileId) {
-        const data = await firebaseService.getHealthRecords(user.uid, activeProfileId);
-        const ascData = [...data].reverse();
-        setRecords(ascData);
-        if (data.length > 0) {
-          setLatestRecord(data[0]);
+      try {
+        if (user && activeProfileId) {
+          const data = await firebaseService.getHealthRecords(user.uid, activeProfileId);
+          const ascData = [...data].reverse();
+          setRecords(ascData);
+          if (data.length > 0) {
+            setLatestRecord(data[0]);
+          }
+        } else if (!user && activeProfileId) {
+          const data = storageService.getRecords(activeProfileId).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          setRecords(data);
+          if (data.length > 0) {
+            setLatestRecord(data[data.length - 1]);
+          }
         }
-      } else if (!user && activeProfileId) {
-        const data = storageService.getRecords(activeProfileId).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        setRecords(data);
-        if (data.length > 0) {
-          setLatestRecord(data[data.length - 1]);
-        }
+      } catch (error) {
+        console.error("Error fetching records:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchRecords();
   }, [user, activeProfileId]);
 
-  const chartData = records.map(r => ({
+  const chartData = React.useMemo(() => records.map(r => ({
     date: new Date(r.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
     weight: r.weight,
     bmi: parseNumber(r.bmi)
-  }));
+  })), [records]);
 
 
   const weightChange = records.length > 1 

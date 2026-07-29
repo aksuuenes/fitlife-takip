@@ -380,7 +380,7 @@ export default function Profile() {
       {/* Add Profile Modal */}
       <AnimatePresence>
         {showAddProfile && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 md:backdrop-blur-">
             <motion.div 
                initial={{ scale: 0.98, opacity: 0 }}
                animate={{ scale: 1, opacity: 1 }}

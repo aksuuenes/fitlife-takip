@@ -51,12 +51,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, 3000);
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      clearTimeout(fallbackTimer);
       try {
         setUser(user);
+        
+        // Asenkron Firestore isteğini beklemeden UI yükleme ekranını kaldıralım.
+        // Böylece Firebase veya internet bağlantısı yavaş olduğunda kullanıcı 6 saniye boş ekranda beklemez.
+        setLoading(false);
+        clearTimeout(fallbackTimer);
+
         if (user) {
           const docRef = doc(db, 'users', user.uid);
-          const docSnap = await getDoc(docRef);
+          
+          let docSnap;
+          try {
+            // Safari WebSocket hang'lerine karşı 4 saniyelik timeout ekleyelim
+            docSnap = await Promise.race([
+              getDoc(docRef),
+              new Promise((_, reject) => setTimeout(() => reject(new Error("Firestore timeout")), 4000))
+            ]);
+          } catch (err) {
+            console.error("AuthContext getDoc timeout/error, falling back to local cache:", err);
+            // Hata olursa (timeout) sanki döküman yokmuş gibi devam et, böylece sonsuz bekleme (Sistem Yükleniyor) çözülür
+            docSnap = { exists: () => false, data: () => ({}) };
+          }
           
           if (docSnap.exists()) {
             const data = docSnap.data() as UserProfile;
@@ -71,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               };
               data.profiles = [defaultSubProfile];
               data.activeProfileId = 'main';
-              await setDoc(docRef, data, { merge: true });
+              setDoc(docRef, data, { merge: true }).catch(e => console.error("setDoc error:", e));
             }
             
             setProfile(data);
@@ -97,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 createdAt: new Date().toISOString()
               }]
             };
-            await setDoc(docRef, initialProfile);
+            setDoc(docRef, initialProfile).catch(e => console.error("setDoc error:", e));
             setProfile(initialProfile);
             setActiveProfileId('main');
             localStorage.setItem('activeProfileId', 'main');
@@ -146,6 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error("Error in onAuthStateChanged:", error);
       } finally {
+        clearTimeout(fallbackTimer);
         setLoading(false);
       }
     });

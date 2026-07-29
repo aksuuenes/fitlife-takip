@@ -90,13 +90,13 @@ export default function Analysis() {
     }
   };
 
-  const chartData = records.map(r => ({
+  const chartData = React.useMemo(() => records.map(r => ({
     date: new Date(r.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
     weight: r.weight,
     bmi: parseFloat(String(r.bmi)),
     sleep: r.sleepQuality || 0,
     hours: r.sleepHours || 0
-  })).slice(-7);
+  })).slice(-7), [records]);
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto pb-12">

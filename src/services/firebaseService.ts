@@ -59,7 +59,11 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
     path
   }
   console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  
+  // GET ve LIST işlemlerinde uygulamayı kilitlememek için hata fırlatmayalım
+  if (operationType !== OperationType.GET && operationType !== OperationType.LIST) {
+    throw new Error(JSON.stringify(errInfo));
+  }
 }
 
 export function sanitizeData(data: any): any {

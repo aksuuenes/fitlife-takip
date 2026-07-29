@@ -121,7 +121,7 @@ export default function Workout() {
 
   if (isFinished) {
     return (
-      <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 overflow-y-auto">
+      <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/80 md:backdrop-blur- z-[100] flex items-center justify-center p-4 overflow-y-auto">
         <motion.div 
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -280,7 +280,7 @@ export default function Workout() {
                   animate={{ y: 0, opacity: 1, scale: 1 }}
                   exit={{ y: -30, opacity: 0, scale: 0.97 }}
                   transition={{ type: "spring", damping: 25, stiffness: 120 }}
-                  className="bg-white p-6 md:p-8 rounded-[36px] shadow-xl border border-slate-100/80 backdrop-blur-sm relative flex flex-col justify-between h-full"
+                  className="bg-white p-6 md:p-8 rounded-[36px] shadow-xl border border-slate-100/80 md:backdrop-blur- relative flex flex-col justify-between h-full"
                 >
                   {/* Phase Accent */}
                   <div className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-[0.03] ${

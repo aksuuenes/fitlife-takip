@@ -13,7 +13,23 @@
     <link rel="apple-touch-icon" href="/icon.svg" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #030712; }
+        .fitlife-initial-loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: system-ui, -apple-system, sans-serif; gap: 16px; }
+        .fitlife-spinner { width: 40px; height: 40px; border: 4px solid rgba(16, 185, 129, 0.15); border-left-color: #10b981; border-radius: 50%; animation: fitlife-spin 1s linear infinite; }
+        .fitlife-logo-text { font-size: 24px; font-weight: 900; letter-spacing: -0.05em; color: #ffffff; display: flex; align-items: center; gap: 8px; }
+        .fitlife-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #10b981, #4f46e5); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-style: italic; font-weight: 900; }
+        .fitlife-text { font-size: 11px; font-weight: 800; letter-spacing: 0.25em; color: #10b981; text-transform: uppercase; animation: fitlife-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes fitlife-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fitlife-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+      </style>
+      <div class="fitlife-initial-loader">
+        <div class="fitlife-logo-text"><div class="fitlife-logo-icon">F</div> FitLife</div>
+        <div class="fitlife-spinner"></div>
+        <div class="fitlife-text">Uygulama Hazırlanıyor...</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

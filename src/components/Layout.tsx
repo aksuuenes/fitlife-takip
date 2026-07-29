@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, User as UserIcon, ClipboardList, BarChart3, Settings, Calendar, Users, Loader2, Trash2, Sun, Moon, StickyNote, LogOut } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Activity, User as UserIcon, ClipboardList, BarChart3, Settings, Calendar, Users, Loader2, Trash2, Sun, Moon, StickyNote, LogOut, Droplets } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -32,6 +32,7 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Kontrol Paneli', path: '/', icon: Activity },
     { name: 'Kayıt Ekle', path: '/add', icon: ClipboardList },
     { name: 'Notlar', path: '/notes', icon: StickyNote },
+    { name: 'Döngü', path: '/cycle', icon: Droplets },
     { name: 'Geçmiş', path: '/history', icon: Calendar },
     { name: 'Analizler', path: '/analysis', icon: BarChart3 },
     { name: 'Profil', path: '/profile', icon: UserIcon },
@@ -259,18 +260,22 @@ export default function Layout({ children }: LayoutProps) {
           </button>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-[1400px] mx-auto w-full pb-24 md:pb-0"
-        >
-          {children}
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="max-w-[1400px] mx-auto w-full pb-24 md:pb-0"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Mobile Nav - Re-designed to be an ultra-sleek, luxurious floating dynamic pill menu */}
-      <div className="md:hidden fixed bottom-6 left-4 right-4 bg-slate-950/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-[24px] px-4 py-2 flex justify-around items-center border border-white/10 dark:border-slate-800 shadow-[0_16px_40px_rgba(0,0,0,0.5)] z-50">
+      <div className="md:hidden fixed bottom-6 left-4 right-4 bg-slate-950 dark:bg-slate-900 rounded-[24px] px-4 py-2 flex justify-around items-center border border-slate-800 dark:border-slate-800 shadow-xl z-50">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
