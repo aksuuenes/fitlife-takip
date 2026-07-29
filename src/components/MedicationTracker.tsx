@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Pill, CheckCircle2, Loader2, Plus, Trash2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Pill, CheckCircle2, Loader2, Plus, Trash2, Edit2, Settings, X } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'motion/react';
 import { firebaseService } from '../services/firebaseService';
 import { storageService } from '../services/storageService';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,19 +12,148 @@ interface MedicationItem {
   dosage: string;
 }
 
+// Swipeable medication row component
+function SwipeableMedRow({
+  item,
+  isTaken,
+  onToggle,
+  onDelete,
+  onEdit,
+}: {
+  item: MedicationItem;
+  isTaken: boolean;
+  onToggle: () => void;
+  onDelete: () => void;
+  onEdit: () => void;
+}) {
+  const x = useMotionValue(0);
+  const [swiped, setSwiped] = useState(false);
+  const actionOpacity = useTransform(x, [0, 60, 120], [0, 0.5, 1]);
+  const actionScale = useTransform(x, [0, 60, 120], [0.5, 0.8, 1]);
+
+  const handleDragEnd = (_: any, info: PanInfo) => {
+    if (info.offset.x > 80) {
+      setSwiped(true);
+    } else {
+      setSwiped(false);
+    }
+  };
+
+  const closeSwipe = () => setSwiped(false);
+
+  return (
+    <div className="relative overflow-hidden rounded-2xl">
+      {/* Action buttons revealed behind */}
+      <div className="absolute inset-y-0 left-0 flex items-center gap-1.5 pl-2 z-0">
+        <motion.button
+          style={{ opacity: swiped ? 1 : actionOpacity, scale: swiped ? 1 : actionScale }}
+          onClick={(e) => { e.stopPropagation(); onEdit(); closeSwipe(); }}
+          className="p-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl shadow-lg transition-colors active:scale-95"
+          title="Düzenle"
+        >
+          <Edit2 className="w-4 h-4" />
+        </motion.button>
+        <motion.button
+          style={{ opacity: swiped ? 1 : actionOpacity, scale: swiped ? 1 : actionScale }}
+          onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          className="p-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-lg transition-colors active:scale-95"
+          title="Sil"
+        >
+          <Trash2 className="w-4 h-4" />
+        </motion.button>
+      </div>
+
+      {/* Swipeable card */}
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: 0, right: 120 }}
+        dragElastic={0.1}
+        dragSnapToOrigin={!swiped}
+        onDragEnd={handleDragEnd}
+        animate={swiped ? { x: 120 } : { x: 0 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        style={{ x }}
+        onClick={() => { if (swiped) { closeSwipe(); } else { onToggle(); } }}
+        className={`relative z-10 w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all text-left group/item active:scale-[0.99] cursor-pointer select-none touch-pan-y ${
+          isTaken
+            ? 'bg-emerald-50/5 dark:bg-emerald-950/10 border-emerald-50/30 dark:border-emerald-50/20'
+            : 'bg-slate-50/50 hover:bg-slate-50 dark:bg-slate-950/20 dark:hover:bg-slate-850 border-slate-100 hover:border-slate-200 dark:border-slate-800/80 dark:hover:border-slate-700/80'
+        }`}
+      >
+        <div className="flex items-center gap-3.5 flex-1 min-w-0">
+          <div className={`p-2.5 rounded-xl border transition-colors shrink-0 ${
+            isTaken
+              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-100 dark:border-emerald-900/30'
+              : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 group-hover/item:border-slate-300 dark:group-hover/item:border-slate-600'
+          }`}>
+            <Pill className={`w-5 h-5 ${isTaken ? 'text-emerald-500' : 'text-sky-500'}`} />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <span className={`text-xs font-bold transition-all block truncate ${
+              isTaken
+                ? 'text-slate-850 dark:text-slate-200 line-through opacity-70'
+                : 'text-slate-900 dark:text-white'
+            }`}>
+              {item.name}
+            </span>
+            <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold tracking-tight block truncate">
+                Miktar: {item.dosage}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Swipe hint on mobile */}
+          <span className="text-[9px] text-slate-300 dark:text-slate-600 font-medium md:hidden mr-1">
+            ← kaydır
+          </span>
+
+          {/* Desktop hover delete */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all opacity-0 group-hover/item:opacity-100 shrink-0 hidden md:block"
+            title="İlacı Sil"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+
+          <div className={`p-1.5 rounded-lg border-2 transition-all shrink-0 ${
+            isTaken
+              ? 'bg-emerald-500 border-emerald-500 text-white scale-105 shadow-sm'
+              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 group-hover/item:border-slate-350 text-transparent'
+          }`}>
+            <CheckCircle2 className="w-3.5 h-3.5 fill-current" />
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 export default function MedicationTracker() {
   const { user, activeProfileId } = useAuth();
   const { theme } = useTheme();
-  
+
   const [medications, setMedications] = useState<MedicationItem[]>([]);
   const [takenMap, setTakenMap] = useState<{ [key: string]: boolean }>({});
-  
+
   const [loading, setLoading] = useState(true);
   const [pendingUpdate, setPendingUpdate] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState('');
   const [newDosage, setNewDosage] = useState('');
-  
+
+  // Edit state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editDosage, setEditDosage] = useState('');
+
+  // Settings/customize mode
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
   const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
@@ -35,13 +164,13 @@ export default function MedicationTracker() {
           if (user) {
             const list = await firebaseService.getMedicationList(user.uid, activeProfileId);
             setMedications(list);
-            
+
             const cloudData = await firebaseService.getMedicationLogs(user.uid, activeProfileId, today);
             setTakenMap(cloudData);
           } else {
             const list = storageService.getMedicationList(activeProfileId);
             setMedications(list);
-            
+
             const localData = storageService.getMedicationLogs(today, activeProfileId);
             setTakenMap(localData);
           }
@@ -57,12 +186,12 @@ export default function MedicationTracker() {
 
   const toggleMedication = async (id: string) => {
     if (pendingUpdate) return;
-    
+
     const nextMap = {
       ...takenMap,
       [id]: !takenMap[id]
     };
-    
+
     setTakenMap(nextMap);
     setPendingUpdate(true);
 
@@ -81,13 +210,13 @@ export default function MedicationTracker() {
 
   const addMedication = async () => {
     if (!newName.trim()) return;
-    
+
     const newItem: MedicationItem = {
       id: Math.random().toString(36).substring(2, 9),
       name: newName.trim(),
       dosage: newDosage.trim() || '1 Adet'
     };
-    
+
     const newList = [...medications, newItem];
     setMedications(newList);
     setNewName('');
@@ -105,8 +234,7 @@ export default function MedicationTracker() {
     }
   };
 
-  const deleteMedication = async (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
+  const deleteMedication = async (id: string) => {
     const newList = medications.filter(m => m.id !== id);
     setMedications(newList);
 
@@ -118,6 +246,35 @@ export default function MedicationTracker() {
       }
     } catch (error) {
       console.error("Failed to delete medication:", error);
+    }
+  };
+
+  const startEditing = (item: MedicationItem) => {
+    setEditingId(item.id);
+    setEditName(item.name);
+    setEditDosage(item.dosage);
+  };
+
+  const saveEdit = async () => {
+    if (!editingId || !editName.trim()) {
+      setEditingId(null);
+      return;
+    }
+
+    const newList = medications.map(m =>
+      m.id === editingId ? { ...m, name: editName.trim(), dosage: editDosage.trim() || '1 Adet' } : m
+    );
+    setMedications(newList);
+    setEditingId(null);
+
+    try {
+      if (user && activeProfileId) {
+        await firebaseService.saveMedicationList(user.uid, activeProfileId, newList);
+      } else if (activeProfileId) {
+        storageService.saveMedicationList(newList, activeProfileId);
+      }
+    } catch (error) {
+      console.error("Failed to save edit:", error);
     }
   };
 
@@ -137,7 +294,7 @@ export default function MedicationTracker() {
 
   return (
     <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group h-full flex flex-col justify-between transition-colors duration-200">
-      
+
       {/* Background Graphic watermark */}
       <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform duration-700 pointer-events-none">
         <Pill className="w-36 h-36 text-sky-600 dark:text-sky-400" />
@@ -155,7 +312,18 @@ export default function MedicationTracker() {
               İlaç takibinizi düzenli yapın
             </p>
           </div>
-          <div className="text-right">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              className={`p-2 rounded-xl border transition-all ${
+                isSettingsOpen
+                  ? 'bg-sky-50 dark:bg-sky-900/30 border-sky-200 dark:border-sky-800 text-sky-600 dark:text-sky-400'
+                  : 'bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-slate-400 dark:text-slate-500 hover:text-sky-600 dark:hover:text-sky-400 hover:border-sky-200 dark:hover:border-sky-800'
+              }`}
+              title="Özelleştir"
+            >
+              {isSettingsOpen ? <X className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
+            </button>
             <span className="text-sm font-mono font-black text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 px-2.5 py-1 rounded-xl">
               {takenCount} / {totalCount} Alındı
             </span>
@@ -173,12 +341,91 @@ export default function MedicationTracker() {
           />
         </div>
 
+        {/* Settings Panel */}
+        <AnimatePresence>
+          {isSettingsOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-sky-50/80 to-indigo-50/50 dark:from-sky-950/30 dark:to-indigo-950/20 border border-sky-100/50 dark:border-sky-900/30 space-y-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Settings className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                  <span className="text-xs font-black text-sky-900 dark:text-sky-300 uppercase tracking-wider">İlaç Yönetimi</span>
+                </div>
+
+                {/* Existing medications list for editing */}
+                {medications.map((med) => (
+                  <div key={med.id} className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-xl p-2 border border-slate-100 dark:border-slate-700">
+                    {editingId === med.id ? (
+                      <div className="flex-1 flex flex-col gap-1.5">
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          autoFocus
+                          className="text-xs font-bold bg-sky-50 dark:bg-slate-700 border border-sky-200 dark:border-sky-800 rounded-lg px-2.5 py-1.5 w-full focus:outline-none focus:ring-2 focus:ring-sky-500"
+                          placeholder="İlaç Adı"
+                        />
+                        <input
+                          type="text"
+                          value={editDosage}
+                          onChange={(e) => setEditDosage(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') setEditingId(null); }}
+                          className="text-xs font-medium bg-sky-50 dark:bg-slate-700 border border-sky-200 dark:border-sky-800 rounded-lg px-2.5 py-1.5 w-full focus:outline-none focus:ring-2 focus:ring-sky-500"
+                          placeholder="Dozaj"
+                        />
+                        <div className="flex gap-1.5">
+                          <button onClick={saveEdit} className="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-[10px] font-bold py-1.5 rounded-lg transition-colors">
+                            Kaydet
+                          </button>
+                          <button onClick={() => setEditingId(null)} className="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold py-1.5 rounded-lg transition-colors">
+                            İptal
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <Pill className="w-4 h-4 text-sky-500 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs font-bold text-slate-800 dark:text-white block truncate">{med.name}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium block truncate">{med.dosage}</span>
+                        </div>
+                        <button
+                          onClick={() => startEditing(med)}
+                          className="p-1.5 text-sky-500 hover:bg-sky-100 dark:hover:bg-sky-900/30 rounded-lg transition-colors"
+                          title="Düzenle"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => deleteMedication(med.id)}
+                          className="p-1.5 text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                          title="Sil"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ))}
+
+                {medications.length === 0 && (
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center py-2">Henüz ilaç eklenmemiş</p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Medications Checklist Stack */}
         <div className="space-y-2.5 pt-2">
           {medications.length === 0 && !isAdding && (
             <div className="text-center py-6">
               <p className="text-xs text-slate-400 dark:text-slate-500 mb-2">Henüz kayıtlı ilacınız yok.</p>
-              <button 
+              <button
                 onClick={() => setIsAdding(true)}
                 className="text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/20 px-3 py-1.5 rounded-lg border border-sky-100 dark:border-sky-800/50 hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors"
               >
@@ -190,60 +437,14 @@ export default function MedicationTracker() {
           {medications.map((item) => {
             const isTaken = !!takenMap[item.id];
             return (
-              <div
+              <SwipeableMedRow
                 key={item.id}
-                onClick={() => toggleMedication(item.id)}
-                className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all text-left group/item active:scale-[0.99] cursor-pointer select-none ${
-                  isTaken 
-                    ? 'bg-emerald-50/5 dark:bg-emerald-950/10 border-emerald-50/30 dark:border-emerald-50/20' 
-                    : 'bg-slate-50/50 hover:bg-slate-50 dark:bg-slate-950/20 dark:hover:bg-slate-850 border-slate-100 hover:border-slate-200 dark:border-slate-800/80 dark:hover:border-slate-700/80'
-                }`}
-              >
-                <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                  <div className={`p-2.5 rounded-xl border transition-colors shrink-0 ${
-                    isTaken 
-                      ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-100 dark:border-emerald-900/30' 
-                      : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 group-hover/item:border-slate-300 dark:group-hover/item:border-slate-600'
-                  }`}>
-                    <Pill className={`w-5 h-5 ${isTaken ? 'text-emerald-500' : 'text-sky-500'}`} />
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <span className={`text-xs font-bold transition-all block truncate ${
-                      isTaken 
-                        ? 'text-slate-850 dark:text-slate-200 line-through opacity-70' 
-                        : 'text-slate-900 dark:text-white'
-                    }`}>
-                      {item.name}
-                    </span>
-                    
-                    <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold tracking-tight block truncate">
-                        Miktar: {item.dosage}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {/* Delete button appears on hover */}
-                  <button 
-                    onClick={(e) => deleteMedication(e, item.id)}
-                    className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all opacity-0 group-hover/item:opacity-100 shrink-0"
-                    title="İlacı Sil"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-
-                  <div className={`p-1.5 rounded-lg border-2 transition-all shrink-0 ${
-                    isTaken 
-                      ? 'bg-emerald-500 border-emerald-500 text-white scale-105 shadow-sm' 
-                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 group-hover/item:border-slate-350 text-transparent'
-                  }`}>
-                    <CheckCircle2 className="w-3.5 h-3.5 fill-current" />
-                  </div>
-                </div>
-              </div>
+                item={item}
+                isTaken={isTaken}
+                onToggle={() => toggleMedication(item.id)}
+                onDelete={() => deleteMedication(item.id)}
+                onEdit={() => startEditing(item)}
+              />
             );
           })}
 
@@ -271,13 +472,13 @@ export default function MedicationTracker() {
                   className="text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-sky-500"
                 />
                 <div className="flex gap-2 mt-1">
-                  <button 
+                  <button
                     onClick={addMedication}
                     className="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold py-2 rounded-xl transition-colors"
                   >
                     Kaydet
                   </button>
-                  <button 
+                  <button
                     onClick={() => setIsAdding(false)}
                     className="flex-1 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-bold py-2 rounded-xl transition-colors"
                   >
@@ -302,7 +503,7 @@ export default function MedicationTracker() {
 
       <AnimatePresence>
         {isAllTaken && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
