@@ -524,348 +524,128 @@ export default function Notes() {
                 {/* Form Input Body */}
                 <div className="flex-1 overflow-y-auto p-5 scrollbar-thin">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  {/* Category choices */}
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1">
-                      KATEGORİ SEÇİNİZ
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {CATEGORIES.filter(c => c.id !== 'all').map((cat) => {
-                        const isSelected = category === cat.id;
-                        const CatIcon = cat.icon;
-
-                        return (
-                          <button
-                            type="button"
-                            key={cat.id}
-                            onClick={() => setCategory(cat.id as any)}
-                            className={`p-3 rounded-xl border flex items-center gap-2 text-left justify-start cursor-pointer transition-all ${
-                              isSelected
-                                ? 'bg-gradient-to-tr from-indigo-650 to-indigo-700 text-white border-transparent shadow shadow-indigo-100 dark:shadow-none font-bold'
-                                : 'bg-slate-50 dark:bg-slate-950 hover:bg-slate-100/50 dark:hover:bg-slate-850/50 border-slate-100 dark:border-slate-850 text-slate-600 dark:text-slate-300 font-semibold'
-                            }`}
-                          >
-                            <CatIcon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-slate-400'}`} />
-                            <span className="text-[10px] font-black uppercase tracking-wider">{cat.name}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Yazım Şekli (Format Selector) */}
-                  <div className="space-y-1.5 pt-1">
-                    <label className="text-[9px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1">
-                      YAZIM ŞEKLİ VEYA BİÇİMİ
-                    </label>
-                    <div className="flex gap-2 bg-slate-50 dark:bg-slate-950/40 p-1.5 rounded-2xl border border-slate-100 dark:border-slate-850/60">
-                      <button
-                        type="button"
-                        onClick={() => setNoteFormat('text')}
-                        className={`flex-1 py-2.5 px-3 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                          noteFormat === 'text'
-                            ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 border-transparent shadow-sm'
-                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
-                        }`}
-                      >
-                        📝 Metin
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setNoteFormat('spreadsheet')}
-                        className={`flex-1 py-2.5 px-3 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                          noteFormat === 'spreadsheet'
-                            ? 'bg-gradient-to-tr from-emerald-600 to-teal-500 text-white border-transparent shadow-sm'
-                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
-                        }`}
-                      >
-                        📊 Excel Tablo
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Pre-made Spreadsheet Templates Ribbon */}
-                  {noteFormat === 'spreadsheet' && (
-                    <div className="space-y-2 bg-slate-50/50 dark:bg-slate-950/20 p-3.5 rounded-2xl border border-slate-150/40 dark:border-slate-850/60">
-                      <span className="text-[8px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1">
-                        AKILLI ŞABLONLARI YÜKLE
-                      </span>
-                      <div className="flex flex-col gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => loadTemplate('workout')}
-                          className="w-full py-2 px-3 text-left bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-xl text-[9px] font-extrabold uppercase tracking-wide hover:border-indigo-500/30 text-slate-650 dark:text-slate-350 cursor-pointer flex items-center gap-2 transition-all hover:scale-[1.01]"
-                        >
-                          🏋️ Egzersiz & Antrenman Tablosu
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => loadTemplate('nutrition')}
-                          className="w-full py-2 px-3 text-left bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-xl text-[9px] font-extrabold uppercase tracking-wide hover:border-emerald-500/30 text-slate-650 dark:text-slate-350 cursor-pointer flex items-center gap-2 transition-all hover:scale-[1.01]"
-                        >
-                          🥗 Kalori & Beslenme Defteri
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => loadTemplate('health')}
-                          className="w-full py-2 px-3 text-left bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-xl text-[9px] font-extrabold uppercase tracking-wide hover:border-rose-500/30 text-slate-650 dark:text-slate-350 cursor-pointer flex items-center gap-2 transition-all hover:scale-[1.01]"
-                        >
-                          📈 Biyometrik Ölçüm Takipçisi
-                        </button>
-                      </div>
-
-                      {/* Custom saved templates */}
-                      {customTemplates.length > 0 && (
-                        <div className="pt-2.5 border-t border-slate-200/50 dark:border-slate-800/50 mt-2.5">
-                          <span className="text-[8px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1.5">
-                            ÖZEL PROGRAM ŞABLONLARIM
-                          </span>
-                          <div className="flex flex-col gap-1.5">
-                            {customTemplates.map((tpl, tIdx) => (
-                              <div 
-                                key={tIdx}
-                                onClick={() => loadCustomTemplate(tpl)}
-                                className="w-full py-2 px-3 bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-xl text-[9px] font-extrabold uppercase tracking-wide hover:border-[#10b981]/40 text-slate-600 dark:text-slate-350 cursor-pointer flex items-center justify-between group/tpl transition-all"
-                              >
-                                <span className="truncate">📋 {tpl.name}</span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => handleDeleteCustomTemplate(e, tpl.name)}
-                                  className="text-slate-400 hover:text-red-500 opacity-0 group-hover/tpl:opacity-100 p-0.5 transition-all cursor-pointer"
-                                  title="Şablonu Sil"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Title */}
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1">
-                      NOT BAŞLIĞI
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="Örn: Split Rutinim 💪 veya Pazartesi Kahvaltım"
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs font-bold text-slate-800 dark:text-slate-200"
-                    />
-                  </div>
-
-                  {/* Date Picker */}
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1">
-                      KAYIT TARİHİ
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs font-bold text-slate-800 dark:text-slate-200"
-                    />
-                  </div>
-
-                  {/* Advanced Mood / Energy Selection */}
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1">
-                      ENERJİ VE HİS DURUMUNUZ
-                    </label>
-                    <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full scrollbar-none">
-                      {EMOP_MOODS.map((m) => {
-                        const isSel = mood === m.emoji;
-                        return (
-                          <button
-                            type="button"
-                            key={m.emoji}
-                            onClick={() => setMood(m.emoji)}
-                            className={`p-2 text-lg rounded-xl shrink-0 border transition-all cursor-pointer ${
-                              isSel 
-                                ? 'bg-indigo-50 dark:bg-emerald-950 text-indigo-700 dark:text-emerald-400 border-indigo-200 dark:border-emerald-800/40 transform scale-110' 
-                                : 'bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-850 hover:bg-slate-100 text-slate-650'
-                            }`}
-                            title={m.label}
-                          >
-                            {m.emoji}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Advanced Intensity Level Picker */}
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1">
-                      YOĞUNLUK / ETKİ SEVİYESİ
-                    </label>
-                    <div className="grid grid-cols-4 gap-1">
-                      {INTENSITIES.map((i) => {
-                        const isActive = intensity === i.level;
-                        return (
-                          <button
-                            type="button"
-                            key={i.level}
-                            onClick={() => setIntensity(i.level)}
-                            className={`py-1.5 text-[8px] font-black uppercase tracking-wider text-center rounded-lg border transition-all cursor-pointer ${
-                              isActive 
-                                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 border-transparent' 
-                                : 'bg-slate-50 dark:bg-slate-950 text-slate-450 border-slate-105 dark:border-slate-850'
-                            }`}
-                          >
-                            {i.name.split(' ')[0]}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Note tags */}
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1">
-                      ETİKETLER
-                    </label>
-                    <div className="flex gap-1.5">
-                      <input
-                        type="text"
-                        value={tagInput}
-                        onChange={(e) => setTagInput(e.target.value)}
-                        onKeyDown={handleKeyPress}
-                        placeholder="Etiket yazıp enterlayın"
-                        className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-[11px] font-semibold text-slate-800 dark:text-slate-200"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddTag}
-                        className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-350 font-bold text-[11px] rounded-xl cursor-pointer"
-                      >
-                        Ekle
-                      </button>
-                    </div>
-
-                    {/* Tags container */}
-                    {tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 pt-1.5">
-                        {tags.map((tg, idx) => (
-                          <span
-                            key={tg}
-                            className="bg-indigo-50/50 dark:bg-emerald-950/20 text-indigo-700 dark:text-emerald-400 border border-indigo-100/50 dark:border-emerald-900/30 font-semibold text-[10px] uppercase px-2.5 py-0.5 rounded-lg flex items-center gap-1 cursor-default"
-                          >
-                            #{tg}
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveTag(idx)}
-                              className="text-slate-400 hover:text-indigo-650 cursor-pointer"
-                            >
-                              <X className="w-2.5 h-2.5" />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  {/* Apple Notes Style Super Simple Form */}
+                  
+                  {/* Title (Huge, borderless) */}
+                  <input
+                    type="text"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Başlık"
+                    className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-3xl font-bold text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700 mb-4 px-0"
+                  />
 
                   {/* Content Inputs (Text vs Spreadsheet Table Preview) */}
                   {noteFormat === 'text' ? (
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center pr-1 mb-1">
-                        <label className="text-[9px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1">
-                          NOT İÇERİĞİ
-                        </label>
-                        <span className="text-[8px] text-slate-450 dark:text-slate-500 font-mono font-bold">
-                          {content.length} Karakter
-                        </span>
-                      </div>
-
-                      {/* Quick Formatting bar */}
-                      <div className="flex items-center gap-1.5 p-1.5 px-2.5 mb-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-xl shadow-inner">
-                        <span className="text-[8px] font-extrabold text-slate-400 tracking-wider">HIZLI EKLE:</span>
-                        
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const now = new Date();
-                            const hrs = String(now.getHours()).padStart(2, '0');
-                            const mins = String(now.getMinutes()).padStart(2, '0');
-                            insertTextAtCursor(`[${hrs}:${mins}] `);
-                          }}
-                          className="py-1 px-2 bg-white dark:bg-slate-900 hover:bg-slate-100 border border-slate-100 dark:border-slate-800 text-[8px] font-bold text-slate-500 rounded flex items-center gap-1 transition-all cursor-pointer"
-                        >
-                          <Clock className="w-2.5 h-2.5 text-indigo-505" />
-                          Saat
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => insertTextAtCursor('\n- ')}
-                          className="py-1 px-2 bg-white dark:bg-slate-900 hover:bg-slate-100 border border-slate-100 dark:border-slate-800 text-[8px] font-bold text-slate-500 rounded flex items-center gap-1 transition-all cursor-pointer"
-                        >
-                          <ListTodo className="w-2.5 h-2.5 text-emerald-555" />
-                          Liste
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => insertTextAtCursor('\n⭐ Derece: [ /10] ')}
-                          className="py-1 px-2 bg-white dark:bg-slate-900 hover:bg-slate-100 border border-slate-100 dark:border-slate-800 text-[8px] font-bold text-slate-500 rounded flex items-center gap-1 transition-all cursor-pointer"
-                        >
-                          <TrendingUp className="w-2.5 h-2.5 text-amber-505" />
-                          Derece
-                        </button>
-                      </div>
-
-                      <textarea
-                        id="note-content-textarea"
-                        required
-                        rows={6}
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder="Egzersiz değerlerinizi, beslenme kalori hesaplarınızı veya nasıl hissettiğinizi bu alana dökün..."
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs leading-relaxed font-semibold text-slate-800 dark:text-slate-200 resize-none shadow-inner"
-                      />
-                    </div>
+                    <textarea
+                      id="note-content-textarea"
+                      required
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      placeholder="Notunuzu buraya yazın..."
+                      className="w-full flex-1 min-h-[300px] bg-transparent border-none focus:outline-none focus:ring-0 text-base leading-relaxed text-slate-700 dark:text-slate-300 resize-none px-0"
+                    />
                   ) : (
-                    // Spreadsheet Section
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center pr-1">
-                        <label className="text-[9px] font-mono font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1">
-                          EXCEL TABLOSU DÜZENLEME
-                        </label>
-                        <span className="text-[8px] text-[#10b981] dark:text-[#10b981] font-mono font-extrabold uppercase">
-                          {sheetRows.length} S. x {sheetColumns.length} Süt.
-                        </span>
-                      </div>
-
-                      {/* Premium card preview with Maximize Button */}
-                      <div className="bg-gradient-to-tr from-slate-50 to-slate-100/50 dark:from-slate-950 dark:to-slate-900/60 p-4 rounded-2xl border border-slate-150 dark:border-slate-850 flex flex-col items-center justify-center text-center py-7 gap-3.5 shadow-sm">
-                        <div className="w-12 h-12 bg-emerald-100/65 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center text-2xl shadow-inner animate-pulse">
-                          田
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-[11px] font-black uppercase text-slate-800 dark:text-slate-200 block">
-                            Detaylı Excel Çalışma Alanı
-                          </span>
-                          <span className="text-[9px] font-semibold text-slate-450 dark:text-slate-500 block max-w-xs leading-normal">
-                            Tabloyu formüller, CSV araçları, otomatik istatistikler ve geniş sütunlarla, devasa ekranı kaplayan tam modda düzenleyin.
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setIsSheetFullscreen(true)}
-                          className="py-3 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-indigo-150/30 dark:shadow-none transition-all transform hover:scale-[1.03]"
-                        >
-                          <Maximize2 className="w-3.5 h-3.5 text-white animate-pulse" />
-                          Tabloyu Geniş Ekran Düzenle
-                        </button>
-                      </div>
+                    // Spreadsheet Section Simplified
+                    <div className="flex-1 flex flex-col justify-center items-center py-10 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                      <span className="text-3xl mb-3">📊</span>
+                      <span className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-4">
+                        Tablo Modu ({sheetRows.length}x{sheetColumns.length})
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setIsSheetFullscreen(true)}
+                        className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-lg transition-colors"
+                      >
+                        Tabloyu Düzenle
+                      </button>
                     </div>
                   )}
+
+                  {/* Hidden Details block for extra fluff */}
+                  <details className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800/60 group">
+                    <summary className="text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer list-none flex items-center gap-1.5 select-none mb-4">
+                      <span className="text-base leading-none">⚙️</span> Diğer Seçenekler (İsteğe Bağlı)
+                    </summary>
+                    
+                    <div className="space-y-5 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                      {/* Format Selector */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Format</label>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setNoteFormat('text')}
+                            className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-colors ${
+                              noteFormat === 'text' ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
+                            }`}
+                          >
+                            📝 Metin
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setNoteFormat('spreadsheet')}
+                            className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-colors ${
+                              noteFormat === 'spreadsheet' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
+                            }`}
+                          >
+                            📊 Tablo
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Category */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Kategori</label>
+                        <select 
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value as any)}
+                          className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm focus:outline-none"
+                        >
+                          {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Tags */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Etiketler</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={tagInput}
+                            onChange={(e) => setTagInput(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            placeholder="Etiket yazıp enterlayın"
+                            className="flex-1 p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none"
+                          />
+                          <button type="button" onClick={handleAddTag} className="px-3 bg-slate-200 dark:bg-slate-700 rounded-lg text-sm font-semibold">Ekle</button>
+                        </div>
+                        {tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {tags.map((tg, idx) => (
+                              <span key={tg} className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-1 rounded text-xs flex items-center gap-1">
+                                #{tg} <button type="button" onClick={() => handleRemoveTag(idx)} className="ml-1 opacity-50 hover:opacity-100">×</button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Date */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tarih</label>
+                        <input
+                          type="date"
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </details>
 
                   </div>
                   <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3">
