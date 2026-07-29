@@ -127,21 +127,15 @@ export default function Notes() {
 
   return (
     <div className="space-y-6 relative pb-12">
-      {/* Top Tag Header */}
-      <div className="flex items-center gap-2">
-        <span className="text-[10px] font-mono tracking-widest text-[#10b981] dark:text-emerald-400 font-black uppercase bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100/50 dark:border-emerald-900/30 px-3 py-1 rounded-full shadow-inner animate-pulse">
-          ⚡ EXCEL PRO YÜKSEK PERFORMANS ATÖLYESİ
-        </span>
-      </div>
-
-      {/* Futuristic Dashboard Title & Intro */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 -mt-2">
+    <div className="space-y-6 relative pb-12">
+      {/* Clean Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-display font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-            Akıllı Notlar & Rutin Düzenleyici
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Notlar & Rutinler
           </h1>
-          <p className="text-slate-400 dark:text-slate-500 font-semibold text-xs mt-1.5 max-w-xl">
-            Spor rutinlerinizi, makro beslenmenizi ve biyometrik ölçümlerinizi profesyonel veri tablolarıyla veya düz metinlerle planlayıp analiz edin.
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+            Çalışmalarınızı, diyetlerinizi ve notlarınızı düzenleyin.
           </p>
         </div>
 
@@ -150,108 +144,82 @@ export default function Notes() {
             resetForm();
             setIsOpenForm(true);
           }}
-          className="bg-gradient-to-r from-indigo-650 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-extrabold text-xs px-6 py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-indigo-150/30 dark:shadow-none transition-all cursor-pointer transform hover:scale-[1.03] active:scale-[0.97]"
+          className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-semibold text-sm px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
         >
-          <Plus className="w-5 h-5 text-white animate-bounce" />
-          Yeni Pro Not / Tablo Yaz
+          <Plus className="w-4 h-4" />
+          Yeni Not Ekle
         </button>
       </div>
-
-      {/* ========================================================================= */}
-      {/* FUTURISTIC GLASS DASHBOARD STATS GAUGES                                    */}
-      {/* ========================================================================= */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-        {/* Stat Gauge 1 */}
-        <div className="bg-white/85 dark:bg-slate-900/70 md:backdrop-blur- p-4 rounded-2xl border border-slate-100/70 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-all group flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-8 -mt-8 group-hover:scale-125 transition-transform" />
-          <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-inner">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+          <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-slate-500 dark:text-slate-400">
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-wider block">Toplam Notlarım</span>
-            <span className="text-2xl font-black text-slate-900 dark:text-white mt-0.5 block leading-none font-mono">
-              {totalNotesCount}
-            </span>
+            <span className="text-xs text-slate-500 block">Toplam Not</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white leading-none block">{totalNotesCount}</span>
           </div>
         </div>
 
-        {/* Stat Gauge 2 */}
-        <div className="bg-white/85 dark:bg-slate-900/70 md:backdrop-blur- p-4 rounded-2xl border border-slate-100/70 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-all group flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-8 -mt-8 group-hover:scale-125 transition-transform" />
-          <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/40 text-[#10b981] dark:text-emerald-400 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-inner">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+          <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-slate-500 dark:text-slate-400">
             <Activity className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-wider block">Egzersiz / Tablo</span>
-            <span className="text-2xl font-black text-slate-900 dark:text-white mt-0.5 block leading-none font-mono">
-              {workoutSheetsCount}
-            </span>
+            <span className="text-xs text-slate-500 block">Egzersizler</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white leading-none block">{workoutSheetsCount}</span>
           </div>
         </div>
 
-        {/* Stat Gauge 3 */}
-        <div className="bg-white/85 dark:bg-slate-900/70 md:backdrop-blur- p-4 rounded-2xl border border-slate-100/70 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-all group flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-full -mr-8 -mt-8 group-hover:scale-125 transition-transform" />
-          <div className="w-10 h-10 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-455 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-inner">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+          <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-slate-500 dark:text-slate-400">
             <Apple className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-wider block">Beslenme Planı</span>
-            <span className="text-2xl font-black text-slate-900 dark:text-white mt-0.5 block leading-none font-mono">
-              {nutritionCount}
-            </span>
+            <span className="text-xs text-slate-500 block">Beslenme</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white leading-none block">{nutritionCount}</span>
           </div>
         </div>
 
-        {/* Stat Gauge 4 */}
-        <div className="bg-white/85 dark:bg-slate-900/70 md:backdrop-blur- p-4 rounded-2xl border border-slate-100/70 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-all group flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-8 -mt-8 group-hover:scale-125 transition-transform" />
-          <div className="w-10 h-10 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-inner">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+          <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-slate-500 dark:text-slate-400">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-wider block">Özel Şablonlarım</span>
-            <span className="text-2xl font-black text-slate-900 dark:text-white mt-0.5 block leading-none font-mono">
-              {savedTemplatesCount}
-            </span>
+            <span className="text-xs text-slate-500 block">Şablonlar</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white leading-none block">{savedTemplatesCount}</span>
           </div>
         </div>
       </div>
 
-      {/* Main Grid content */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* Left/Main Column - Notes list & Filters */}
-        <div className="col-span-1 lg:col-span-8 space-y-6">
-          
-          {/* Elegant Command Center (Filters Toolbar) */}
-          <div className="bg-white/80 dark:bg-slate-900/80 md:backdrop-blur- p-5 rounded-[24px] border border-slate-100 dark:border-slate-800/80 flex flex-col gap-4 shadow-sm">
-            
+      <div className="grid grid-cols-1 gap-8 items-start">
+        {/* Full width - Notes list & Filters */}
+        <div className="col-span-1 space-y-6">
+          {/* Clean Command Center (Filters Toolbar) */}
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              {/* Futuristic Search bar with Clear Button */}
               <div className="relative w-full md:w-80">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400 dark:text-slate-500">
-                  <Search className="h-4.5 w-4.5" />
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                  <Search className="h-4 w-4" />
                 </span>
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Notlarda veya etiketlerde ara..."
-                  className="w-full pl-10 pr-10 py-3 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 font-semibold"
+                  placeholder="Notlarda ara..."
+                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:border-slate-400 dark:focus:border-slate-600 text-slate-800 dark:text-slate-200"
                 />
                 {searchQuery && (
                   <button 
                     onClick={() => setSearchQuery('')}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-650 dark:hover:text-white"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                   >
-                    <X className="w-3.5 h-3.5 bg-slate-200 dark:bg-slate-800 p-0.5 rounded-full" />
+                    <X className="w-4 h-4" />
                   </button>
                 )}
               </div>
 
-              {/* High-End Segmented Categories Choices */}
-              <div className="flex flex-wrap items-center gap-1.5 w-full md:w-auto bg-slate-50/80 dark:bg-slate-950/30 p-1.5 rounded-xl border border-slate-100 dark:border-slate-850/60">
+              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                 {CATEGORIES.map((cat) => {
                   const CatIcon = cat.icon;
                   const isSelected = selectedCategory === cat.id;
@@ -263,10 +231,10 @@ export default function Notes() {
                         setSelectedCategory(cat.id);
                         setSelectedTag(null);
                       }}
-                      className={`px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
+                      className={`px-3.5 py-2 rounded-full text-[11px] font-semibold tracking-wide flex items-center gap-1.5 transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 shadow-sm border border-transparent'
-                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 border border-transparent'
+                          ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
+                          : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
                       }`}
                     >
                       <CatIcon className="w-3.5 h-3.5" />
@@ -276,33 +244,28 @@ export default function Notes() {
                 })}
               </div>
             </div>
-
-            {/* Tags Filters Ribbon */}
             {allUniqueTags.length > 0 && (
-              <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800/60 flex items-center gap-2 flex-wrap text-xs">
-                <div className="flex items-center gap-1 text-slate-450 dark:text-slate-500 font-extrabold text-[9px] uppercase tracking-widest shrink-0 mb-1">
-                  <Tag className="w-3 h-3 text-indigo-500" />
-                  <span>ETİKET FİLTRESİ:</span>
-                </div>
+              <div className="flex items-center gap-2 flex-wrap mt-2">
+                <span className="text-xs text-slate-500 font-medium">Etiketler:</span>
                 <div className="flex flex-wrap gap-1.5">
                   <button
                     onClick={() => setSelectedTag(null)}
-                    className={`px-2.5 py-1 text-[9px] font-black tracking-wide uppercase rounded-md border transition-colors ${
+                    className={`px-3 py-1 text-[11px] font-medium rounded-full border transition-colors ${
                       !selectedTag 
-                        ? 'bg-indigo-50 dark:bg-emerald-950/30 text-indigo-650 dark:text-emerald-400 border-indigo-200 dark:border-emerald-800/40' 
-                        : 'bg-white dark:bg-slate-950 text-slate-450 border-slate-100 dark:border-slate-850 hover:text-slate-650 dark:hover:text-slate-200'
+                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white border-transparent' 
+                        : 'bg-transparent text-slate-500 border-slate-200 dark:border-slate-700 hover:text-slate-800 dark:hover:text-slate-200'
                     }`}
                   >
-                    Hepsi
+                    Tümü
                   </button>
                   {allUniqueTags.map(tg => (
                     <button
                       key={tg}
                       onClick={() => setSelectedTag(tg)}
-                      className={`px-2.5 py-1 text-[9px] font-black tracking-wide uppercase rounded-md border transition-all ${
+                      className={`px-3 py-1 text-[11px] font-medium rounded-full border transition-all ${
                         selectedTag === tg 
-                          ? 'bg-indigo-600 dark:bg-emerald-500 text-white dark:text-slate-950 border-transparent shadow-sm' 
-                          : 'bg-white dark:bg-slate-950 text-slate-450 border-slate-100 dark:border-slate-850 hover:text-slate-650 dark:hover:text-slate-200 hover:border-slate-300'
+                          ? 'bg-slate-900 dark:bg-slate-200 text-white dark:text-slate-900 border-transparent' 
+                          : 'bg-transparent text-slate-500 border-slate-200 dark:border-slate-700 hover:text-slate-800 dark:hover:text-slate-200'
                       }`}
                     >
                       #{tg}
@@ -313,22 +276,22 @@ export default function Notes() {
             )}
           </div>
 
-          {/* Notes Render Grid/List */}
+          {/* Notes Grid */}
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 bg-white/80 dark:bg-slate-900/80 md:backdrop-blur- rounded-3xl border border-slate-100 dark:border-slate-850">
-              <Loader2 className="w-8 h-8 text-indigo-600 animate-spin animate-duration-1000" />
-              <p className="text-xs text-slate-400 font-semibold mt-3">Bulut veritabanınızdan notlar yükleniyor...</p>
+            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+              <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
+              <p className="text-sm text-slate-500 mt-4">Notlar yükleniyor...</p>
             </div>
           ) : filteredNotes.length === 0 ? (
-            <div className="text-center py-24 bg-white/80 dark:bg-slate-900/80 md:backdrop-blur- rounded-3xl border border-slate-100 dark:border-slate-850 p-8">
-              <div className="w-16 h-16 mx-auto bg-slate-50 dark:bg-slate-850 rounded-2xl flex items-center justify-center text-slate-400 mb-4 border border-slate-100 dark:border-slate-800 animate-pulse">
-                <FileText className="w-8 h-8" />
+            <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+              <div className="w-12 h-12 mx-auto bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 mb-4">
+                <FileText className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-850 dark:text-slate-205">Kayıt Bulunmamaktadır</h3>
-              <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm mx-auto mt-2 font-semibold">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">Not Bulunamadı</h3>
+              <p className="text-sm text-slate-500 max-w-sm mx-auto mt-2">
                 {searchQuery || selectedCategory !== 'all' || selectedTag
-                  ? 'Filtreleme kriterlerinize uygun not bulunamadı. Süzgeçleri temizlemeyi deneyin.'
-                  : 'Aktif profilinize ait bir not henüz yok. Sağ taraftaki panel veya üstteki buton ile yeni bir boş not yazabilirsiniz!'}
+                  ? 'Kriterlerinize uygun not yok.'
+                  : 'Henüz not eklemediniz. Yeni bir not oluşturarak başlayın.'}
               </p>
               {(searchQuery || selectedCategory !== 'all' || selectedTag) && (
                 <button
@@ -337,14 +300,14 @@ export default function Notes() {
                     setSelectedCategory('all');
                     setSelectedTag(null);
                   }}
-                  className="mt-4 text-xs font-black text-indigo-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                  className="mt-4 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                 >
-                  Tüm Filtreleri Sıfırla
+                  Filtreleri Temizle
                 </button>
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               <AnimatePresence mode="popLayout">
                 {filteredNotes.map((note) => {
                   const CatIcon = getCategoryIcon(note.category);
@@ -355,49 +318,45 @@ export default function Notes() {
                     <motion.div
                       layout
                       key={note.id}
-                      initial={{ opacity: 0, y: 15 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.25, type: 'spring', stiffness: 200, damping: 20 }}
-                      className="bg-white/90 dark:bg-slate-900/90 md:backdrop-blur- rounded-3xl p-6 border border-slate-100 dark:border-slate-850 flex flex-col justify-between shadow-sm hover:shadow-lg dark:shadow-none hover:border-slate-200 dark:hover:border-slate-800 transition-all duration-300 relative overflow-hidden group/card"
+                      transition={{ duration: 0.2 }}
+                      className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 flex flex-col justify-between hover:shadow-md transition-shadow relative group/card"
                     >
-                      {/* Premium card accent top-light line */}
-                      <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-800 to-transparent group-hover/card:via-[#10b981] transition-all duration-300`} />
-
                       <div>
                         {/* Note Header */}
-                        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                          <div className="flex items-center gap-1.5">
-                            <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border ${getCategoryColor(note.category)} flex items-center gap-1.5 shadow-sm`}>
-                              <CatIcon className="w-3.5 h-3.5" />
+                        <div className="flex items-center justify-between mb-3 gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                              <CatIcon className="w-4 h-4" />
                               {CATEGORIES.find(c => c.id === note.category)?.name || 'Genel'}
                             </span>
                             {note.intensity && (
-                              <span className={`text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-lg border ${intensityObj.color}`}>
+                              <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full text-slate-600 dark:text-slate-300">
                                 {intensityObj.name.split(' ')[0]}
                               </span>
                             )}
                           </div>
                           
-                          <div className="flex items-center gap-1 text-slate-400 dark:text-slate-500 text-[10px] font-extrabold">
-                            <Calendar className="w-3 h-3" />
-                            <span>{note.date}</span>
-                          </div>
+                          <span className="text-[11px] text-slate-400">
+                            {note.date}
+                          </span>
                         </div>
 
                         {/* Title & Mood */}
-                        <div className="flex items-start justify-between gap-2 mb-2.5">
-                          <h3 className="font-display font-black text-slate-900 dark:text-white leading-snug group-hover/card:text-indigo-650 dark:group-hover/card:text-[#10b981] transition-colors text-base tracking-tight">
+                        <div className="flex items-start justify-between gap-2 mb-3">
+                          <h3 className="font-semibold text-slate-900 dark:text-white text-base">
                             {note.title}
                           </h3>
                           {note.mood && (
-                            <span className="text-xl shrink-0 p-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-xl shadow-inner shrink-0 block" title="Ruh Hali / Enerji">
+                            <span className="text-lg shrink-0" title="Ruh Hali">
                               {note.mood}
                             </span>
                           )}
                         </div>
                         
-                        {/* Note Body (Text vs Table Preview) */}
+                        {/* Note Body */}
                         {(() => {
                           const isSheet = note.format === 'spreadsheet' || note.content.startsWith('{"isSpreadsheet":true');
                           if (isSheet) {
@@ -406,22 +365,21 @@ export default function Notes() {
                               const stats = getSheetStatistics(sheetData.columns || [], sheetData.rows || []);
                               
                               return (
-                                <div className="space-y-3 mt-3.5">
-                                  {/* Table Preview */}
-                                  <div className="overflow-x-auto border border-slate-100 dark:border-slate-850 rounded-2xl shadow-inner w-full bg-slate-50/50 dark:bg-slate-950/20 max-h-[180px] overflow-y-auto scrollbar-thin">
-                                    <table className="w-full text-left border-collapse text-[10px] font-sans">
+                                <div className="space-y-3 mt-2">
+                                  <div className="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-lg max-h-[140px] overflow-y-auto">
+                                    <table className="w-full text-left border-collapse text-[11px]">
                                       <thead>
-                                        <tr className="bg-slate-100/80 dark:bg-slate-950 border-b border-slate-200/50 dark:border-slate-800 sticky top-0 z-10">
+                                        <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 sticky top-0">
                                           {sheetData.columns.map((col: string, idx: number) => (
-                                            <th key={idx} className="p-2.5 font-extrabold uppercase text-slate-550 dark:text-slate-400 tracking-wider min-w-[80px] bg-slate-100/90 dark:bg-slate-950/90 border-r border-slate-200/20 dark:border-slate-800/20">{col}</th>
+                                            <th key={idx} className="p-2 font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800">{col}</th>
                                           ))}
                                         </tr>
                                       </thead>
                                       <tbody>
                                         {sheetData.rows.map((row: string[], rIdx: number) => (
-                                          <tr key={rIdx} className="border-b border-slate-100 dark:border-slate-850/60 hover:bg-slate-100/30 dark:hover:bg-slate-900/30 transition-colors even:bg-slate-50/30 dark:even:bg-slate-900/10">
+                                          <tr key={rIdx} className="border-b border-slate-100 dark:border-slate-800/50">
                                             {row.map((cell: string, cIdx: number) => (
-                                              <td key={cIdx} className="p-2.5 text-slate-700 dark:text-slate-350 font-semibold whitespace-normal break-words border-r border-slate-150/10 dark:border-slate-800/10">{cell || '-'}</td>
+                                              <td key={cIdx} className="p-2 text-slate-700 dark:text-slate-300 border-r border-slate-100 dark:border-slate-800/50">{cell || '-'}</td>
                                             ))}
                                           </tr>
                                         ))}
@@ -429,18 +387,13 @@ export default function Notes() {
                                     </table>
                                   </div>
 
-                                  {/* Dynamic auto-calculation statistics preview on card */}
                                   {stats.length > 0 && (
-                                    <div className="bg-emerald-50/30 dark:bg-emerald-950/10 border border-emerald-100/40 dark:border-emerald-900/15 rounded-xl p-2.5 flex flex-wrap gap-x-3 gap-y-1 text-[9px] shadow-sm">
-                                      <span className="font-extrabold text-[#10b981] dark:text-emerald-400 uppercase tracking-wider block shrink-0">📊 DİNAMİK HESAP:</span>
+                                    <div className="flex flex-wrap gap-2 text-[10px]">
                                       {stats.slice(0, 3).map((st, sIdx) => (
-                                        <span key={sIdx} className="text-slate-500 dark:text-slate-400 font-extrabold">
-                                          {st.colName}: <strong className="text-slate-800 dark:text-white font-extrabold">{st.total}</strong>
+                                        <span key={sIdx} className="text-slate-500 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded">
+                                          {st.colName}: <strong className="text-slate-700 dark:text-slate-200">{st.total}</strong>
                                         </span>
                                       ))}
-                                      {stats.length > 3 && (
-                                        <span className="text-slate-400 dark:text-slate-500 font-black">+{stats.length - 3} sütun</span>
-                                      )}
                                     </div>
                                   )}
                                 </div>
@@ -450,15 +403,15 @@ export default function Notes() {
                             }
                           }
                           return (
-                            <p className="text-slate-550 dark:text-slate-450 text-xs leading-relaxed whitespace-pre-wrap line-clamp-5 font-medium mt-2">
+                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-4 mt-2">
                               {note.content}
                             </p>
                           );
                         })()}
 
-                        {/* Rendering tags on card */}
+                        {/* Tags */}
                         {note.tags && note.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-4">
+                          <div className="flex flex-wrap gap-1.5 mt-4">
                             {note.tags.map(t => (
                               <button
                                 key={t}
@@ -466,7 +419,7 @@ export default function Notes() {
                                   e.stopPropagation();
                                   setSelectedTag(t);
                                 }}
-                                className="text-[9px] font-black uppercase text-indigo-500 dark:text-emerald-400 bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded-md hover:bg-indigo-50 dark:hover:bg-emerald-950/20 border border-slate-100 dark:border-slate-850 transition-colors tracking-wide"
+                                className="text-[10px] font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                               >
                                 #{t}
                               </button>
@@ -476,37 +429,37 @@ export default function Notes() {
                       </div>
 
                       {/* Card Footer Actions */}
-                      <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
+                      <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleEdit(note)}
-                            className="p-2 bg-slate-50 hover:bg-indigo-55 dark:bg-slate-850 dark:hover:bg-slate-800 text-slate-400 hover:text-indigo-600 dark:hover:text-emerald-400 rounded-xl transition-all cursor-pointer shadow-sm border border-slate-150/40 dark:border-slate-800"
-                            title="Notu Düzenle"
+                            className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                            title="Düzenle"
                           >
-                            <Edit3 className="w-3.5 h-3.5" />
+                            <Edit3 className="w-4 h-4" />
                           </button>
                           
                           <button
                             onClick={() => setSelectedViewNote(note)}
-                            className="p-2 bg-slate-50 hover:bg-emerald-50 dark:bg-slate-850 dark:hover:bg-slate-800 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl transition-all cursor-pointer shadow-sm border border-slate-150/40 dark:border-slate-800 flex items-center justify-center"
+                            className="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                             title="Tam Ekran Büyüt"
                           >
-                            <Maximize2 className="w-3.5 h-3.5" />
+                            <Maximize2 className="w-4 h-4" />
                           </button>
                         </div>
 
                         {isDeleting ? (
-                          <div className="flex items-center gap-1 bg-red-50 dark:bg-red-950/20 p-1 rounded-xl border border-red-150 dark:border-red-900/40 z-10">
-                            <span className="text-[9px] font-black text-red-600 uppercase px-1.5">Silinsin mi?</span>
+                          <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-lg border border-red-100 dark:border-red-900/40">
+                            <span className="text-xs font-semibold text-red-600 dark:text-red-400">Emin misiniz?</span>
                             <button
                               onClick={() => handleDelete(note.id)}
-                              className="px-2.5 py-1 bg-red-650 text-white font-bold text-[9px] uppercase rounded-lg hover:bg-red-750 cursor-pointer shadow-sm"
+                              className="text-xs font-bold text-red-600 hover:underline"
                             >
                               Evet
                             </button>
                             <button
                               onClick={() => setDeletingId(null)}
-                              className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold text-[9px] uppercase rounded-lg hover:bg-slate-200 dark:hover:bg-slate-750 cursor-pointer"
+                              className="text-xs font-bold text-slate-500 hover:underline"
                             >
                               Hayır
                             </button>
@@ -514,10 +467,10 @@ export default function Notes() {
                         ) : (
                           <button
                             onClick={() => setDeletingId(note.id)}
-                            className="p-2 bg-slate-50 hover:bg-red-50 dark:bg-slate-850 dark:hover:bg-red-950/25 text-slate-400 hover:text-red-500 rounded-xl transition-all cursor-pointer border border-slate-150/40 dark:border-slate-800"
-                            title="Notu Kalıcı Olarak Sil"
+                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            title="Sil"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         )}
                       </div>
@@ -527,43 +480,49 @@ export default function Notes() {
               </AnimatePresence>
             </div>
           )}
-
         </div>
+      </div>
 
-        {/* Right Column - Create/Edit Form */}
-        <div className="col-span-1 lg:col-span-4 space-y-6">
-
-          {/* Toggle Button Form View State */}
-          <AnimatePresence mode="wait">
-            {isOpenForm ? (
+      {/* Slide-over Form Drawer */}
+          {isOpenForm && (
+            <div className="fixed inset-0 z-40 flex justify-end">
+              {/* Overlay */}
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                className="bg-white/95 dark:bg-slate-900/95 md:backdrop-blur- rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-xl relative"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={resetForm}
+                className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+              />
+              
+              {/* Drawer */}
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
+                className="w-full max-w-md bg-white dark:bg-slate-900 h-full shadow-2xl relative z-50 flex flex-col border-l border-slate-200 dark:border-slate-800"
               >
-                {/* Decorative top glass border */}
-                <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-indigo-500 via-[#10b981] to-blue-500 rounded-t-3xl" />
-
                 {/* Form Header */}
-                <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-100 dark:border-slate-805/80 mt-1">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7.5 h-7.5 bg-indigo-50 dark:bg-emerald-950/30 text-indigo-650 dark:text-emerald-450 rounded-xl flex items-center justify-center shadow-inner">
+                <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-800">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300">
                       <Edit3 className="w-4 h-4" />
                     </div>
-                    <span className="font-display font-black text-xs text-slate-850 dark:text-white uppercase tracking-tight">
-                      {editingNoteId ? 'Notu Düzenle' : 'Not Oluşturucu Atölyesi'}
+                    <span className="font-semibold text-base text-slate-900 dark:text-white">
+                      {editingNoteId ? 'Notu Düzenle' : 'Yeni Not'}
                     </span>
                   </div>
                   <button
                     onClick={resetForm}
-                    className="p-1.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg cursor-pointer transition-colors"
+                    className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
 
                 {/* Form Input Body */}
+                <div className="flex-1 overflow-y-auto p-5 scrollbar-thin">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {/* Category choices */}
                   <div className="space-y-1.5">
@@ -908,53 +867,30 @@ export default function Notes() {
                     </div>
                   )}
 
-                  {/* Buttons */}
-                  <div className="flex items-center gap-2 pt-2">
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3">
                     <button
                       type="button"
                       onClick={resetForm}
-                      className="flex-1 py-3 bg-slate-50 hover:bg-slate-100 dark:bg-slate-855 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-800 font-bold text-[10px] uppercase tracking-wider rounded-xl cursor-pointer transition-colors"
+                      className="flex-1 py-2.5 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                     >
-                      Vazgeç
+                      İptal
                     </button>
                     <button
                       type="submit"
                       disabled={saving || !title.trim() || (noteFormat === 'text' && !content.trim())}
-                      className="flex-1 py-3 bg-[#10b981] hover:bg-emerald-600 text-white font-bold text-[10px] uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-md shadow-emerald-50/10 transition-all disabled:opacity-50 cursor-pointer"
+                      className="flex-1 py-2.5 px-4 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-semibold rounded-lg disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                     >
-                      {saving ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Check className="w-3.5 h-3.5 text-white" />
-                      )}
+                      {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                       {editingNoteId ? 'Güncelle' : 'Kaydet'}
                     </button>
                   </div>
                 </form>
-              </motion.div>
-            ) : (
-              // Default view showing neat instructions
-              <div className="bg-slate-900/5 dark:bg-slate-900/40 rounded-3xl p-6 border border-dashed border-slate-200 dark:border-slate-800 text-center py-10 shadow-inner">
-                <div className="w-12 h-12 bg-white dark:bg-slate-950/60 rounded-2xl flex items-center justify-center text-slate-400 mx-auto border border-slate-100 dark:border-slate-800 shadow-sm mb-3">
-                  <FileText className="w-6 h-6 text-slate-400 animate-bounce" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-350 block mb-1">Yeni Not Yapılandırın</span>
-                <p className="text-[11px] text-slate-450 dark:text-slate-500 max-w-xs mx-auto mb-5 font-semibold leading-relaxed">
-                  Saniyeler içinde antrenman değerlerinizi veya diyetlerinizi düzenli bir biçimde kaydetmek için yeni bir boş sayfa açın.
-                </p>
-                <button
-                  onClick={() => setIsOpenForm(true)}
-                  className="px-6 py-3.5 bg-gradient-to-r from-indigo-650 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-extrabold text-[10px] uppercase tracking-wider rounded-xl inline-flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-150/10 dark:shadow-none transition-all transform hover:scale-105"
-                >
-                  <Plus className="w-4 h-4 text-white" />
-                  Boş Sayfa Aç
-                </button>
-              </div>
-            )}
-          </AnimatePresence>
-
-        </div>
-
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ========================================================================= */}
