@@ -3,6 +3,8 @@ import {
   doc, 
   getDocs as firebaseGetDocs, 
   getDoc as firebaseGetDoc, 
+  getDocFromCache,
+  getDocsFromCache,
   setDoc, 
   query, 
   where, 
@@ -13,19 +15,47 @@ import {
 import { db, auth } from '../lib/firebase';
 import { HealthRecord, UserProfile, Note } from '../types';
 
-const TIMEOUT_MS = 4000;
+const TIMEOUT_MS = 2000;
 
 const withTimeout = <T>(promise: Promise<T>, ms: number = TIMEOUT_MS): Promise<T> => {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) => 
-      setTimeout(() => reject(new Error("Firebase ağ isteği zaman aşımına uğradı (offline veya engelli).")), ms)
+      setTimeout(() => reject(new Error("Timeout")), ms)
     )
   ]);
 };
 
-const getDoc = (ref: any) => withTimeout(firebaseGetDoc(ref));
-const getDocs = (ref: any) => withTimeout(firebaseGetDocs(ref));
+// Optimistic Write Wrapper: Resolves successfully if network takes too long, allowing UI to proceed while Firebase syncs in background.
+const withWriteTimeout = <T>(promise: Promise<T>, ms: number = 1500): Promise<T | void> => {
+  return Promise.race([
+    promise,
+    new Promise<void>((resolve) => 
+      setTimeout(() => {
+        console.warn("Write queued for background sync (optimistic UI)");
+        resolve(); 
+      }, ms)
+    )
+  ]);
+};
+
+const getDoc = async (ref: any) => {
+  try {
+    return await withTimeout(firebaseGetDoc(ref), TIMEOUT_MS);
+  } catch (error) {
+    console.warn("Network slow, falling back to cache for getDoc");
+    return await getDocFromCache(ref);
+  }
+};
+
+const getDocs = async (ref: any) => {
+  try {
+    return await withTimeout(firebaseGetDocs(ref), TIMEOUT_MS);
+  } catch (error) {
+    console.warn("Network slow, falling back to cache for getDocs");
+    return await getDocsFromCache(ref);
+  }
+};
 
 enum OperationType {
   CREATE = 'create',
@@ -98,7 +128,7 @@ export const firebaseService = {
     const path = `users/${userId}/profiles/${profileId}/records/${record.id}`;
     const sanitizedRecord = sanitizeData(record);
     try {
-      await setDoc(doc(db, path), sanitizedRecord);
+      await withWriteTimeout(setDoc(doc(db, path), sanitizedRecord));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }
@@ -131,7 +161,7 @@ export const firebaseService = {
   updateWaterIntake: async (userId: string, profileId: string, date: string, amount: number) => {
     const path = `users/${userId}/profiles/${profileId}/water/${date}`;
     try {
-      await setDoc(doc(db, path), { amount, lastUpdated: new Date().toISOString() });
+      await withWriteTimeout(setDoc(doc(db, path), { amount, lastUpdated: new Date().toISOString() }));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }
@@ -191,14 +221,14 @@ export const firebaseService = {
   updateWorkoutStatus: async (userId: string, profileId: string, date: string, completed: boolean, mood?: string, note?: string, workoutTitle?: string, exercises?: string[]) => {
     const path = `users/${userId}/profiles/${profileId}/workouts/${date}`;
     try {
-      await setDoc(doc(db, path), { 
+      await withWriteTimeout(setDoc(doc(db, path), { 
         completed, 
         mood: mood || '', 
         note: note || '', 
         workoutTitle: workoutTitle || 'Profesyonel Antrenman',
         exercises: exercises || [],
         lastUpdated: new Date().toISOString() 
-      }, { merge: true });
+      }, { merge: true }));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }
@@ -207,7 +237,7 @@ export const firebaseService = {
   deleteHealthRecord: async (userId: string, profileId: string, recordId: string) => {
     const path = `users/${userId}/profiles/${profileId}/records/${recordId}`;
     try {
-      await deleteDoc(doc(db, path));
+      await withWriteTimeout(deleteDoc(doc(db, path)));
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, path);
     }
@@ -217,7 +247,7 @@ export const firebaseService = {
     const path = `users/${userId}/profiles/${profileId}/routines/${routine.id}`;
     const sanitized = sanitizeData(routine);
     try {
-      await setDoc(doc(db, path), sanitized);
+      await withWriteTimeout(setDoc(doc(db, path), sanitized));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }
@@ -241,7 +271,7 @@ export const firebaseService = {
   deleteCustomWorkoutRoutine: async (userId: string, profileId: string, routineId: string) => {
     const path = `users/${userId}/profiles/${profileId}/routines/${routineId}`;
     try {
-      await deleteDoc(doc(db, path));
+      await withWriteTimeout(deleteDoc(doc(db, path)));
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, path);
     }
@@ -263,7 +293,7 @@ export const firebaseService = {
     const path = `users/${userId}/profiles/${profileId}/notes/${note.id}`;
     const sanitized = sanitizeData(note);
     try {
-      await setDoc(doc(db, path), sanitized);
+      await withWriteTimeout(setDoc(doc(db, path), sanitized));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }
@@ -272,7 +302,7 @@ export const firebaseService = {
   deleteNote: async (userId: string, profileId: string, noteId: string) => {
     const path = `users/${userId}/profiles/${profileId}/notes/${noteId}`;
     try {
-      await deleteDoc(doc(db, path));
+      await withWriteTimeout(deleteDoc(doc(db, path)));
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, path);
     }
@@ -293,7 +323,7 @@ export const firebaseService = {
   updateSupplements: async (userId: string, profileId: string, date: string, taken: { [key: string]: boolean }) => {
     const path = `users/${userId}/profiles/${profileId}/supplements/${date}`;
     try {
-      await setDoc(doc(db, path), { taken, lastUpdated: new Date().toISOString() });
+      await withWriteTimeout(setDoc(doc(db, path), { taken, lastUpdated: new Date().toISOString() }));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }
@@ -314,7 +344,7 @@ export const firebaseService = {
   saveSupplementDosages: async (userId: string, profileId: string, dosages: { [key: string]: string }) => {
     const path = `users/${userId}/profiles/${profileId}/supplementSettings/customDosages`;
     try {
-      await setDoc(doc(db, path), { dosages, lastUpdated: new Date().toISOString() });
+      await withWriteTimeout(setDoc(doc(db, path), { dosages, lastUpdated: new Date().toISOString() }));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }
