@@ -20,7 +20,7 @@ export function useNotes() {
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<'workout' | 'nutrition' | 'health' | 'general'>('general');
+  const [category, setCategory] = useState<'workout' | 'nutrition' | 'health' | 'general' | 'medication'>('general');
   const [content, setContent] = useState('');
   const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
   const [mood, setMood] = useState('😊');
@@ -28,6 +28,15 @@ export function useNotes() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [saving, setSaving] = useState(false);
+
+  // Auto-fill template for medication category
+  useEffect(() => {
+    if (category === 'medication' && !content.trim() && !editingNoteId) {
+      setContent("### 💊 Günlük İlaç Takibi\n\n**🌅 Sabah**\n- [ ] \n- [ ] \n\n**🌇 Akşam**\n- [ ] \n- [ ] \n");
+      setTitle("Günlük İlaçlarım");
+      setNoteFormat('text');
+    }
+  }, [category]);
 
   // Spreadsheet Format States
   const [noteFormat, setNoteFormat] = useState<'text' | 'spreadsheet'>('text');
@@ -335,6 +344,7 @@ export function useNotes() {
       case 'workout': return 'bg-indigo-50/80 dark:bg-emerald-950/20 text-indigo-700 dark:text-emerald-400 border-indigo-150 dark:border-emerald-800/40';
       case 'nutrition': return 'bg-emerald-50/80 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-350 border-emerald-150 dark:border-emerald-800/40';
       case 'health': return 'bg-rose-50/80 dark:bg-rose-950/20 text-rose-700 dark:text-rose-455 border-rose-150 dark:border-rose-800/40';
+      case 'medication': return 'bg-cyan-50/80 dark:bg-cyan-950/20 text-cyan-700 dark:text-cyan-400 border-cyan-150 dark:border-cyan-800/40';
       default: return 'bg-amber-50/80 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-150 dark:border-amber-800/40';
     }
   };
@@ -344,6 +354,7 @@ export function useNotes() {
       case 'workout': return Activity;
       case 'nutrition': return Apple;
       case 'health': return Heart;
+      case 'medication': return StickyNote; // the real icon is imported in constants, but fallback here
       default: return StickyNote;
     }
   };

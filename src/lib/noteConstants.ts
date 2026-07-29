@@ -1,10 +1,11 @@
-import { Activity, Apple, Heart, StickyNote, FileText } from 'lucide-react';
+import { Activity, Apple, Heart, StickyNote, FileText, Pill } from 'lucide-react';
 
 export const CATEGORIES = [
   { id: 'all', name: 'Tümü', icon: FileText, color: 'text-slate-650 dark:text-slate-455', bg: 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800' },
   { id: 'workout', name: 'Egzersiz', icon: Activity, color: 'text-indigo-600 dark:text-emerald-400', bg: 'bg-indigo-50/50 dark:bg-emerald-950/20 border-indigo-100 dark:border-emerald-900/30' },
   { id: 'nutrition', name: 'Beslenme', icon: Apple, color: 'text-emerald-600 dark:text-emerald-350', bg: 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30' },
   { id: 'health', name: 'Sağlık', icon: Heart, color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50/50 dark:bg-rose-950/20 border-rose-100 dark:border-rose-900/30' },
+  { id: 'medication', name: 'İlaç & Tedavi', icon: Pill, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50/50 dark:bg-cyan-950/20 border-cyan-100 dark:border-cyan-900/30' },
   { id: 'general', name: 'Genel', icon: StickyNote, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-100 dark:border-amber-900/30' },
 ];
 
