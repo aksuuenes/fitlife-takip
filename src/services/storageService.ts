@@ -139,5 +139,24 @@ export const storageService = {
   deleteNote: (noteId: string, profileId: string = 'local') => {
     const notes = storageService.getNotes(profileId).filter(n => n.id !== noteId);
     localStorage.setItem(`fitlife_notes_${profileId}`, JSON.stringify(notes));
+  },
+  getMedicationList: (profileId: string = 'local'): { id: string, name: string, dosage: string }[] => {
+    const key = `fitlife_medication_list_${profileId}`;
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  },
+  saveMedicationList: (list: { id: string, name: string, dosage: string }[], profileId: string = 'local') => {
+    const key = `fitlife_medication_list_${profileId}`;
+    localStorage.setItem(key, JSON.stringify(list));
+  },
+  getMedicationLogs: (date: string, profileId: string = 'local'): { [key: string]: boolean } => {
+    const key = `fitlife_medication_logs_${profileId}`;
+    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    return all[date] || {};
+  },
+  saveMedicationLogs: (date: string, logs: { [key: string]: boolean }, profileId: string = 'local') => {
+    const key = `fitlife_medication_logs_${profileId}`;
+    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    all[date] = logs;
+    localStorage.setItem(key, JSON.stringify(all));
   }
 };

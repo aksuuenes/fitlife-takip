@@ -122,7 +122,12 @@ export default function Notes() {
     workoutSheetsCount,
     nutritionCount,
     savedTemplatesCount,
-    getSheetStatistics
+    getSheetStatistics,
+    checklistItems,
+    setChecklistItems,
+    reminderTime,
+    setReminderTime,
+    handleToggleChecklistItem
   } = useNotes();
 
   return (
@@ -339,9 +344,16 @@ export default function Notes() {
                             )}
                           </div>
                           
-                          <span className="text-[11px] text-slate-400">
-                            {note.date}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            {note.reminderTime && (
+                              <span className="text-[11px] font-bold text-amber-500 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded flex items-center gap-1" title="Hatırlatıcı">
+                                🔔 {note.reminderTime}
+                              </span>
+                            )}
+                            <span className="text-[11px] text-slate-400">
+                              {note.date}
+                            </span>
+                          </div>
                         </div>
 
                         {/* Title & Mood */}
@@ -399,6 +411,29 @@ export default function Notes() {
                                 </div>
                               );
                             } catch(e) {
+                              // fallback
+                            }
+                          } else if (note.format === 'checklist' || note.content.startsWith('{"isChecklist":true')) {
+                            try {
+                              const checklistData = JSON.parse(note.content);
+                              return (
+                                <div className="space-y-1.5 mt-2 max-h-[140px] overflow-y-auto pr-1 custom-scrollbar">
+                                  {checklistData.items.map((item: any) => (
+                                    <div key={item.id} className="flex items-start gap-2">
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); handleToggleChecklistItem(note.id, item.id); }}
+                                        className={`mt-0.5 shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-colors ${item.checked ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600 hover:border-emerald-400'}`}
+                                      >
+                                        {item.checked && <Check className="w-3 h-3" />}
+                                      </button>
+                                      <span className={`text-sm ${item.checked ? 'text-slate-400 line-through' : 'text-slate-700 dark:text-slate-300'}`}>
+                                        {item.text}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              );
+                            } catch (e) {
                               // fallback
                             }
                           }
@@ -493,7 +528,7 @@ export default function Notes() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={resetForm}
-                className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
               />
               
               {/* Drawer */}
@@ -502,171 +537,270 @@ export default function Notes() {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
-                className="w-full max-w-md bg-white dark:bg-slate-900 h-full shadow-2xl relative z-50 flex flex-col border-l border-slate-200 dark:border-slate-800"
+                className="w-full max-w-lg bg-white dark:bg-slate-900 h-full shadow-2xl relative z-50 flex flex-col border-l border-slate-200 dark:border-slate-800"
               >
                 {/* Form Header */}
-                <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300">
-                      <Edit3 className="w-4 h-4" />
+                    <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center shadow-sm">
+                      <Edit3 className="w-5 h-5" />
                     </div>
-                    <span className="font-semibold text-base text-slate-900 dark:text-white">
-                      {editingNoteId ? 'Notu Düzenle' : 'Yeni Not'}
-                    </span>
+                    <div>
+                      <h2 className="font-bold text-lg text-slate-900 dark:text-white leading-tight">
+                        {editingNoteId ? 'Notu Düzenle' : 'Yeni Not'}
+                      </h2>
+                      <p className="text-xs text-slate-500 font-medium">Düşüncelerini kaydet</p>
+                    </div>
                   </div>
                   <button
                     onClick={resetForm}
-                    className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                    className="p-2.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
                 {/* Form Input Body */}
-                <div className="flex-1 overflow-y-auto p-5 scrollbar-thin">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {/* Apple Notes Style Super Simple Form */}
-                  
-                  {/* Title (Huge, borderless) */}
-                  <input
-                    type="text"
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Başlık"
-                    className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-3xl font-bold text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700 mb-4 px-0"
-                  />
-
-                  {/* Content Inputs (Text vs Spreadsheet Table Preview) */}
-                  {noteFormat === 'text' ? (
-                    <textarea
-                      id="note-content-textarea"
-                      required
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      placeholder="Notunuzu buraya yazın..."
-                      className="w-full flex-1 min-h-[300px] bg-transparent border-none focus:outline-none focus:ring-0 text-base leading-relaxed text-slate-700 dark:text-slate-300 resize-none px-0"
-                    />
-                  ) : (
-                    // Spreadsheet Section Simplified
-                    <div className="flex-1 flex flex-col justify-center items-center py-10 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
-                      <span className="text-3xl mb-3">📊</span>
-                      <span className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-4">
-                        Tablo Modu ({sheetRows.length}x{sheetColumns.length})
-                      </span>
+                <div className="flex-1 overflow-y-auto p-6 scrollbar-thin">
+                  <form id="note-form" onSubmit={handleSubmit} className="space-y-6">
+                    
+                    {/* Format Selector (Segmented Control) */}
+                    <div className="flex bg-slate-100 dark:bg-slate-800/60 p-1 rounded-xl">
                       <button
                         type="button"
-                        onClick={() => setIsSheetFullscreen(true)}
-                        className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-lg transition-colors"
+                        onClick={() => setNoteFormat('text')}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                          noteFormat === 'text' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                        }`}
                       >
-                        Tabloyu Düzenle
+                        📝 Metin
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNoteFormat('checklist')}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                          noteFormat === 'checklist' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                        }`}
+                      >
+                        ✅ Liste
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNoteFormat('spreadsheet')}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                          noteFormat === 'spreadsheet' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                        }`}
+                      >
+                        📊 Tablo
                       </button>
                     </div>
-                  )}
 
-                  {/* Hidden Details block for extra fluff */}
-                  <details className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800/60 group">
-                    <summary className="text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer list-none flex items-center gap-1.5 select-none mb-4">
-                      <span className="text-base leading-none">⚙️</span> Diğer Seçenekler (İsteğe Bağlı)
-                    </summary>
-                    
-                    <div className="space-y-5 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
-                      {/* Format Selector */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Format</label>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setNoteFormat('text')}
-                            className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-colors ${
-                              noteFormat === 'text' ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
-                            }`}
-                          >
-                            📝 Metin
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setNoteFormat('spreadsheet')}
-                            className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-colors ${
-                              noteFormat === 'spreadsheet' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
-                            }`}
-                          >
-                            📊 Tablo
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Category */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Kategori</label>
-                        <select 
-                          value={category}
-                          onChange={(e) => setCategory(e.target.value as any)}
-                          className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm focus:outline-none"
-                        >
-                          {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Tags */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Etiketler</label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={tagInput}
-                            onChange={(e) => setTagInput(e.target.value)}
-                            onKeyDown={handleKeyPress}
-                            placeholder="Etiket yazıp enterlayın"
-                            className="flex-1 p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none"
-                          />
-                          <button type="button" onClick={handleAddTag} className="px-3 bg-slate-200 dark:bg-slate-700 rounded-lg text-sm font-semibold">Ekle</button>
-                        </div>
-                        {tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {tags.map((tg, idx) => (
-                              <span key={tg} className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-1 rounded text-xs flex items-center gap-1">
-                                #{tg} <button type="button" onClick={() => handleRemoveTag(idx)} className="ml-1 opacity-50 hover:opacity-100">×</button>
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Date */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tarih</label>
-                        <input
-                          type="date"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                          className="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none"
-                        />
-                      </div>
+                    {/* Title */}
+                    <div>
+                      <input
+                        type="text"
+                        required
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Not Başlığı..."
+                        className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-3xl font-black text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700 px-0"
+                      />
                     </div>
-                  </details>
 
-                  <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={resetForm}
-                      className="flex-1 py-2.5 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                    >
-                      İptal
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={saving || !title.trim() || (noteFormat === 'text' && !content.trim())}
-                      className="flex-1 py-2.5 px-4 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-semibold rounded-lg disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
-                    >
-                      {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                      {editingNoteId ? 'Güncelle' : 'Kaydet'}
-                    </button>
-                  </div>
-                </form>
+                    {/* Main Content Area */}
+                    <div className="min-h-[250px] flex flex-col">
+                      {noteFormat === 'text' && (
+                        <textarea
+                          id="note-content-textarea"
+                          required
+                          value={content}
+                          onChange={(e) => setContent(e.target.value)}
+                          placeholder="Buraya yazmaya başla..."
+                          className="w-full flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-base leading-relaxed text-slate-700 dark:text-slate-300 resize-none px-0 placeholder:text-slate-400"
+                        />
+                      )}
+                      
+                      {noteFormat === 'spreadsheet' && (
+                        <div className="flex-1 flex flex-col justify-center items-center py-12 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+                          <div className="w-16 h-16 bg-white dark:bg-slate-800 shadow-sm rounded-2xl flex items-center justify-center text-3xl mb-4">
+                            📊
+                          </div>
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                            Tablo Modu
+                          </span>
+                          <span className="text-xs text-slate-500 mb-5">
+                            {sheetRows.length} Satır x {sheetColumns.length} Sütun
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setIsSheetFullscreen(true)}
+                            className="py-2.5 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-xl transition-colors shadow-sm"
+                          >
+                            Tabloyu Düzenle
+                          </button>
+                        </div>
+                      )}
+
+                      {noteFormat === 'checklist' && (
+                        <div className="flex-1 flex flex-col space-y-3">
+                          {checklistItems.map((item, idx) => (
+                            <div key={item.id} className="flex items-start gap-3 group/item">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newItems = [...checklistItems];
+                                  newItems[idx].checked = !newItems[idx].checked;
+                                  setChecklistItems(newItems);
+                                }}
+                                className={`mt-0.5 w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${item.checked ? 'bg-emerald-500 border-emerald-500 text-white shadow-inner' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-emerald-400'}`}
+                              >
+                                {item.checked && <Check className="w-4 h-4" />}
+                              </button>
+                              <div className="flex-1">
+                                <input
+                                  type="text"
+                                  value={item.text}
+                                  onChange={(e) => {
+                                    const newItems = [...checklistItems];
+                                    newItems[idx].text = e.target.value;
+                                    setChecklistItems(newItems);
+                                  }}
+                                  placeholder="Görev yazın..."
+                                  className={`w-full bg-transparent border-none focus:outline-none focus:ring-0 text-[15px] p-0 ${item.checked ? 'text-slate-400 line-through' : 'text-slate-700 dark:text-slate-200'}`}
+                                />
+                                <div className="h-px w-full bg-slate-100 dark:bg-slate-800 mt-2 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setChecklistItems(prev => prev.filter((_, i) => i !== idx))}
+                                className="opacity-0 group-hover/item:opacity-100 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all shrink-0"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => setChecklistItems([...checklistItems, { id: Math.random().toString(36).substring(2, 9), text: '', checked: false }])}
+                            className="text-sm font-semibold text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-2 w-max mt-4 p-2 -ml-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Yeni Madde Ekle
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Settings Section (Always visible, styled nicely) */}
+                    <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-5">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">⚙️</span>
+                        <h3 className="font-bold text-sm text-slate-900 dark:text-white">Not Detayları</h3>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Category */}
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Kategori</label>
+                          <select 
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value as any)}
+                            className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer appearance-none"
+                          >
+                            {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+                              <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Date */}
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tarih</label>
+                          <input
+                            type="date"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Reminder Time */}
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            Hatırlatıcı
+                          </label>
+                          <input
+                            type="time"
+                            value={reminderTime}
+                            onChange={(e) => setReminderTime(e.target.value)}
+                            className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+                          />
+                        </div>
+
+                        {/* Tags Input */}
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Etiket Ekle</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={tagInput}
+                              onChange={(e) => setTagInput(e.target.value)}
+                              onKeyDown={handleKeyPress}
+                              placeholder="Yaz ve enter'a bas..."
+                              className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3 pr-12 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                            />
+                            <button 
+                              type="button" 
+                              onClick={handleAddTag} 
+                              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Display Tags */}
+                      {tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          {tags.map((tg, idx) => (
+                            <span key={tg} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                              #{tg} 
+                              <button type="button" onClick={() => handleRemoveTag(idx)} className="w-4 h-4 flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-full hover:bg-red-100 hover:text-red-600 transition-colors">
+                                <X className="w-2.5 h-2.5" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                  </form>
                 </div>
+
+                {/* Footer Actions (Sticky Bottom) */}
+                <div className="p-5 border-t border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky bottom-0 z-10 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="flex-1 py-3 px-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="submit"
+                    form="note-form"
+                    disabled={saving || !title.trim() || (noteFormat === 'text' && !content.trim()) || (noteFormat === 'checklist' && checklistItems.length === 0)}
+                    className="flex-[2] py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40"
+                  >
+                    {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
+                    {editingNoteId ? 'Değişiklikleri Kaydet' : 'Notu Kaydet'}
+                  </button>
+                </div>
+
               </motion.div>
             </div>
           )}

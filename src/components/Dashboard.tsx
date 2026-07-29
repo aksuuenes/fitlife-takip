@@ -11,6 +11,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import WorkoutTracker from './WorkoutTracker';
 import WaterTracker from './WaterTracker';
 import SupplementTracker from './SupplementTracker';
+import MedicationTracker from './MedicationTracker';
 import WorkoutCalendar from './WorkoutCalendar';
 
 import { parseNumber, getBMIStatus } from '../lib/utils';
@@ -205,10 +206,11 @@ export default function Dashboard() {
       </section>
 
       {/* Daily Trackers Row (Perfectly Aligned side-by-side) */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
         <WorkoutTracker />
         <WaterTracker />
         <SupplementTracker />
+        <MedicationTracker />
       </section>
 
       {/* Workout Calendar Section (Spacious Full Width) */}

@@ -7,6 +7,44 @@ import { Note } from '../types';
 import { INTENSITIES } from '../lib/noteConstants';
 import { Activity, Apple, Heart, StickyNote } from 'lucide-react';
 
+const DEFAULT_SHEETS: Record<string, { columns: string[], rows: string[][] }> = {
+  workout: {
+    columns: ['Egzersiz Adı', 'Set', 'Tekrar', 'Ağırlık (kg)', 'Dinlenme', 'Notlar'],
+    rows: [
+      ['Şınav (Pushups)', '4', '15', 'Vücut Ağırlığı', '60 sn', 'Forma dikkat et'],
+      ['Squat (Çömelme)', '4', '12', 'Vücut Ağırlığı', '60 sn', 'Dizler dışa doğru']
+    ]
+  },
+  nutrition: {
+    columns: ['Öğün', 'Yemek', 'Miktar', 'Kalori (kcal)', 'Protein (g)', 'Notlar'],
+    rows: [
+      ['Kahvaltı', 'Yulaf & Yumurta', '100g & 3 Adet', '350', '25', 'Süt ile'],
+      ['Öğle', 'Tavuk Göğsü', '200g', '330', '60', 'Izgara']
+    ]
+  },
+  health: {
+    columns: ['Gözlem Günü', 'Tansiyon', 'Nabız (bpm)', 'Uyku (saat)', 'Ağırlık (kg)', 'Hissiyat'],
+    rows: [
+      ['Pazartesi', '120/80', '72', '8', '75.5', 'Enerjik'],
+      ['Salı', '118/75', '68', '7', '75.2', 'Normal']
+    ]
+  },
+  medication: {
+    columns: ['İlaç Adı', 'Dozaj (mg/ml)', 'Sabah', 'Öğle', 'Akşam', 'Tok/Aç'],
+    rows: [
+      ['Vitamin C', '1000mg', '1', '0', '0', 'Tok'],
+      ['Magnezyum', '250mg', '0', '0', '1', 'Gece Tok']
+    ]
+  },
+  general: {
+    columns: ['Görev/Not', 'Durum', 'Öncelik', 'Tarih', 'İlgili Kişi', 'Detay'],
+    rows: [
+      ['Antrenman Planı', 'Bekliyor', 'Yüksek', 'Bugün', 'Kendim', 'Göğüs-Biceps'],
+      ['Doktor Randevusu', 'Tamamlandı', 'Orta', 'Dün', 'Dr. Ali', 'Kan tahlili']
+    ]
+  }
+};
+
 export function useNotes() {
   const { user, activeProfileId } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
@@ -28,23 +66,59 @@ export function useNotes() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [reminderTime, setReminderTime] = useState('');
+  
+  // Checklist State
+  const [checklistItems, setChecklistItems] = useState<{ id: string; text: string; checked: boolean }[]>([]);
 
-  // Auto-fill template for medication category
+  const DEFAULT_TITLES: Record<string, string> = {
+    workout: "Antrenman Notları",
+    nutrition: "Beslenme Günlüğü",
+    health: "Sağlık Gözlemleri",
+    medication: "İçilecek İlaçlar",
+    general: "Yeni Not"
+  };
+
+  // Auto-fill template for categories
   useEffect(() => {
-    if (category === 'medication' && !content.trim() && !editingNoteId) {
-      setContent("### 💊 Günlük İlaç Takibi\n\n**🌅 Sabah**\n- [ ] \n- [ ] \n\n**🌇 Akşam**\n- [ ] \n- [ ] \n");
-      setTitle("Günlük İlaçlarım");
-      setNoteFormat('text');
+    if (!editingNoteId && !content.trim() && checklistItems.length === 0) {
+      const isTitleDefaultOrEmpty = !title.trim() || Object.values(DEFAULT_TITLES).includes(title);
+      
+      if (isTitleDefaultOrEmpty) {
+        setTitle(DEFAULT_TITLES[category] || DEFAULT_TITLES.general);
+        
+        if (category === 'medication') {
+          setNoteFormat('checklist');
+          setChecklistItems([
+            { id: Math.random().toString(36).substring(2, 9), text: "💊 İlaç Adı: Parol | Ne İçin: Baş Ağrısı | Ne Zaman: Sabah", checked: false },
+            { id: Math.random().toString(36).substring(2, 9), text: "💊 İlaç Adı: Magnezyum | Ne İçin: Kas Gevşetici | Ne Zaman: Akşam", checked: false },
+          ]);
+        } else {
+          setNoteFormat('text');
+          setChecklistItems([]);
+        }
+      }
     }
-  }, [category]);
+  }, [category]); // Only trigger on category change
 
   // Spreadsheet Format States
-  const [noteFormat, setNoteFormat] = useState<'text' | 'spreadsheet'>('text');
-  const [sheetColumns, setSheetColumns] = useState<string[]>(['Egzersiz Adı', 'Set', 'Tekrar', 'Ağırlık (kg)', 'Dinlenme', 'Notlar']);
-  const [sheetRows, setSheetRows] = useState<string[][]>([
-    ['Şınav (Pushups)', '4', '15', 'Vücut Ağırlığı', '60 sn', 'Forma dikkat et'],
-    ['Squat (Çömelme)', '4', '12', 'Vücut Ağırlığı', '60 sn', 'Dizler dışa doğru']
-  ]);
+  const [noteFormat, setNoteFormat] = useState<'text' | 'spreadsheet' | 'checklist'>('text');
+  const [sheetColumns, setSheetColumns] = useState<string[]>(DEFAULT_SHEETS.general.columns);
+  const [sheetRows, setSheetRows] = useState<string[][]>(DEFAULT_SHEETS.general.rows);
+
+  // Switch spreadsheet template automatically when category changes
+  useEffect(() => {
+    if (!editingNoteId) {
+      const isCurrentSheetDefault = Object.values(DEFAULT_SHEETS).some(
+        t => JSON.stringify(t.columns) === JSON.stringify(sheetColumns) && JSON.stringify(t.rows) === JSON.stringify(sheetRows)
+      );
+      if (isCurrentSheetDefault) {
+        const template = DEFAULT_SHEETS[category] || DEFAULT_SHEETS.general;
+        setSheetColumns(template.columns);
+        setSheetRows(template.rows);
+      }
+    }
+  }, [category, editingNoteId, sheetColumns, sheetRows]);
 
   // Excel Pro Advanced States
   const [customTemplates, setCustomTemplates] = useState<{ name: string; columns: string[]; rows: string[][] }[]>([]);
@@ -183,6 +257,11 @@ export function useNotes() {
         columns: sheetColumns,
         rows: sheetRows
       });
+    } else if (noteFormat === 'checklist') {
+      finalContent = JSON.stringify({
+        isChecklist: true,
+        items: checklistItems
+      });
     }
 
     const newNote: Note = {
@@ -197,7 +276,8 @@ export function useNotes() {
       mood,
       intensity,
       tags,
-      format: noteFormat
+      format: noteFormat,
+      reminderTime: reminderTime || undefined
     };
 
     // True Optimistic UI Update - anında ekranı günceller
@@ -228,8 +308,10 @@ export function useNotes() {
     setTitle(note.title);
     setCategory(note.category);
     
-    // Check if format is spreadsheet
+    // Check if format is spreadsheet or checklist
     const isSheet = note.format === 'spreadsheet' || note.content.startsWith('{"isSpreadsheet":true');
+    const isChecklist = note.format === 'checklist' || note.content.startsWith('{"isChecklist":true');
+    
     if (isSheet) {
       try {
         const parsed = JSON.parse(note.content);
@@ -241,12 +323,23 @@ export function useNotes() {
         setContent(note.content);
         setNoteFormat('text');
       }
+    } else if (isChecklist) {
+      try {
+        const parsed = JSON.parse(note.content);
+        setChecklistItems(parsed.items || []);
+        setNoteFormat('checklist');
+        setContent('');
+      } catch (e) {
+        setContent(note.content);
+        setNoteFormat('text');
+      }
     } else {
       setContent(note.content);
       setNoteFormat('text');
     }
     
     setDate(note.date);
+    setReminderTime(note.reminderTime || '');
     setMood(note.mood || '😊');
     setIntensity(note.intensity || 'Moderate');
     setTags(note.tags || []);
@@ -288,11 +381,10 @@ export function useNotes() {
     setTags([]);
     setTagInput('');
     setNoteFormat('text');
-    setSheetColumns(['Egzersiz Adı', 'Set', 'Tekrar', 'Ağırlık (kg)', 'Dinlenme', 'Notlar']);
-    setSheetRows([
-      ['Şınav (Pushups)', '4', '15', 'Vücut Ağırlığı', '60 sn', 'Forma dikkat et'],
-      ['Squat (Çömelme)', '4', '12', 'Vücut Ağırlığı', '60 sn', 'Dizler dışa doğru']
-    ]);
+    setChecklistItems([]);
+    setReminderTime('');
+    setSheetColumns(DEFAULT_SHEETS.general.columns);
+    setSheetRows(DEFAULT_SHEETS.general.rows);
     setActiveCell(null);
     setIsSheetFullscreen(false);
   };
@@ -313,6 +405,39 @@ export function useNotes() {
     if (e.key === 'Enter') {
       e.preventDefault();
       handleAddTag();
+    }
+  };
+
+  const handleToggleChecklistItem = async (noteId: string, itemId: string) => {
+    const profileId = activeProfileId || 'local';
+    
+    const noteToUpdate = notes.find(n => n.id === noteId);
+    if (!noteToUpdate) return;
+    
+    try {
+      const parsed = JSON.parse(noteToUpdate.content);
+      if (!parsed.isChecklist) return;
+      
+      const updatedItems = parsed.items.map((item: any) => 
+        item.id === itemId ? { ...item, checked: !item.checked } : item
+      );
+      
+      const updatedNote = {
+        ...noteToUpdate,
+        content: JSON.stringify({ isChecklist: true, items: updatedItems })
+      };
+      
+      // Optimistic update
+      setNotes(prev => prev.map(n => n.id === noteId ? updatedNote : n));
+      
+      // Background save
+      if (user) {
+        firebaseService.saveNote(user.uid, profileId, updatedNote).catch(console.error);
+      } else {
+        storageService.saveNote(updatedNote, profileId);
+      }
+    } catch (e) {
+      console.error("Failed to toggle checklist item", e);
     }
   };
 
@@ -627,6 +752,11 @@ export function useNotes() {
     workoutSheetsCount,
     nutritionCount,
     savedTemplatesCount,
-    getSheetStatistics
+    getSheetStatistics,
+    checklistItems,
+    setChecklistItems,
+    reminderTime,
+    setReminderTime,
+    handleToggleChecklistItem
   };
 }

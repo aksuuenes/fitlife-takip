@@ -348,5 +348,47 @@ export const firebaseService = {
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }
+  },
+
+  getMedicationList: async (userId: string, profileId: string): Promise<{ id: string, name: string, dosage: string }[]> => {
+    const path = `users/${userId}/profiles/${profileId}/medicationConfig/list`;
+    try {
+      const docRef = doc(db, path);
+      const docSnap = await getDoc(docRef);
+      return docSnap.exists() ? (docSnap.data() as { list: { id: string, name: string, dosage: string }[] }).list : [];
+    } catch (error) {
+      handleFirestoreError(error, OperationType.GET, path);
+      return [];
+    }
+  },
+
+  saveMedicationList: async (userId: string, profileId: string, list: { id: string, name: string, dosage: string }[]) => {
+    const path = `users/${userId}/profiles/${profileId}/medicationConfig/list`;
+    try {
+      await withWriteTimeout(setDoc(doc(db, path), { list, lastUpdated: new Date().toISOString() }));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
+  getMedicationLogs: async (userId: string, profileId: string, date: string): Promise<{ [key: string]: boolean }> => {
+    const path = `users/${userId}/profiles/${profileId}/medicationLogs/${date}`;
+    try {
+      const docRef = doc(db, path);
+      const docSnap = await getDoc(docRef);
+      return docSnap.exists() ? (docSnap.data() as { taken: { [key: string]: boolean } }).taken : {};
+    } catch (error) {
+      handleFirestoreError(error, OperationType.GET, path);
+      return {};
+    }
+  },
+
+  updateMedicationLogs: async (userId: string, profileId: string, date: string, taken: { [key: string]: boolean }) => {
+    const path = `users/${userId}/profiles/${profileId}/medicationLogs/${date}`;
+    try {
+      await withWriteTimeout(setDoc(doc(db, path), { taken, lastUpdated: new Date().toISOString() }));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
   }
 };

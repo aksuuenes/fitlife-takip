@@ -81,12 +81,13 @@ export interface Note {
   id: string;
   title: string;
   content: string;
-  category: 'workout' | 'nutrition' | 'health' | 'general';
+  category: 'workout' | 'nutrition' | 'health' | 'general' | 'medication';
   date: string; // YYYY-MM-DD
   createdAt: string; // ISO String
   mood?: string; // Emoji or textual feeling descriptor
   intensity?: string; // Light, Moderate, High, Max
   tags?: string[]; // Custom tags
-  format?: 'text' | 'spreadsheet'; // Spreadsheet or text format
+  format?: 'text' | 'spreadsheet' | 'checklist'; // Spreadsheet, text, or checklist format
+  reminderTime?: string; // HH:mm or full time string
 }
 
