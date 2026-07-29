@@ -200,19 +200,26 @@ export function useNotes() {
       format: noteFormat
     };
 
+    // True Optimistic UI Update - anında ekranı günceller
+    if (editingNoteId) {
+      setNotes(prev => prev.map(n => n.id === editingNoteId ? newNote : n));
+    } else {
+      setNotes(prev => [newNote, ...prev]);
+    }
+    
+    resetForm();
+    setSaving(false);
+
+    // Arka plan senkronizasyonu (Background sync)
     try {
       if (user) {
-        await firebaseService.saveNote(user.uid, profileId, newNote);
+        // await yapmıyoruz, arka planda kendisi kaydetsin
+        firebaseService.saveNote(user.uid, profileId, newNote).catch(console.error);
       } else {
         storageService.saveNote(newNote, profileId);
       }
-      await fetchNotes();
-      resetForm();
     } catch (err) {
-      console.error(err);
-      setError('Not kaydedilirken bir hata oluştu');
-    } finally {
-      setSaving(false);
+      console.error('Not kaydedilirken bir hata oluştu', err);
     }
   };
 
@@ -252,17 +259,20 @@ export function useNotes() {
 
   const handleDelete = async (noteId: string) => {
     const profileId = activeProfileId || 'local';
+    
+    // True Optimistic UI Update - anında ekranı günceller
+    setNotes(prev => prev.filter(n => n.id !== noteId));
+    setDeletingId(null);
+
+    // Arka plan senkronizasyonu
     try {
       if (user) {
-        await firebaseService.deleteNote(user.uid, profileId, noteId);
+        firebaseService.deleteNote(user.uid, profileId, noteId).catch(console.error);
       } else {
         storageService.deleteNote(noteId, profileId);
       }
-      setNotes(prev => prev.filter(n => n.id !== noteId));
-      setDeletingId(null);
     } catch (err) {
-      console.error(err);
-      setError('Not silinirken hata oluştu');
+      console.error('Not silinirken hata oluştu', err);
     }
   };
 
