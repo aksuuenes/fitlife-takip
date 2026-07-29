@@ -484,6 +484,7 @@ export default function Notes() {
       </div>
 
       {/* Slide-over Form Drawer */}
+      <AnimatePresence>
           {isOpenForm && (
             <div className="fixed inset-0 z-40 flex justify-end">
               {/* Overlay */}
@@ -647,7 +648,6 @@ export default function Notes() {
                     </div>
                   </details>
 
-                  </div>
                   <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3">
                     <button
                       type="button"
