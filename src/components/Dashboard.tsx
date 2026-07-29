@@ -89,14 +89,6 @@ export default function Dashboard() {
     activeBmi = parseNumber(latestRecord.bmi);
   }
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-40">
-        <Loader2 className="h-10 w-10 text-blue-605 dark:text-indigo-400 animate-spin mb-4" />
-        <p className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-xs">Verileriniz Getiriliyor...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8">
