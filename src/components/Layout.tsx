@@ -61,7 +61,7 @@ export default function Layout({ children }: LayoutProps) {
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2 ml-auto rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-805 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-emerald-400 hover:bg-indigo-50 dark:hover:bg-slate-850 cursor-pointer transition-all duration-200 shadow-sm shrink-0"
+              className="p-2 ml-auto rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-emerald-400 hover:bg-indigo-50 dark:hover:bg-slate-800 cursor-pointer transition-all duration-200 shadow-sm shrink-0"
               title={theme === 'light' ? 'Koyu Moda Geç' : 'Açık Moda Geç'}
             >
               {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-emerald-400" />}
@@ -275,7 +275,7 @@ export default function Layout({ children }: LayoutProps) {
       </main>
 
       {/* Mobile Nav - Re-designed to be an ultra-sleek, luxurious floating dynamic pill menu */}
-      <div className="md:hidden fixed bottom-6 left-4 right-4 bg-slate-950 dark:bg-slate-900 rounded-[24px] px-4 py-2 flex justify-around items-center border border-slate-800 dark:border-slate-800 shadow-xl z-50">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950 dark:bg-slate-900 rounded-t-[24px] px-4 py-2 flex justify-around items-center border-t border-slate-800 dark:border-slate-800 shadow-xl z-50" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -290,7 +290,7 @@ export default function Layout({ children }: LayoutProps) {
                 <motion.div
                   layoutId="mobileActivePill"
                   className="absolute inset-0 bg-emerald-500/15 rounded-xl border border-emerald-500/10"
-                  transition={{ type: "spring", stiffness: 380, damping: 25 }}
+                  transition={{ type: "tween", duration: 0.15 }}
                 />
               )}
               <item.icon className="h-5 w-5 z-10" />

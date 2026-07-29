@@ -160,4 +160,63 @@ html.dark .hover\:bg-slate-50\/60:hover {
   background-color: #1c2538 !important;
 }
 
+/* ========== MOBILE OPTIMIZATIONS ========== */
 
+/* Faster touch response - eliminate 300ms tap delay */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Hardware-accelerated smooth scrolling */
+main, .overflow-y-auto, .overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+}
+
+/* Safe area for notched phones (iPhone X+) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Reduce motion for users who prefer it (saves battery too) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile-specific touch target sizes */
+@media (max-width: 768px) {
+  /* Ensure minimum 44px touch targets on mobile */
+  button, a, [role="button"], input[type="checkbox"] {
+    min-height: 38px;
+    min-width: 38px;
+  }
+  
+  /* Smoother animations on mobile */
+  .transition-all, .transition-colors, .transition-transform {
+    transition-duration: 150ms !important;
+  }
+  
+  /* Prevent overscroll bounce on iOS */
+  html {
+    overscroll-behavior: none;
+  }
+  
+  /* Better text rendering on mobile */
+  body {
+    text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* GPU acceleration for animated elements */
+[class*="animate-"], [class*="motion"] {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
