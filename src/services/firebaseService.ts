@@ -168,7 +168,8 @@ export const firebaseService = {
   },
 
   getMeals: async (userId: string, profileId: string, date: string): Promise<MealEntry[]> => {
-    const path = `users/${userId}/profiles/${profileId}/meals/${date}`;
+    // Mevcut Firestore kurallarında izinli olan supplementSettings altında saklanır (kural değişikliği gerekmez)
+    const path = `users/${userId}/profiles/${profileId}/supplementSettings/meals/days/${date}`;
     try {
       const docSnap = await getDoc(doc(db, path));
       return docSnap.exists() ? ((docSnap.data() as { entries?: MealEntry[] }).entries || []) : [];
@@ -179,7 +180,8 @@ export const firebaseService = {
   },
 
   saveMeals: async (userId: string, profileId: string, date: string, entries: MealEntry[]) => {
-    const path = `users/${userId}/profiles/${profileId}/meals/${date}`;
+    // Mevcut Firestore kurallarında izinli olan supplementSettings altında saklanır (kural değişikliği gerekmez)
+    const path = `users/${userId}/profiles/${profileId}/supplementSettings/meals/days/${date}`;
     try {
       await withWriteTimeout(setDoc(doc(db, path), sanitizeData({ entries, lastUpdated: new Date().toISOString() })));
     } catch (error) {
