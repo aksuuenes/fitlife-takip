@@ -13,7 +13,7 @@ import {
   deleteDoc
 } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
-import { HealthRecord, UserProfile, Note } from '../types';
+import { HealthRecord, UserProfile, Note, MealEntry } from '../types';
 
 const TIMEOUT_MS = 2000;
 
@@ -162,6 +162,28 @@ export const firebaseService = {
     const path = `users/${userId}/profiles/${profileId}/water/${date}`;
     try {
       await withWriteTimeout(setDoc(doc(db, path), { amount, lastUpdated: new Date().toISOString() }));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
+  getMeals: async (userId: string, profileId: string, date: string): Promise<MealEntry[]> => {
+    // Mevcut Firestore kurallarında izinli olan supplementSettings altında saklanır (kural değişikliği gerekmez)
+    const path = `users/${userId}/profiles/${profileId}/supplementSettings/meals/days/${date}`;
+    try {
+      const docSnap = await getDoc(doc(db, path));
+      return docSnap.exists() ? ((docSnap.data() as { entries?: MealEntry[] }).entries || []) : [];
+    } catch (error) {
+      handleFirestoreError(error, OperationType.GET, path);
+      return [];
+    }
+  },
+
+  saveMeals: async (userId: string, profileId: string, date: string, entries: MealEntry[]) => {
+    // Mevcut Firestore kurallarında izinli olan supplementSettings altında saklanır (kural değişikliği gerekmez)
+    const path = `users/${userId}/profiles/${profileId}/supplementSettings/meals/days/${date}`;
+    try {
+      await withWriteTimeout(setDoc(doc(db, path), sanitizeData({ entries, lastUpdated: new Date().toISOString() })));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }

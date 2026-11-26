@@ -20,6 +20,7 @@ const History = lazy(() => import('./components/History'));
 const Workout = lazy(() => import('./components/Workout'));
 const WorkoutSelection = lazy(() => import('./components/WorkoutSelection'));
 const Notes = lazy(() => import('./components/Notes'));
+const Nutrition = lazy(() => import('./components/Nutrition'));
 const MenstrualCycle = lazy(() => import('./components/MenstrualCycle'));
 import AuthGate from './components/AuthGate';
 
@@ -98,6 +99,7 @@ function AppContent() {
                   <Route path="/history" element={<History />} />
                   <Route path="/workout" element={<WorkoutSelection />} />
                   <Route path="/notes" element={<Notes />} />
+                  <Route path="/nutrition" element={<Nutrition />} />
                   <Route path="/cycle" element={<MenstrualCycle />} />
                 </Routes>
               </Suspense>

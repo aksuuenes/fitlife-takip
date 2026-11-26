@@ -12,34 +12,42 @@ export default defineConfig(({mode}) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon.svg', 'icon-maskable.svg'],
+        includeAssets: ['icon.svg', 'icon-maskable.svg', 'apple-touch-icon.png'],
         manifest: {
-          name: 'FitLife Takip & Sağlık Platformu',
+          id: '/',
+          name: 'FitLife',
+          lang: 'tr',
           short_name: 'FitLife',
           description: 'Yapay Zeka Destekli Sağlık, Egzersiz, Fitness ve Yaşamsal Metrik Takip Platformu',
-          theme_color: '#4f46e5',
+          theme_color: '#030712',
           background_color: '#030712',
           display: 'standalone',
           orientation: 'portrait-primary',
           start_url: '/',
           icons: [
-            {
-              src: '/icon.svg',
-              sizes: '192x192 512x512',
-              type: 'image/svg+xml',
-              purpose: 'any'
-            },
-            {
-              src: '/icon-maskable.svg',
-              sizes: '192x192 512x512',
-              type: 'image/svg+xml',
-              purpose: 'maskable'
-            }
+            { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: '/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+            { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }
           ]
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest,json}'],
+          globIgnores: ['**/splash/**', '**/images/**'],
+          runtimeCaching: [
+            {
+              urlPattern: ({ url }) => url.pathname.startsWith('/images/'),
+              handler: 'CacheFirst',
+              options: { cacheName: 'exercise-images', expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 60 } },
+            },
+            {
+              urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com',
+              handler: 'StaleWhileRevalidate',
+              options: { cacheName: 'google-fonts' },
+            },
+          ],
           navigateFallback: '/index.html',
+          navigateFallbackDenylist: [/^\/api\//],
           maximumFileSizeToCacheInBytes: 5000000
         },
         devOptions: {
@@ -47,16 +55,13 @@ export default defineConfig(({mode}) => {
         }
       })
     ],
-    define: {
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-    },
     build: {
       rollupOptions: {
         output: {
           manualChunks: {
             'vendor-react': ['react', 'react-dom', 'react-router-dom'],
             'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-            'vendor-ui': ['motion/react', 'lucide-react', 'recharts'],
+            'vendor-ui': ['motion/react', 'lucide-react'],
           }
         }
       }

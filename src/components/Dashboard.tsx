@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Plus, Info, Play, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { storageService } from '../services/storageService';
@@ -15,6 +14,7 @@ import MedicationTracker from './MedicationTracker';
 import WorkoutCalendar from './WorkoutCalendar';
 
 import { parseNumber, getBMIStatus } from '../lib/utils';
+const WeightChart = lazy(() => import('./WeightChart'));
 
 export default function Dashboard() {
   const { user, profile, activeProfileId, currentProfile, switchProfile } = useAuth();
@@ -107,10 +107,10 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100 dark:border-slate-900/60">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 pb-4 md:pb-6 border-b border-slate-100 dark:border-slate-900/60">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-[22px] md:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                Hoş Geldin, {currentProfile?.name || profile?.displayName?.split(' ')[0] || user?.displayName?.split(' ')[0] || 'Sporcu'} 👋
             </h1>
             {profile?.profiles && profile.profiles.length > 1 && (
@@ -119,7 +119,7 @@ export default function Dashboard() {
               </span>
             )}
           </div>
-          <p className="text-slate-500 dark:text-slate-400 font-medium italic">Haftalık ilerleme raporun ve AI analizlerin burada.</p>
+          <p className="hidden md:block text-slate-500 dark:text-slate-400 font-medium italic">Haftalık ilerleme raporun ve AI analizlerin burada.</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
@@ -142,17 +142,17 @@ export default function Dashboard() {
             </div>
           )}
           
-          <div className="flex gap-2">
+          <div className="grid grid-cols-2 md:flex gap-2 w-full md:w-auto">
             <Link 
               to="/workout" 
-              className="px-4 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 rounded-lg text-sm font-bold shadow-xl dark:shadow-none hover:bg-slate-800 dark:hover:bg-slate-200 transition-all flex items-center group h-10 cursor-pointer"
+              className="px-4 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 rounded-lg text-sm font-bold shadow-xl dark:shadow-none hover:bg-slate-800 dark:hover:bg-slate-200 transition-all flex items-center justify-center group h-11 md:h-10 rounded-xl md:rounded-lg cursor-pointer"
             >
               <Play className="mr-2 h-4 w-4 fill-current group-hover:scale-110 transition-transform" />
               Spora Başla
             </Link>
             <Link 
               to="/add" 
-              className="px-4 py-2 bg-blue-600 dark:bg-indigo-600 text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-blue-700 dark:hover:bg-indigo-700 transition-colors flex items-center h-10 cursor-pointer"
+              className="px-4 py-2 bg-blue-600 dark:bg-indigo-600 text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-blue-700 dark:hover:bg-indigo-700 transition-colors flex items-center justify-center h-11 md:h-10 rounded-xl md:rounded-lg cursor-pointer"
             >
               <Plus className="mr-2 h-4 w-4" />
               Yeni Giriş
@@ -162,7 +162,7 @@ export default function Dashboard() {
       </header>
 
       {/* Metric Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.01] hover:shadow-md dark:shadow-none duration-200">
           <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold mb-1.5 block">BOY</div>
           <div className="text-3xl font-display font-black text-slate-900 dark:text-white flex items-baseline gap-1">
@@ -188,7 +188,7 @@ export default function Dashboard() {
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.01] hover:shadow-md dark:shadow-none duration-200">
-          <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold mb-1.5 block">VÜCUT KİTLE İNDEKSİ (BMI)</div>
+          <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold mb-1.5 block"><span className="hidden md:inline">VÜCUT KİTLE İNDEKSİ </span>BMI</div>
           <div className="text-3xl font-display font-black text-slate-900 dark:text-white">{activeBmi ? activeBmi.toFixed(1) : '--'}</div>
           {activeBmi && (() => {
             const status = getBMIStatus(activeBmi);
@@ -207,7 +207,7 @@ export default function Dashboard() {
         </div>
 
         <div className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.01] hover:shadow-md dark:shadow-none duration-200 ${latestRecord?.injuries ? 'ring-2 ring-amber-500/20 shadow-amber-50 dark:ring-amber-500/20' : ''}`}>
-          <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold mb-1.5 block">FİZİKSEL DURUM</div>
+          <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold mb-1.5 block">DURUM</div>
           <div className={`text-lg font-display font-black ${latestRecord?.injuries ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-slate-100'}`}>
             {latestRecord?.injuries ? 'Sakatlık/Hassasiyet ⚠️' : 'Tamamen Aktif ⚡'}
           </div>
@@ -251,44 +251,9 @@ export default function Dashboard() {
           </div>
           <div className="flex-1 w-full">
             {records.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#1e293b' : '#f8fafc'} />
-                  <XAxis 
-                    dataKey="date" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{fontSize: 10, fill: theme === 'dark' ? '#94a3b8' : '#64748b', fontWeight: '700', textTransform: 'uppercase'}} 
-                  />
-                  <YAxis hide={true} domain={['dataMin - 3', 'dataMax + 3']} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      borderRadius: '16px', 
-                      border: theme === 'dark' ? '1px solid #334155' : '1px solid #f1f5f9', 
-                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', 
-                      fontSize: '13px', 
-                      fontFamily: 'Plus Jakarta Sans', 
-                      backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff'
-                    }}
-                    labelStyle={{ fontWeight: 'bold', color: theme === 'dark' ? '#f1f5f9' : '#0f172a' }}
-                    itemStyle={{ color: theme === 'dark' ? '#94a3b8' : '#0f172a' }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="weight" 
-                    stroke="#4f46e5" 
-                    strokeWidth={3}
-                    fillOpacity={1} 
-                    fill="url(#colorWeight)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <Suspense fallback={<div className="h-full rounded-2xl bg-slate-50/50 dark:bg-slate-950/30 animate-pulse" />}>
+                <WeightChart chartData={chartData} theme={theme} />
+              </Suspense>
             ) : (
               <div className="h-full flex items-center justify-center text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-slate-950/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
                 <div className="text-center p-6">

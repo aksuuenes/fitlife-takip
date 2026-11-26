@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, User as UserIcon, ClipboardList, BarChart3, Settings, Calendar, Users, Loader2, Trash2, Sun, Moon, StickyNote, LogOut, Droplets } from 'lucide-react';
+import { Activity, User as UserIcon, ClipboardList, BarChart3, Settings, Calendar, Users, Loader2, Trash2, Sun, Moon, StickyNote, LogOut, Droplets, Salad, Plus, Menu, X, ChevronRight, Home } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -27,10 +27,12 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   const navItems = [
     { name: 'Kontrol Paneli', path: '/', icon: Activity },
     { name: 'Kayıt Ekle', path: '/add', icon: ClipboardList },
+    { name: 'Beslenme', path: '/nutrition', icon: Salad },
     { name: 'Notlar', path: '/notes', icon: StickyNote },
     { name: 'Döngü', path: '/cycle', icon: Droplets },
     { name: 'Geçmiş', path: '/history', icon: Calendar },
@@ -38,8 +40,27 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Profil', path: '/profile', icon: UserIcon },
   ];
 
+  // Mobil alt sekme çubuğu: 4 sekme + ortada büyük "+" butonu
+  const mobileTabs = [
+    { name: 'Ana Sayfa', path: '/', icon: Home },
+    { name: 'Beslenme', path: '/nutrition', icon: Salad },
+    { name: 'Analiz', path: '/analysis', icon: BarChart3 },
+  ];
+  const moreItems = [
+    { name: 'Notlar', path: '/notes', icon: StickyNote },
+    { name: 'Döngü', path: '/cycle', icon: Droplets },
+    { name: 'Geçmiş', path: '/history', icon: Calendar },
+    { name: 'Profil', path: '/profile', icon: UserIcon },
+  ];
+  const pageTitles: Record<string, string> = {
+    '/': 'FitLife', '/add': 'Kayıt Ekle', '/nutrition': 'Beslenme', '/notes': 'Notlar', '/cycle': 'Döngü',
+    '/history': 'Geçmiş', '/analysis': 'Analizler', '/profile': 'Profil', '/workout': 'Antrenman',
+  };
+  const pageTitle = pageTitles[location.pathname] || 'FitLife';
+  const isMoreActive = moreItems.some(i => i.path === location.pathname);
+
   return (
-    <div className="h-screen flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-200">
+    <div className="h-[100dvh] flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-200">
       {/* Sidebar Navigation */}
       <aside className="hidden md:flex w-72 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex-col shrink-0 transition-colors duration-200 relative">
         {/* Subtle decorative futuristic edge lights */}
@@ -240,65 +261,122 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col p-5 md:p-10 overflow-y-auto">
-        {/* Mobile Top Header (Visible only on mobile) */}
-        <div className="md:hidden flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-900 transition-colors duration-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-tr from-blue-600 via-indigo-600 to-indigo-700 rounded-xl flex items-center justify-center text-white font-display font-black italic shadow-md">
-              F
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
+        {/* Mobil üst çubuk: durum çubuğunun altında kalır */}
+        <header
+          className="md:hidden shrink-0 z-40 bg-slate-50/85 dark:bg-slate-950/85 backdrop-blur-xl border-b border-slate-100/80 dark:border-slate-900"
+          style={{ paddingTop: 'env(safe-area-inset-top)' }}
+        >
+          <div className="h-12 px-4 flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 shrink-0 bg-gradient-to-tr from-emerald-500 via-indigo-600 to-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-display font-black italic">
+                F
+              </div>
+              <span className="font-display font-black text-[17px] tracking-tight text-slate-900 dark:text-white truncate">{pageTitle}</span>
             </div>
-            <div>
-              <span className="font-display font-black text-base tracking-tight text-slate-900 dark:text-white">FitLife</span>
-              <span className="text-[8px] font-mono tracking-widest text-[#10b981] dark:text-emerald-400 font-extrabold block -mt-1 uppercase animate-pulse">Wellness AI</span>
-            </div>
+            <button
+              onClick={toggleTheme}
+              className="app-icon-btn w-9 h-9 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400 active:bg-slate-200/60 dark:active:bg-slate-800"
+              aria-label="Tema değiştir"
+            >
+              {theme === 'light' ? <Moon className="h-[18px] w-[18px]" /> : <Sun className="h-[18px] w-[18px] text-emerald-400" />}
+            </button>
           </div>
+        </header>
+
+        <main className="app-main flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 pt-4 md:p-10">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="max-w-[1400px] mx-auto w-full md:pb-0"
+              style={{ paddingBottom: 'calc(88px + env(safe-area-inset-bottom))' }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+
+      {/* Mobil alt sekme çubuğu */}
+      <nav
+        className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200/70 dark:border-slate-800"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <div className="h-[60px] grid grid-cols-5 items-center">
+          <TabLink item={mobileTabs[0]} active={location.pathname === mobileTabs[0].path} />
+          <TabLink item={mobileTabs[1]} active={location.pathname === mobileTabs[1].path} />
+          <div className="flex justify-center">
+            <Link
+              to="/add"
+              aria-label="Kayıt Ekle"
+              className={`app-icon-btn w-12 h-12 -mt-5 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 bg-gradient-to-tr from-emerald-500 to-teal-400 active:scale-95 transition-transform ${location.pathname === '/add' ? 'ring-4 ring-emerald-500/25' : ''}`}
+            >
+              <Plus className="w-6 h-6" strokeWidth={2.75} />
+            </Link>
+          </div>
+          <TabLink item={mobileTabs[2]} active={location.pathname === mobileTabs[2].path} />
           <button
-            onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-emerald-400 transition-all duration-200 cursor-pointer"
+            onClick={() => setMoreOpen(true)}
+            className={`app-icon-btn flex flex-col items-center justify-center gap-0.5 h-full ${isMoreActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`}
           >
-            {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-emerald-400" />}
+            <Menu className="w-[22px] h-[22px]" strokeWidth={isMoreActive ? 2.5 : 2} />
+            <span className="text-[10px] font-bold">Daha Fazla</span>
           </button>
         </div>
+      </nav>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="max-w-[1400px] mx-auto w-full pb-24 md:pb-0"
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-
-      {/* Mobile Nav - Re-designed to be an ultra-sleek, luxurious floating dynamic pill menu */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950 dark:bg-slate-900 rounded-t-[24px] px-4 py-2 flex justify-around items-center border-t border-slate-800 dark:border-slate-800 shadow-xl z-50" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex flex-col items-center p-2 rounded-2xl transition-all relative ${
-                isActive ? 'text-emerald-400 scale-105 font-bold' : 'text-slate-400 hover:text-slate-350'
-              }`}
+      {/* "Daha Fazla" alt sayfası */}
+      <AnimatePresence>
+        {moreOpen && (
+          <motion.div className="md:hidden fixed inset-0 z-[60] flex items-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <div className="absolute inset-0 bg-slate-950/50" onClick={() => setMoreOpen(false)} />
+            <motion.div
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 340 }}
+              className="relative w-full bg-white dark:bg-slate-900 rounded-t-[28px] px-4 pt-3"
+              style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="mobileActivePill"
-                  className="absolute inset-0 bg-emerald-500/15 rounded-xl border border-emerald-500/10"
-                  transition={{ type: "tween", duration: 0.15 }}
-                />
+              <div className="w-10 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 mx-auto mb-3" />
+              <div className="flex items-center justify-between mb-2 px-1">
+                <h2 className="font-display font-black text-lg text-slate-900 dark:text-white">Daha Fazla</h2>
+                <button onClick={() => setMoreOpen(false)} className="app-icon-btn w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500" aria-label="Kapat">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="rounded-2xl bg-slate-50 dark:bg-slate-950/60 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden">
+                {moreItems.map(item => (
+                  <Link key={item.path} to={item.path} onClick={() => setMoreOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3.5 active:bg-slate-100 dark:active:bg-slate-800">
+                    <item.icon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="flex-1 text-[15px] font-bold text-slate-800 dark:text-slate-100">{item.name}</span>
+                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                  </Link>
+                ))}
+              </div>
+              {user && (
+                <button onClick={() => { setMoreOpen(false); logout(); }}
+                  className="mt-3 w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold text-[15px]">
+                  <LogOut className="w-4 h-4" /> Çıkış Yap
+                </button>
               )}
-              <item.icon className="h-5 w-5 z-10" />
-              <span className="text-[9px] mt-1 font-bold tracking-tight z-10">{item.name}</span>
-            </Link>
-          );
-        })}
-      </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+function TabLink({ item, active }: { item: { name: string; path: string; icon: React.ElementType }; active: boolean }) {
+  const Icon = item.icon;
+  return (
+    <Link to={item.path} className={`app-icon-btn flex flex-col items-center justify-center gap-0.5 h-full ${active ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`}>
+      <Icon className="w-[22px] h-[22px]" strokeWidth={active ? 2.5 : 2} />
+      <span className="text-[10px] font-bold">{item.name}</span>
+    </Link>
   );
 }
