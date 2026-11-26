@@ -108,3 +108,15 @@ export function resizeImage(file: File, maxSize = 1024, quality = 0.8): Promise<
     img.src = url;
   });
 }
+
+let aiStatus: Promise<boolean> | null = null;
+// Sunucuda Claude anahtarı tanımlı mı? (bir kez sorulur, hata olursa kapalı sayılır)
+export function isAIEnabled(): Promise<boolean> {
+  if (!aiStatus) {
+    aiStatus = fetch('/api/ai', { method: 'GET' })
+      .then(r => (r.ok ? r.json() : { enabled: false }))
+      .then(d => !!d?.enabled)
+      .catch(() => false);
+  }
+  return aiStatus;
+}

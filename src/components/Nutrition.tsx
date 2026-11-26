@@ -6,7 +6,7 @@ import { storageService } from '../services/storageService';
 import { useAuth } from '../contexts/AuthContext';
 import { MealEntry, MealType } from '../types';
 import { FoodItem, FOOD_CATEGORY_LABELS, FoodCategory, TURKISH_FOODS, searchFoods } from '../lib/turkishFoods';
-import { analyzeFoodPhoto, resizeImage, PhotoFoodItem } from '../services/aiService';
+import { analyzeFoodPhoto, resizeImage, PhotoFoodItem, isAIEnabled } from '../services/aiService';
 
 const MEALS: { type: MealType; label: string; icon: React.ElementType; tint: string }[] = [
   { type: 'breakfast', label: 'Kahvaltı', icon: Sun, tint: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' },
@@ -362,6 +362,8 @@ type NewEntry = Omit<MealEntry, 'id' | 'createdAt'>;
 
 function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onClose: () => void; onAdd: (e: NewEntry) => void; onAddMany: (e: NewEntry[]) => void }) {
   const [tab, setTab] = useState<'search' | 'photo' | 'custom'>('search');
+  const [photoEnabled, setPhotoEnabled] = useState(false);
+  useEffect(() => { isAIEnabled().then(setPhotoEnabled); }, []);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<FoodCategory | 'all'>('all');
   const [selected, setSelected] = useState<FoodItem | null>(null);
@@ -407,7 +409,7 @@ function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onC
         </div>
 
         <div className="px-5 flex gap-1 mb-3">
-          {(['search', 'photo', 'custom'] as const).map(t => (
+          {(photoEnabled ? (['search', 'photo', 'custom'] as const) : (['search', 'custom'] as const)).map(t => (
             <button key={t} onClick={() => { setTab(t); setSelected(null); }}
               className={`flex-1 py-2 rounded-xl text-xs font-black transition-colors ${tab === t ? 'bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
               {t === 'search' ? 'Listeden' : t === 'photo' ? '📷 Fotoğraf' : 'Elle gir'}
@@ -489,7 +491,7 @@ function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onC
           </div>
         )}
 
-        {tab === 'photo' && <PhotoTab meal={meal} onAddMany={onAddMany} />}
+        {tab === 'photo' && photoEnabled && <PhotoTab meal={meal} onAddMany={onAddMany} />}
 
         {tab === 'custom' && (
           <div className="px-5 pb-5 space-y-3 overflow-y-auto">

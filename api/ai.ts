@@ -149,6 +149,8 @@ Not: kcal/protein/carbs/fat değerleri TOPLAM değerlerdir (servings dahil).`;
 
 export default async function handler(req: Req, res: Res) {
   res.setHeader('Cache-Control', 'no-store');
+  // GET: yapay zeka özelliklerinin açık olup olmadığını bildirir (anahtar yoksa arayüz gizler)
+  if (req.method === 'GET') return res.status(200).json({ enabled: !!process.env.ANTHROPIC_API_KEY });
   if (req.method !== 'POST') return res.status(405).json({ error: 'Yalnızca POST' });
   if (!originAllowed(req)) return res.status(403).json({ error: 'İzin verilmeyen kaynak' });
 
