@@ -70,6 +70,10 @@ service cloud.firestore {
           allow read, write: if isOwner(userId);
         }
 
+        match /meals/{date} {
+          allow read, write: if isOwner(userId);
+        }
+
         match /workouts/{date} {
           allow read: if isOwner(userId);
           allow create, update: if isOwner(userId) && isValidWorkoutStatus(incoming());

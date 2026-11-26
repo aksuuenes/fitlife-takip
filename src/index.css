@@ -220,3 +220,6 @@ main, .overflow-y-auto, .overflow-x-auto {
   transform: translateZ(0);
   backface-visibility: hidden;
 }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }

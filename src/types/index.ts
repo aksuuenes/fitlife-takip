@@ -91,3 +91,19 @@ export interface Note {
   reminderTime?: string; // HH:mm or full time string
 }
 
+
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
+export interface MealEntry {
+  id: string;
+  meal: MealType;
+  foodId?: string; // veritabanından seçildiyse
+  name: string;
+  portion: string;
+  servings: number; // porsiyon çarpanı
+  kcal: number; // toplam (servings dahil)
+  protein: number;
+  carbs: number;
+  fat: number;
+  createdAt: string;
+}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, User as UserIcon, ClipboardList, BarChart3, Settings, Calendar, Users, Loader2, Trash2, Sun, Moon, StickyNote, LogOut, Droplets } from 'lucide-react';
+import { Activity, User as UserIcon, ClipboardList, BarChart3, Settings, Calendar, Users, Loader2, Trash2, Sun, Moon, StickyNote, LogOut, Droplets, Salad } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -31,6 +31,7 @@ export default function Layout({ children }: LayoutProps) {
   const navItems = [
     { name: 'Kontrol Paneli', path: '/', icon: Activity },
     { name: 'Kayıt Ekle', path: '/add', icon: ClipboardList },
+    { name: 'Beslenme', path: '/nutrition', icon: Salad },
     { name: 'Notlar', path: '/notes', icon: StickyNote },
     { name: 'Döngü', path: '/cycle', icon: Droplets },
     { name: 'Geçmiş', path: '/history', icon: Calendar },
@@ -275,14 +276,14 @@ export default function Layout({ children }: LayoutProps) {
       </main>
 
       {/* Mobile Nav - Re-designed to be an ultra-sleek, luxurious floating dynamic pill menu */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950 dark:bg-slate-900 rounded-t-[24px] px-4 py-2 flex justify-around items-center border-t border-slate-800 dark:border-slate-800 shadow-xl z-50" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950 dark:bg-slate-900 rounded-t-[24px] px-1.5 py-2 flex justify-around items-center border-t border-slate-800 dark:border-slate-800 shadow-xl z-50" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center p-2 rounded-2xl transition-all relative ${
+              className={`flex flex-col items-center px-1.5 py-2 rounded-2xl transition-all relative ${
                 isActive ? 'text-emerald-400 scale-105 font-bold' : 'text-slate-400 hover:text-slate-350'
               }`}
             >

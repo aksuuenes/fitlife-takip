@@ -1,10 +1,11 @@
-import { HealthRecord, UserProfile, Note } from '../types';
+import { HealthRecord, UserProfile, Note, MealEntry } from '../types';
 
 // Mock/LocalStorage Fallback Service
 const STORAGE_KEY_RECORDS = 'fitlife_records';
 const STORAGE_KEY_PROFILE = 'fitlife_profile';
 const STORAGE_KEY_WATER = 'fitlife_water';
 const STORAGE_KEY_WORKOUT = 'fitlife_workout';
+const STORAGE_KEY_MEALS = 'fitlife_meals';
 
 export const storageService = {
   getRecords: (profileId: string = 'local'): HealthRecord[] => {
@@ -32,6 +33,19 @@ export const storageService = {
   },
   saveProfile: (profile: UserProfile) => {
     localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profile));
+  },
+  getMeals: (date: string, profileId: string = 'local'): MealEntry[] => {
+    const key = `${STORAGE_KEY_MEALS}_${profileId}`;
+    let all: Record<string, MealEntry[]> = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
+    return all[date] || [];
+  },
+  saveMeals: (date: string, entries: MealEntry[], profileId: string = 'local') => {
+    const key = `${STORAGE_KEY_MEALS}_${profileId}`;
+    let all: Record<string, MealEntry[]> = {};
+    try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
+    all[date] = entries;
+    localStorage.setItem(key, JSON.stringify(all));
   },
   getWaterIntake: (date: string, profileId: string = 'local'): number => {
     const key = `${STORAGE_KEY_WATER}_${profileId}`;
