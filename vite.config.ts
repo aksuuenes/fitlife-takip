@@ -33,7 +33,19 @@ export default defineConfig(({mode}) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest,json}'],
-          globIgnores: ['**/splash/**'],
+          globIgnores: ['**/splash/**', '**/images/**'],
+          runtimeCaching: [
+            {
+              urlPattern: ({ url }) => url.pathname.startsWith('/images/'),
+              handler: 'CacheFirst',
+              options: { cacheName: 'exercise-images', expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 60 } },
+            },
+            {
+              urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com',
+              handler: 'StaleWhileRevalidate',
+              options: { cacheName: 'google-fonts' },
+            },
+          ],
           navigateFallback: '/index.html',
           navigateFallbackDenylist: [/^\/api\//],
           maximumFileSizeToCacheInBytes: 5000000
@@ -49,7 +61,7 @@ export default defineConfig(({mode}) => {
           manualChunks: {
             'vendor-react': ['react', 'react-dom', 'react-router-dom'],
             'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-            'vendor-ui': ['motion/react', 'lucide-react', 'recharts'],
+            'vendor-ui': ['motion/react', 'lucide-react'],
           }
         }
       }

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Plus, Info, Play, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { storageService } from '../services/storageService';
@@ -15,6 +14,7 @@ import MedicationTracker from './MedicationTracker';
 import WorkoutCalendar from './WorkoutCalendar';
 
 import { parseNumber, getBMIStatus } from '../lib/utils';
+const WeightChart = lazy(() => import('./WeightChart'));
 
 export default function Dashboard() {
   const { user, profile, activeProfileId, currentProfile, switchProfile } = useAuth();
@@ -251,44 +251,9 @@ export default function Dashboard() {
           </div>
           <div className="flex-1 w-full">
             {records.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#1e293b' : '#f8fafc'} />
-                  <XAxis 
-                    dataKey="date" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{fontSize: 10, fill: theme === 'dark' ? '#94a3b8' : '#64748b', fontWeight: '700', textTransform: 'uppercase'}} 
-                  />
-                  <YAxis hide={true} domain={['dataMin - 3', 'dataMax + 3']} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      borderRadius: '16px', 
-                      border: theme === 'dark' ? '1px solid #334155' : '1px solid #f1f5f9', 
-                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', 
-                      fontSize: '13px', 
-                      fontFamily: 'Plus Jakarta Sans', 
-                      backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff'
-                    }}
-                    labelStyle={{ fontWeight: 'bold', color: theme === 'dark' ? '#f1f5f9' : '#0f172a' }}
-                    itemStyle={{ color: theme === 'dark' ? '#94a3b8' : '#0f172a' }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="weight" 
-                    stroke="#4f46e5" 
-                    strokeWidth={3}
-                    fillOpacity={1} 
-                    fill="url(#colorWeight)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <Suspense fallback={<div className="h-full rounded-2xl bg-slate-50/50 dark:bg-slate-950/30 animate-pulse" />}>
+                <WeightChart chartData={chartData} theme={theme} />
+              </Suspense>
             ) : (
               <div className="h-full flex items-center justify-center text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-slate-950/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
                 <div className="text-center p-6">

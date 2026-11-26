@@ -4,6 +4,7 @@ import { app } from '../firebase';
 
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache(),
-  experimentalForceLongPolling: true
+  // Otomatik algılama: normal ağlarda hızlı WebChannel, gerekirse long-polling
+  experimentalAutoDetectLongPolling: true
 });
 export const auth = getAuth(app);
