@@ -174,11 +174,8 @@ main, .overflow-y-auto, .overflow-x-auto {
 }
 
 /* Safe area for notched phones (iPhone X+) */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  body {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-}
+/* Güvenli alanlar (çentik / ana ekran çizgisi) Layout'taki üst ve alt çubuklarda ele alınıyor */
+html, body { height: 100%; -webkit-text-size-adjust: 100%; }
 
 /* Reduce motion for users who prefer it (saves battery too) */
 @media (prefers-reduced-motion: reduce) {
@@ -223,3 +220,30 @@ main, .overflow-y-auto, .overflow-x-auto {
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
+
+/* ========== MOBİL UYGULAMA GÖRÜNÜMÜ ========== */
+@media (max-width: 767px) {
+  body { overflow: hidden; overscroll-behavior: none; }
+
+  /* iOS'ta inputa dokununca sayfanın yakınlaşmasını engeller */
+  input, select, textarea { font-size: 16px !important; }
+
+  /* Alt/üst çubuk butonlarında genel 38px kuralını uygulama */
+  .app-icon-btn { min-height: 0; min-width: 0; }
+
+  /* Sayfa içeriğini telefon ekranına göre sıkılaştır */
+  .app-main .space-y-8 > :not(:last-child) { margin-block-start: 0; margin-block-end: 1.25rem; }
+  .app-main .space-y-6 > :not(:last-child) { margin-block-start: 0; margin-block-end: 1rem; }
+  .app-main .gap-8 { gap: 1rem; }
+  .app-main .gap-6 { gap: 0.75rem; }
+  .app-main .p-8 { padding: 1.125rem; }
+  .app-main .p-6 { padding: 1rem; }
+  .app-main .p-12 { padding: 1.5rem; }
+  .app-main .rounded-3xl { border-radius: 1.25rem; }
+  .app-main .text-5xl { font-size: 2rem; line-height: 1.1; }
+  .app-main .text-4xl { font-size: 1.75rem; line-height: 1.15; }
+  .app-main .text-3xl { font-size: 1.5rem; line-height: 1.2; }
+  .app-main .pb-6 { padding-bottom: 1rem; }
+  .app-main .mb-8 { margin-bottom: 1.25rem; }
+  .app-main .mb-6 { margin-bottom: 1rem; }
+}

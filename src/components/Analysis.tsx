@@ -65,6 +65,14 @@ export default function Analysis() {
     setLoading(false);
   };
 
+  const chartData = React.useMemo(() => records.map(r => ({
+    date: new Date(r.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
+    weight: r.weight,
+    bmi: parseFloat(String(r.bmi)),
+    sleep: r.sleepQuality || 0,
+    hours: r.sleepHours || 0
+  })).slice(-7), [records]);
+
   if (fetching) {
     return (
       <div className="flex flex-col items-center justify-center py-40">
@@ -90,13 +98,6 @@ export default function Analysis() {
     }
   };
 
-  const chartData = React.useMemo(() => records.map(r => ({
-    date: new Date(r.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
-    weight: r.weight,
-    bmi: parseFloat(String(r.bmi)),
-    sleep: r.sleepQuality || 0,
-    hours: r.sleepHours || 0
-  })).slice(-7), [records]);
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto pb-12">
