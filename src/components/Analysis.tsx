@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Sparkles, Brain, Loader2, Calendar, TrendingUp, TrendingDown, Target, Zap, Heart, ShieldAlert, CheckCircle2, AreaChart as ChartIcon } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { firebaseService } from '../services/firebaseService';
-import { analyzeHealthData } from '../services/geminiService';
+import { analyzeHealthData } from '../services/aiService';
 import { HealthRecord } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
@@ -279,7 +279,7 @@ export default function Analysis() {
                           <Brain className="h-8 w-8 text-indigo-950 dark:text-indigo-200 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                         </div>
                         <h3 className="text-slate-900 dark:text-white text-lg font-display font-black mt-8 tracking-tight animate-pulse">Veriler Analiz Ediliyor...</h3>
-                        <p className="text-slate-400 dark:text-slate-500 text-xs mt-2 italic font-medium">Gemini Wellness AI motoru sağlık profilinizi optimize ediyor.</p>
+                        <p className="text-slate-400 dark:text-slate-500 text-xs mt-2 italic font-medium">Claude yapay zekası sağlık profilinizi optimize ediyor.</p>
                       </motion.div>
                     )}
 

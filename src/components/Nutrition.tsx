@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Salad, Sun, Soup, Moon, Apple, Plus, Minus, X, Search, Trash2, ChevronLeft, ChevronRight, Loader2, Pencil, Target, Check } from 'lucide-react';
+import { Salad, Sun, Soup, Moon, Apple, Plus, Minus, X, Search, Trash2, ChevronLeft, ChevronRight, Loader2, Pencil, Target, Check, Camera, Sparkles, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { firebaseService } from '../services/firebaseService';
 import { storageService } from '../services/storageService';
 import { useAuth } from '../contexts/AuthContext';
 import { MealEntry, MealType } from '../types';
 import { FoodItem, FOOD_CATEGORY_LABELS, FoodCategory, TURKISH_FOODS, searchFoods } from '../lib/turkishFoods';
+import { analyzeFoodPhoto, resizeImage, PhotoFoodItem } from '../services/aiService';
 
 const MEALS: { type: MealType; label: string; icon: React.ElementType; tint: string }[] = [
   { type: 'breakfast', label: 'Kahvaltı', icon: Sun, tint: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' },
@@ -135,6 +136,10 @@ export default function Nutrition() {
 
   const addEntry = (entry: Omit<MealEntry, 'id' | 'createdAt'>) => {
     persist([...entries, { ...entry, id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, createdAt: new Date().toISOString() }]);
+  };
+  const addEntries = (list: Omit<MealEntry, 'id' | 'createdAt'>[]) => {
+    const now = new Date().toISOString();
+    persist([...entries, ...list.map((e, i) => ({ ...e, id: `${Date.now()}-${i}-${Math.random().toString(36).slice(2, 7)}`, createdAt: now }))]);
   };
   const removeEntry = (id: string) => persist(entries.filter(e => e.id !== id));
 
@@ -312,6 +317,7 @@ export default function Nutrition() {
             meal={sheetMeal}
             onClose={() => setSheetMeal(null)}
             onAdd={(entry) => { addEntry(entry); setSheetMeal(null); }}
+            onAddMany={(list) => { addEntries(list); setSheetMeal(null); }}
           />
         )}
       </AnimatePresence>
@@ -354,8 +360,8 @@ function GoalEditor({ initial, auto, onSave, onCancel }: { initial: number; auto
 
 type NewEntry = Omit<MealEntry, 'id' | 'createdAt'>;
 
-function AddFoodSheet({ meal, onClose, onAdd }: { meal: MealType; onClose: () => void; onAdd: (e: NewEntry) => void }) {
-  const [tab, setTab] = useState<'search' | 'custom'>('search');
+function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onClose: () => void; onAdd: (e: NewEntry) => void; onAddMany: (e: NewEntry[]) => void }) {
+  const [tab, setTab] = useState<'search' | 'photo' | 'custom'>('search');
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<FoodCategory | 'all'>('all');
   const [selected, setSelected] = useState<FoodItem | null>(null);
@@ -401,10 +407,10 @@ function AddFoodSheet({ meal, onClose, onAdd }: { meal: MealType; onClose: () =>
         </div>
 
         <div className="px-5 flex gap-1 mb-3">
-          {(['search', 'custom'] as const).map(t => (
+          {(['search', 'photo', 'custom'] as const).map(t => (
             <button key={t} onClick={() => { setTab(t); setSelected(null); }}
               className={`flex-1 py-2 rounded-xl text-xs font-black transition-colors ${tab === t ? 'bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
-              {t === 'search' ? 'Listeden seç' : 'Kendim gireyim'}
+              {t === 'search' ? 'Listeden' : t === 'photo' ? '📷 Fotoğraf' : 'Elle gir'}
             </button>
           ))}
         </div>
@@ -483,6 +489,8 @@ function AddFoodSheet({ meal, onClose, onAdd }: { meal: MealType; onClose: () =>
           </div>
         )}
 
+        {tab === 'photo' && <PhotoTab meal={meal} onAddMany={onAddMany} />}
+
         {tab === 'custom' && (
           <div className="px-5 pb-5 space-y-3 overflow-y-auto">
             <Field label="Besin adı" value={custom.name} onChange={v => setCustom(c => ({ ...c, name: v }))} placeholder="Örn. Annemin böreği" text />
@@ -513,5 +521,168 @@ function Field({ label, value, onChange, placeholder, text }: { label: string; v
         className="mt-1 w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/40"
       />
     </label>
+  );
+}
+
+type ReviewItem = PhotoFoodItem & { key: string; checked: boolean; baseServings: number; food?: FoodItem };
+
+function scaleItem(it: ReviewItem) {
+  if (it.food) {
+    return {
+      kcal: it.food.kcal * it.servings, protein: it.food.protein * it.servings,
+      carbs: it.food.carbs * it.servings, fat: it.food.fat * it.servings,
+    };
+  }
+  const k = it.baseServings > 0 ? it.servings / it.baseServings : 1;
+  return { kcal: it.kcal * k, protein: it.protein * k, carbs: it.carbs * k, fat: it.fat * k };
+}
+
+function PhotoTab({ meal, onAddMany }: { meal: MealType; onAddMany: (e: NewEntry[]) => void }) {
+  const [preview, setPreview] = useState<string | null>(null);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+  const [error, setError] = useState('');
+  const [note, setNote] = useState<string | undefined>();
+  const [items, setItems] = useState<ReviewItem[]>([]);
+  const cameraRef = React.useRef<HTMLInputElement>(null);
+  const galleryRef = React.useRef<HTMLInputElement>(null);
+
+  const onFile = async (file?: File) => {
+    if (!file) return;
+    setStatus('loading'); setError(''); setItems([]); setNote(undefined);
+    try {
+      const img = await resizeImage(file);
+      setPreview(img.preview);
+      const catalog = TURKISH_FOODS.map(f => `${f.id}|${f.name}|${f.portion}`);
+      const result = await analyzeFoodPhoto(img.data, img.mediaType, catalog);
+      const list: ReviewItem[] = (result.items || []).map((it, i) => {
+        const food = it.foodId ? TURKISH_FOODS.find(f => f.id === it.foodId) : undefined;
+        const servings = Math.max(0.5, Math.round((Number(it.servings) || 1) * 2) / 2);
+        return {
+          ...it,
+          name: food?.name || it.name,
+          portion: food?.portion || it.portion || '1 porsiyon',
+          kcal: Number(it.kcal) || 0, protein: Number(it.protein) || 0,
+          carbs: Number(it.carbs) || 0, fat: Number(it.fat) || 0,
+          servings, baseServings: servings, food, key: `${i}-${it.name}`, checked: true,
+        };
+      });
+      setItems(list);
+      setNote(result.note);
+      setStatus('done');
+    } catch (e: any) {
+      setError(e?.message || 'Fotoğraf analiz edilemedi');
+      setStatus('error');
+    }
+  };
+
+  const update = (key: string, patch: Partial<ReviewItem>) =>
+    setItems(list => list.map(it => (it.key === key ? { ...it, ...patch } : it)));
+
+  const selected = items.filter(i => i.checked);
+  const total = selected.reduce((s, it) => s + scaleItem(it).kcal, 0);
+
+  const save = () => {
+    onAddMany(selected.map(it => {
+      const v = scaleItem(it);
+      return {
+        meal, foodId: it.food?.id, name: it.name, portion: it.food ? it.food.portion : it.portion,
+        servings: it.food ? it.servings : 1,
+        kcal: round1(v.kcal), protein: round1(v.protein), carbs: round1(v.carbs), fat: round1(v.fat),
+      };
+    }));
+  };
+
+  const reset = () => { setPreview(null); setItems([]); setStatus('idle'); setError(''); setNote(undefined); };
+
+  return (
+    <div className="px-5 pb-5 overflow-y-auto space-y-4">
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => { onFile(e.target.files?.[0]); e.target.value = ''; }} />
+      <input ref={galleryRef} type="file" accept="image/*" className="hidden" onChange={e => { onFile(e.target.files?.[0]); e.target.value = ''; }} />
+
+      {status === 'idle' && (
+        <div className="rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 p-6 text-center space-y-4">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+            <Camera className="w-7 h-7" />
+          </div>
+          <div>
+            <p className="font-display font-black text-slate-900 dark:text-white">Tabağının fotoğrafını çek</p>
+            <p className="text-xs text-slate-400 mt-1">Claude yemekleri ve porsiyonları tahmin eder, sen kontrol edip kaydedersin.</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => cameraRef.current?.click()} className="flex-1 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-black">Fotoğraf çek</button>
+            <button onClick={() => galleryRef.current?.click()} className="flex-1 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-sm font-black">Galeriden seç</button>
+          </div>
+        </div>
+      )}
+
+      {preview && (
+        <img src={preview} alt="Yemek fotoğrafı" className="w-full max-h-48 object-cover rounded-3xl" />
+      )}
+
+      {status === 'loading' && (
+        <div className="flex items-center justify-center gap-2 py-6 text-sm font-bold text-slate-500">
+          <Sparkles className="w-4 h-4 text-emerald-500 animate-pulse" /> Claude tabağı inceliyor…
+        </div>
+      )}
+
+      {status === 'error' && (
+        <div className="rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 p-4 text-sm flex gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-bold">Analiz yapılamadı</p>
+            <p className="text-xs opacity-80">{error}</p>
+            <button onClick={reset} className="mt-2 text-xs font-black underline">Tekrar dene</button>
+          </div>
+        </div>
+      )}
+
+      {status === 'done' && (
+        <>
+          {items.length === 0 ? (
+            <div className="text-center text-sm text-slate-400 py-4">
+              {note || 'Fotoğrafta yiyecek bulunamadı.'}
+              <button onClick={reset} className="block mx-auto mt-2 text-emerald-600 font-bold underline">Başka fotoğraf dene</button>
+            </div>
+          ) : (
+            <>
+              <p className="text-[11px] font-bold text-slate-400">Bulunanlar. Kontrol et, yanlış olanların işaretini kaldır:</p>
+              <ul className="space-y-2">
+                {items.map(it => {
+                  const v = scaleItem(it);
+                  return (
+                    <li key={it.key} className={`rounded-2xl border p-3 flex items-center gap-2.5 transition-opacity ${it.checked ? 'border-emerald-200 dark:border-emerald-500/30 bg-emerald-50/40 dark:bg-emerald-500/5' : 'border-slate-100 dark:border-slate-800 opacity-50'}`}>
+                      <button onClick={() => update(it.key, { checked: !it.checked })}
+                        className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${it.checked ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700'}`} aria-label="Seç">
+                        {it.checked && <Check className="w-4 h-4" />}
+                      </button>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold leading-tight text-slate-800 dark:text-slate-100 line-clamp-2">{it.name}</p>
+                        <p className="text-[11px] text-slate-400 truncate">
+                          {it.confidence === 'düşük' ? 'emin değil · ' : ''}{it.food ? it.food.portion : it.portion}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => update(it.key, { servings: Math.max(0.5, it.servings - 0.5) })} className="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Azalt"><Minus className="w-3 h-3" /></button>
+                        <span className="w-7 text-center text-xs font-black tabular-nums">{it.servings}</span>
+                        <button onClick={() => update(it.key, { servings: Math.min(10, it.servings + 0.5) })} className="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Artır"><Plus className="w-3 h-3" /></button>
+                      </div>
+                      <span className="w-10 text-right text-sm font-black tabular-nums text-slate-700 dark:text-slate-200">{Math.round(v.kcal)}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+              {note && <p className="text-[11px] text-slate-400">{note}</p>}
+              <div className="flex gap-2">
+                <button onClick={reset} className="py-3.5 px-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm">Yeniden</button>
+                <button onClick={save} disabled={selected.length === 0} className="flex-1 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black disabled:opacity-40">
+                  {selected.length} besini ekle · {Math.round(total)} kcal
+                </button>
+              </div>
+              <p className="text-[10px] text-center text-slate-400">Fotoğraftan tahminler yaklaşıktır; porsiyonları kontrol etmeyi unutma.</p>
+            </>
+          )}
+        </>
+      )}
+    </div>
   );
 }

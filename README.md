@@ -5,7 +5,7 @@ FitLife, kullanıcıların sağlık, egzersiz, fitness ve yaşamsal metriklerini
 ## Özellikler
 
 - **Gelişmiş PWA Desteği**: Çevrimdışı çalışabilme ve cihazlara yüklenebilme özelliği.
-- **Yapay Zeka Destekli Analizler**: Gemini API entegrasyonu ile sağlık verilerinizin akıllı analizi.
+- **Yapay Zeka Destekli Analizler**: Claude API (Anthropic) ile sağlık analizi ve fotoğraftan kalori tahmini. Çağrılar Vercel sunucu fonksiyonu (`api/ai.ts`) üzerinden yapılır, API anahtarı tarayıcıya inmez.
 - **Modern Arayüz**: TailwindCSS ve React kullanılarak geliştirilmiş, duyarlı (responsive) tasarım.
 - **Firebase Entegrasyonu**: Veri yönetimi ve kimlik doğrulama işlemleri.
 
@@ -26,7 +26,7 @@ Projeyi yerel ortamınızda çalıştırmak için aşağıdaki adımları izleyi
    ```
 
 2. Ortam değişkenlerini ayarlayın:
-   `.env.example` veya `.env.local` dosyasını kullanarak gerekli API anahtarlarını yapılandırın (özellikle `GEMINI_API_KEY`).
+   `.env.example` veya `.env.local` dosyasını kullanarak gerekli API anahtarlarını yapılandırın (özellikle `ANTHROPIC_API_KEY`). Yapay zeka özelliklerini yerelde denemek için `npx vercel dev` kullanın.
 
 3. Geliştirme sunucusunu başlatın:
    ```bash
@@ -39,5 +39,5 @@ Projeyi yerel ortamınızda çalıştırmak için aşağıdaki adımları izleyi
 - [Vite](https://vitejs.dev/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Firebase](https://firebase.google.com/)
-- [Gemini API](https://ai.google.dev/)
+- [Claude API](https://docs.claude.com/)
 - [Vite PWA](https://vite-pwa-org.netlify.app/)
