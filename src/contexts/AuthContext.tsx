@@ -67,10 +67,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const applyProfile = (data: UserProfile) => {
             setProfile(data);
             try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch { /* yoksay */ }
-            const savedId = localStorage.getItem('activeProfileId') || data.activeProfileId;
-            const isValidId = !!data.profiles?.some(p => p.id === savedId);
+            // Hesapta kayıtlı aktif profil önceliklidir: telefon ve bilgisayar aynı profili göstersin.
+            const serverId = data.activeProfileId;
+            const localId = localStorage.getItem('activeProfileId');
+            const isValid = (id?: string | null) => !!id && !!data.profiles?.some(p => p.id === id);
+            const savedId = isValid(serverId) ? serverId : localId;
+            const isValidId = isValid(savedId);
             if (isValidId && savedId) {
               setActiveProfileId(savedId);
+              localStorage.setItem('activeProfileId', savedId);
             } else if (data.profiles && data.profiles.length > 0) {
               const firstId = data.profiles[0].id;
               setActiveProfileId(firstId);
@@ -253,7 +258,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       createdAt: new Date().toISOString()
     };
     const updatedProfiles = [...(profile.profiles || []), newProfile];
-    await updateProfile({ profiles: updatedProfiles });
+    await updateProfile({ profiles: updatedProfiles, activeProfileId: newProfile.id });
     setActiveProfileId(newProfile.id);
     localStorage.setItem('activeProfileId', newProfile.id);
   };
