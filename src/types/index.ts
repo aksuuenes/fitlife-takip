@@ -100,7 +100,8 @@ export interface MealEntry {
   foodId?: string; // veritabanından seçildiyse
   name: string;
   portion: string;
-  servings: number; // porsiyon çarpanı
+  unit?: string; // adet, dilim, bardak, kase…
+  servings: number; // birim sayısı
   kcal: number; // toplam (servings dahil)
   protein: number;
   carbs: number;

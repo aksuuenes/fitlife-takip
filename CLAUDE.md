@@ -23,6 +23,8 @@ Kullanıcı siteyi çoğunlukla **iPhone'da ana ekran uygulaması (PWA)** olarak
 `users/{uid}/profiles/{profileId}/` altında: `records`, `water/{date}`, `workouts`, `routines`, `notes`,
 `supplements/{date}`, `medicationConfig`, `medicationLogs/{date}`, `supplementSettings/**`.
 - **Öğünler (Beslenme):** `supplementSettings/meals/days/{date}` → `{ entries: MealEntry[] }`.
+- **Beslenme ayarları:** `supplementSettings/nutrition` → favoriler, son yenenler, hedef kilo, haftalık hız, elle kcal (`NutritionSettings`).
+  Misafirde `localStorage` `fitlife_nutrition_settings_{profileId}`.
   Bilerek burada: `supplementSettings/{document=**}` kuralı zaten izinli olduğu için Firestore kural değişikliği gerekmedi
   (kullanıcı Firebase konsolunu telefondan kullanamadı). Yeni bir koleksiyon eklemek kural yüklemeyi gerektirir.
 - `firestore.rules` repoda var ama otomatik yüklenmez; kural değişiklikleri Firebase konsolundan ya da
@@ -30,11 +32,21 @@ Kullanıcı siteyi çoğunlukla **iPhone'da ana ekran uygulaması (PWA)** olarak
 
 ## Önemli dosyalar
 - `src/components/Layout.tsx` — masaüstü yan menü + mobil üst çubuk ve 5 sekmeli alt menü ("Daha Fazla" sayfası)
-- `src/components/Nutrition.tsx` — Beslenme sekmesi; besin veritabanı `src/lib/turkishFoods.ts` (~90 Türk yemeği, porsiyon başına)
+- `src/components/Nutrition.tsx` — Beslenme (Günlük / Hafta / Plan sekmeleri, besin ekleme sayfası)
+- `src/components/nutrition/` — `GoalSheet` (hedef kilo/kalori), `NutritionWeekly` (7 gün grafiği, seri, kilo tahmini),
+  `NutritionPlan` (7 günlük menü + alışveriş listesi), `NutritionTodayCard` (ana sayfa kartı)
+- `src/lib/turkishFoods.ts` — ~90 Türk yemeği; değerler **1 birim** içindir. `unit`: adet/dilim/bardak/… tam sayı adımlı,
+  kase/tabak/porsiyon/avuç yarım adımlı (`unitStep`, `servingsText`)
+- `src/lib/nutrition.ts` — hedef kalori (Mifflin-St Jeor ×1,375), kilo tahmini, seri; `src/lib/mealPlans.ts` — menü kombinasyonları
+- `src/hooks/useNutrition.ts` — `useMealStore`, `useBodyStats`, `useNutritionSettings`, `useNutritionGoals`
+- `src/components/ui/BottomSheet.tsx` — alttan açılan sayfa: `document.body`'ye portal + klavyeye göre yükseklik
 - `src/index.css` — en altta `@media (max-width: 767px)` mobil sıkılaştırma kuralları (`.app-main` altında)
 - `src/components/WeightChart.tsx` — recharts ana pakete girmesin diye ayrı, lazy yüklenir
 
 ## Dikkat
+- Açılır pencereleri/alt sayfaları `BottomSheet` (portal) ile yap; `main` içinde `fixed` kullanılırsa alt menünün altında kalabilir.
+  Layout'taki sayfa geçişi bu yüzden sadece opaklık animasyonu kullanıyor (transform yok).
+- Kancalardan dönen nesneleri `useMemo` ile sabitle; `useEffect` bağımlılığında yeni nesne sonsuz yükleme döngüsü yapar.
 - Hook'ları erken `return`'lerden önce çağır (Analysis'ta React #310 çökmesi bu yüzdendi).
 - Görselleri service worker önbelleğine (`globPatterns`) ekleme; `public/images` çalışma anında önbelleğe alınıyor. Yeni görselleri ≤640px ve sıkıştırılmış ekle.
 - Mobilde input yazı boyutu 16px (iOS yakınlaştırmasını önler) — `index.css`.
