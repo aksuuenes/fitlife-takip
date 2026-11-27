@@ -148,7 +148,7 @@ export default function Analysis() {
                 exit={{ opacity: 0, scale: 0.99 }}
                 transition={{ duration: 0.2 }}
               >
-                <GarminInBodyHub records={records} />
+                <GarminInBodyHub records={records} gender={currentProfile?.gender || profile?.gender} />
               </motion.div>
             ) : (
               <motion.div
@@ -358,7 +358,7 @@ export default function Analysis() {
                               <div className="w-9 h-9 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
                                   <Heart className="w-4.5 h-4.5 fill-current" />
                               </div>
-                              <h2 className="text-lg font-display font-black text-slate-900 dark:text-white tracking-tight">Profesyonel Görüş</h2>
+                              <h2 className="text-lg font-display font-black text-slate-900 dark:text-white tracking-tight">Genel değerlendirme</h2>
                           </div>
                           <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed font-semibold mb-8">
                             {analysis.feedback}
@@ -398,7 +398,7 @@ export default function Analysis() {
           <Calendar className="mx-auto h-16 w-16 text-slate-205 dark:text-slate-700 mb-6" />
           <h2 className="text-2xl font-display font-black mb-3 text-slate-900 dark:text-white tracking-tight">Analiz İçin Veri Bekleniyor</h2>
           <p className="text-slate-400 dark:text-slate-500 max-w-sm mx-auto font-medium text-sm leading-relaxed">
-            Gelişmiş analizlerin kilidini açmak için ilk sağlık kaydınızı veya antrenmanınızı tamamlamalısınız.
+            Grafikleri ve kişisel raporu görmek için önce bir sağlık kaydı ekle.
           </p>
           <Link 
             to="/add" 

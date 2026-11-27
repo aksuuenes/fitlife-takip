@@ -12,6 +12,12 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
+  // Sayfa değişince içerik en üstten başlasın
+  const mainRef = React.useRef<HTMLElement>(null);
+  React.useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0 });
+  }, [location.pathname]);
   const { user, profile, activeProfileId, switchProfile, logout, loginWithEmail, signUpWithEmail, deleteProfile, currentProfile } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [switching, setSwitching] = useState(false);
@@ -30,6 +36,10 @@ export default function Layout({ children }: LayoutProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
 
+  // Döngü (adet takibi) erkek profillerde gizli
+  const isMale = (currentProfile?.gender || profile?.gender) === 'male';
+  const hideMale = (i: { path: string }) => !(isMale && i.path === '/cycle');
+
   const navItems = [
     { name: 'Kontrol Paneli', path: '/', icon: Activity },
     { name: 'Kayıt Ekle', path: '/add', icon: ClipboardList },
@@ -39,7 +49,7 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Geçmiş', path: '/history', icon: Calendar },
     { name: 'Analizler', path: '/analysis', icon: BarChart3 },
     { name: 'Profil', path: '/profile', icon: UserIcon },
-  ];
+  ].filter(hideMale);
 
   // Mobil alt sekme çubuğu: 4 sekme + ortada büyük "+" butonu
   const mobileTabs = [
@@ -52,7 +62,7 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Döngü', path: '/cycle', icon: Droplets },
     { name: 'Geçmiş', path: '/history', icon: Calendar },
     { name: 'Profil', path: '/profile', icon: UserIcon },
-  ];
+  ].filter(hideMale);
   const pageTitles: Record<string, string> = {
     '/': 'FitLife', '/add': 'Kayıt Ekle', '/nutrition': 'Beslenme', '/notes': 'Notlar', '/cycle': 'Döngü',
     '/history': 'Geçmiş', '/analysis': 'Analizler', '/profile': 'Profil', '/workout': 'Antrenman',
@@ -286,7 +296,7 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </header>
 
-        <main className="app-main flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 pt-4 md:p-10">
+        <main ref={mainRef} className="app-main flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 pt-4 md:p-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}

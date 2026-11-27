@@ -45,6 +45,11 @@ Kullanıcı siteyi çoğunlukla **iPhone'da ana ekran uygulaması (PWA)** olarak
 - `src/hooks/useNutrition.ts` — `useMealStore`, `useBodyStats`, `useNutritionSettings`, `useNutritionGoals`
 - `src/components/ui/BottomSheet.tsx` — alttan açılan sayfa: `document.body`'ye portal + klavyeye göre yükseklik
 - `src/index.css` — en altta `@media (max-width: 767px)` mobil sıkılaştırma kuralları (`.app-main` altında)
+- `src/components/DailyChecklist.tsx` — Günlük İlaçlar / Takviyeler ortak listesi (dokun = alındı, ⋯ = düzenle/sil sayfası, ekle).
+  Takviye listesi `supplementSettings/list` (misafirde `fitlife_supplement_list_{profileId}`); kayıt yoksa varsayılan 4 takviye.
+- `src/lib/bodyComp.ts` — yağ % (Deurenberg, cinsiyetli), iskelet kası, BMR. Cinsiyet Profil sayfasından seçilir;
+  bilinmiyorsa erkek varsayılır. Erkek profilde "Döngü" menüden gizlenir.
+- Günlük tarih anahtarı için `toDateKey(new Date())` kullan (yerel saat); `toISOString()` UTC olduğu için gece 00–03 arası önceki günü verir.
 - `src/components/WeightChart.tsx` — recharts ana pakete girmesin diye ayrı, lazy yüklenir
 
 ## Dikkat

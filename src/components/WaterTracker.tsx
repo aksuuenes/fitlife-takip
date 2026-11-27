@@ -5,6 +5,7 @@ import { firebaseService } from '../services/firebaseService';
 import { storageService } from '../services/storageService';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { toDateKey } from '../lib/nutrition';
 
 export default function WaterTracker() {
   const { user, profile, activeProfileId, currentProfile } = useAuth();
@@ -20,7 +21,7 @@ export default function WaterTracker() {
   const dailyGoal = calculatedGoal > 0 ? calculatedGoal : 2500;
   
   const glassSize = 250; // Standard 250ml per glass
-  const today = new Date().toISOString().split('T')[0];
+  const today = toDateKey(new Date());
 
   useEffect(() => {
     const fetchData = async () => {

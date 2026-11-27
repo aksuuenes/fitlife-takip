@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { storageService } from '../services/storageService';
 import { firebaseService } from '../services/firebaseService';
+import { toDateKey } from '../lib/nutrition';
 
 interface WorkoutHistoryItem {
   date: string;
@@ -26,7 +27,7 @@ export default function WorkoutCalendar() {
   const { user, activeProfileId } = useAuth();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [workoutHistory, setWorkoutHistory] = useState<WorkoutHistoryItem[]>([]);
-  const [selectedDateStr, setSelectedDateStr] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [selectedDateStr, setSelectedDateStr] = useState<string>(toDateKey(new Date()));
   const [loading, setLoading] = useState(true);
 
   // Fetch history when profile/user changes
@@ -99,7 +100,7 @@ export default function WorkoutCalendar() {
   // Render month days
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = getFormattedDateString(day);
-    const isToday = new Date().toISOString().split('T')[0] === dateStr;
+    const isToday = toDateKey(new Date()) === dateStr;
     const hasWorkout = !!getWorkoutForDate(dateStr);
     const isSelected = selectedDateStr === dateStr;
 
@@ -223,7 +224,7 @@ export default function WorkoutCalendar() {
                     <div className="flex-1 min-w-0">
                       <span className="text-[9px] font-mono font-extrabold uppercase text-emerald-500 dark:text-emerald-400 tracking-wider block">ANTRENMAN TAMAMLANDI!</span>
                       <h4 className="text-sm md:text-base font-black text-slate-900 dark:text-white mt-1 leading-tight font-display tracking-tight break-words text-left">
-                        {selectedWorkout.workoutTitle || 'Profesyonel Antrenman'}
+                        {selectedWorkout.workoutTitle || 'Antrenman'}
                       </h4>
                     </div>
                   </div>

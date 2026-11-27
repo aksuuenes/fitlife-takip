@@ -212,7 +212,7 @@ export default function HealthForm() {
           <div className="space-y-4">
             <h3 className="text-[10px] font-mono font-extrabold uppercase tracking-widest text-slate-400 flex items-center gap-1.5 border-b border-slate-50 pb-2">
               <Ruler className="h-3.5 w-3.5 text-indigo-500" />
-              Temel Antropometrik Ölçümler
+              Temel ölçümler
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
@@ -283,7 +283,7 @@ export default function HealthForm() {
           <div className="space-y-6">
             <h3 className="text-[10px] font-mono font-extrabold uppercase tracking-widest text-slate-400 flex items-center gap-1.5 border-b border-slate-50 pb-2">
               <Brain className="h-3.5 w-3.5 text-indigo-500" />
-              Dinlenme, Uyku & Zihinsel Well-being
+              Uyku, dinlenme ve ruh hâli
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

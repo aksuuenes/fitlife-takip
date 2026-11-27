@@ -4,6 +4,7 @@ import { Dumbbell, CheckCircle2, ChevronRight, Play } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { firebaseService } from '../services/firebaseService';
 import { storageService } from '../services/storageService';
+import { toDateKey } from '../lib/nutrition';
 
 export default function WorkoutTracker() {
   const { user, activeProfileId } = useAuth();
@@ -12,7 +13,7 @@ export default function WorkoutTracker() {
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = toDateKey(new Date());
 
   useEffect(() => {
     const checkStatus = async () => {

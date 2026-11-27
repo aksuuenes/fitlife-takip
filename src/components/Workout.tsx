@@ -9,6 +9,7 @@ import BreathingAnimation from './BreathingAnimation';
 import { useAuth } from '../contexts/AuthContext';
 import { firebaseService } from '../services/firebaseService';
 import { storageService } from '../services/storageService';
+import { toDateKey } from '../lib/nutrition';
 
 export default function Workout() {
   const { user, activeProfileId } = useAuth();
@@ -19,7 +20,7 @@ export default function Workout() {
   const [timeLeft, setTimeLeft] = useState(10);
   const [isActive, setIsActive] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [workoutTitle, setWorkoutTitle] = useState('Profesyonel Mod');
+  const [workoutTitle, setWorkoutTitle] = useState('Antrenman');
   
   const [mood, setMood] = useState<string>('good');
   const [note, setNote] = useState<string>('');
@@ -92,7 +93,7 @@ export default function Workout() {
   };
 
   const saveCompletion = async () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = toDateKey(new Date());
     const exerciseList = exercises.map(ex => ex.name);
     if (user && activeProfileId) {
       await firebaseService.updateWorkoutStatus(user.uid, activeProfileId, today, true, mood, note, workoutTitle, exerciseList);
@@ -103,7 +104,7 @@ export default function Workout() {
 
   const handleSaveNote = async () => {
     setSavingNote(true);
-    const today = new Date().toISOString().split('T')[0];
+    const today = toDateKey(new Date());
     const exerciseList = exercises.map(ex => ex.name);
     try {
       if (user && activeProfileId) {

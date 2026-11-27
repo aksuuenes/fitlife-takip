@@ -844,7 +844,7 @@ export default function Notes() {
                         className="bg-transparent border-b border-dashed border-slate-350 dark:border-slate-700 focus:border-[#10b981] font-display font-black text-slate-900 dark:text-white text-base md:text-lg focus:outline-none transition-colors"
                       />
                       <span className="text-[9px] font-mono font-black uppercase text-[#10b981] bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/30 px-2 py-0.5 rounded">
-                        Excel Pro
+                        Tablo
                       </span>
                     </div>
                     <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
@@ -1207,7 +1207,7 @@ export default function Notes() {
                 <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-emerald-50/20 dark:bg-emerald-950/5 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-extrabold shrink-0">
                     <Info className="w-4 h-4 text-[#10b981] animate-pulse" />
-                    <span>HACİM & AKILLI ANALİZLER (TOPLAMLAR):</span>
+                    <span>HACİM VE TOPLAMLAR:</span>
                   </div>
                   <div className="flex flex-wrap gap-2.5">
                     {activeStats.map((st, idx) => (

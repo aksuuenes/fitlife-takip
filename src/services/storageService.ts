@@ -174,6 +174,14 @@ export const storageService = {
     const notes = storageService.getNotes(profileId).filter(n => n.id !== noteId);
     localStorage.setItem(`fitlife_notes_${profileId}`, JSON.stringify(notes));
   },
+  getSupplementList: (profileId: string = 'local'): { id: string, name: string, dosage: string }[] | null => {
+    const raw = localStorage.getItem(`fitlife_supplement_list_${profileId}`);
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (e) { return null; }
+  },
+  saveSupplementList: (items: { id: string, name: string, dosage: string }[], profileId: string = 'local') => {
+    localStorage.setItem(`fitlife_supplement_list_${profileId}`, JSON.stringify(items));
+  },
   getMedicationList: (profileId: string = 'local'): { id: string, name: string, dosage: string }[] => {
     const key = `fitlife_medication_list_${profileId}`;
     try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { return []; }

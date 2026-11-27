@@ -16,7 +16,7 @@ export default function ExerciseLibrary() {
     { id: 'cardio', name: 'KARDİYO & ISI' },
     { id: 'upper', name: 'ÜST VÜCUT' },
     { id: 'lower', name: 'ALT VÜCUT' },
-    { id: 'core', name: 'CENTRAL CORE' },
+    { id: 'core', name: 'KARIN & GÖVDE' },
     { id: 'yoga', name: 'YOGA & ESNEKLİK' },
   ];
 
@@ -85,13 +85,13 @@ export default function ExerciseLibrary() {
         <div className="relative z-10 max-w-2xl space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/20 rounded-full border border-indigo-400/30 text-indigo-400 text-[10px] font-black uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
-            PROFESYONEL EGZERSİZ KÜTÜPHANESİ
+            HAREKET REHBERİ
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
             Tüm Spor Hareketleri &amp; Detaylar
           </h1>
           <p className="text-slate-300 text-sm font-medium leading-relaxed">
-            Sistemimizde kayıtlı güncel spor hareketlerini, biyomekanik hedeflerini, doğru form açıklamalarını ve gereken ekipman rehberini buradan hızla inceleyin.
+            Tüm hareketleri, çalıştırdığı bölgeleri ve doğru yapılış şeklini burada bulabilirsin.
           </p>
         </div>
       </div>
@@ -103,7 +103,7 @@ export default function ExerciseLibrary() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Egzersiz adı veya açıklamalarda arayın..."
+              placeholder="Hareket ara…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-850/65 rounded-2xl border border-slate-100 dark:border-slate-800 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-550 transition-all dark:text-white"
