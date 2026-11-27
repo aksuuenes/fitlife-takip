@@ -340,7 +340,7 @@ export default function Layout({ children }: LayoutProps) {
             <motion.div
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 340 }}
-              className="relative w-full bg-white dark:bg-slate-900 rounded-t-[28px] px-4 pt-3"
+              className="relative w-full max-h-[88dvh] overflow-y-auto bg-white dark:bg-slate-900 rounded-t-[28px] px-4 pt-3"
               style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}
             >
               <div className="w-10 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 mx-auto mb-3" />
