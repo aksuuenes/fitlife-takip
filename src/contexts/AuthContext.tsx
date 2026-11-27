@@ -61,64 +61,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (user) {
           const docRef = doc(db, 'users', user.uid);
-          
-          let docSnap;
-          try {
-            // Safari WebSocket hang'lerine karşı 4 saniyelik timeout ekleyelim
-            docSnap = await Promise.race([
-              getDoc(docRef),
-              new Promise((_, reject) => setTimeout(() => reject(new Error("Firestore timeout")), 4000))
-            ]);
-          } catch (err) {
-            console.error("AuthContext getDoc timeout/error, falling back to local cache:", err);
-            // Hata olursa (timeout) sanki döküman yokmuş gibi devam et, böylece sonsuz bekleme (Sistem Yükleniyor) çözülür
-            docSnap = { exists: () => false, data: () => ({}) };
-          }
-          
-          if (docSnap.exists()) {
-            const data = docSnap.data() as UserProfile;
-            
-            if (!data.profiles || data.profiles.length === 0) {
-              const defaultSubProfile: SubProfile = {
-                id: 'main',
-                name: data.displayName || 'Asıl Profil',
-                createdAt: new Date().toISOString(),
-                initialHeight: data.initialHeight,
-                initialWeight: data.initialWeight
-              };
-              data.profiles = [defaultSubProfile];
-              data.activeProfileId = 'main';
-              setDoc(docRef, data, { merge: true }).catch(e => console.error("setDoc error:", e));
-            }
-            
+          const cacheKey = `fitlife_user_profile_${user.uid}`;
+
+          // Profili uygula ve aktif profili seç
+          const applyProfile = (data: UserProfile) => {
             setProfile(data);
-            
+            try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch { /* yoksay */ }
             const savedId = localStorage.getItem('activeProfileId') || data.activeProfileId;
-            const isValidId = data.profiles.some(p => p.id === savedId);
-            
+            const isValidId = !!data.profiles?.some(p => p.id === savedId);
             if (isValidId && savedId) {
               setActiveProfileId(savedId);
-            } else if (data.profiles.length > 0) {
+            } else if (data.profiles && data.profiles.length > 0) {
               const firstId = data.profiles[0].id;
               setActiveProfileId(firstId);
               localStorage.setItem('activeProfileId', firstId);
             }
-          } else {
-            const initialProfile: UserProfile = {
-              uid: user.uid,
-              email: user.email || '',
-              displayName: user.displayName || '',
-              profiles: [{
-                id: 'main',
-                name: user.displayName || 'Asıl Profil',
-                createdAt: new Date().toISOString()
-              }]
-            };
-            setDoc(docRef, initialProfile).catch(e => console.error("setDoc error:", e));
-            setProfile(initialProfile);
-            setActiveProfileId('main');
-            localStorage.setItem('activeProfileId', 'main');
-          }
+          };
+
+          // 1) Telefondaki son bilinen profili hemen göster (yavaş bağlantıda boş ekran olmasın)
+          try {
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) applyProfile(JSON.parse(cached) as UserProfile);
+          } catch { /* yoksay */ }
+
+          // 2) Sunucudan oku. ÖNEMLİ: okuma başarısız olursa ya da zaman aşımına uğrarsa profil
+          //    ASLA yeniden oluşturulmaz/üzerine yazılmaz; sadece tekrar denenir.
+          //    (Eskiden 4 sn zaman aşımında boş profil yazılıyor, kullanıcının bilgileri sıfırlanıyordu.)
+          const loadRemote = async (attempt = 0): Promise<void> => {
+            try {
+              const snap = await getDoc(docRef);
+              const fromServer = !snap.metadata.fromCache;
+              if (snap.exists()) {
+                const data = snap.data() as UserProfile;
+                if (!data.profiles || data.profiles.length === 0) {
+                  data.profiles = [{
+                    id: 'main',
+                    name: data.displayName || 'Asıl Profil',
+                    createdAt: new Date().toISOString(),
+                    initialHeight: data.initialHeight,
+                    initialWeight: data.initialWeight,
+                  }];
+                  data.activeProfileId = 'main';
+                  setDoc(docRef, { profiles: data.profiles, activeProfileId: 'main' }, { merge: true }).catch(e => console.error('setDoc error:', e));
+                }
+                applyProfile(data);
+              } else if (fromServer) {
+                // Sunucu kesin olarak "yok" dedi: yeni kullanıcı. merge ile, var olan hiçbir alanı silmeden oluştur.
+                const initialProfile: UserProfile = {
+                  uid: user.uid,
+                  email: user.email || '',
+                  displayName: user.displayName || '',
+                  profiles: [{ id: 'main', name: user.displayName || 'Asıl Profil', createdAt: new Date().toISOString() }],
+                };
+                await setDoc(docRef, initialProfile, { merge: true });
+                applyProfile(initialProfile);
+              } else if (attempt < 5) {
+                setTimeout(() => { loadRemote(attempt + 1); }, 3000);
+              }
+            } catch (err) {
+              console.error('Profil okunamadı, tekrar denenecek:', err);
+              if (attempt < 5) setTimeout(() => { loadRemote(attempt + 1); }, 2000 * (attempt + 1));
+            }
+          };
+          loadRemote();
         } else {
           // Handle Local Multi-Profile
           const savedData = localStorage.getItem('fitlife_profile');
@@ -225,7 +230,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const updated = profile ? { ...profile, ...sanitizedData } : sanitizedData as UserProfile;
       localStorage.setItem('fitlife_profile', JSON.stringify(updated));
     }
-    setProfile(prev => prev ? { ...prev, ...sanitizedData } : (sanitizedData as UserProfile));
+    setProfile(prev => {
+      const next = prev ? { ...prev, ...sanitizedData } : (sanitizedData as UserProfile);
+      if (user) { try { localStorage.setItem(`fitlife_user_profile_${user.uid}`, JSON.stringify(next)); } catch { /* yoksay */ } }
+      return next;
+    });
   };
 
   const switchProfile = async (id: string) => {

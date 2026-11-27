@@ -521,7 +521,7 @@ export default function Notes() {
       {/* Slide-over Form Drawer */}
       <AnimatePresence>
           {isOpenForm && (
-            <div className="fixed inset-0 z-40 flex justify-end">
+            <div className="fixed inset-0 z-[100] flex justify-end">
               {/* Overlay */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -816,7 +816,7 @@ export default function Notes() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 md:backdrop-blur- flex items-center justify-center p-4 md:p-6"
+            className="fixed inset-0 z-[100] overflow-y-auto bg-slate-950/80 md:backdrop-blur- flex items-center justify-center p-4 md:p-6"
           >
             <motion.div
               initial={{ scale: 0.95, y: 25 }}
@@ -1269,7 +1269,7 @@ export default function Notes() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 md:backdrop-blur- flex items-center justify-center p-4 md:p-6"
+            className="fixed inset-0 z-[100] overflow-y-auto bg-slate-950/80 md:backdrop-blur- flex items-center justify-center p-4 md:p-6"
           >
             <motion.div
               initial={{ scale: 0.95, y: 25 }}

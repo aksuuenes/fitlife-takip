@@ -477,8 +477,8 @@ export default function MedicationTracker() {
           {medications.map((item) => {
             const isTaken = !!takenMap[item.id];
             return (
+              <React.Fragment key={item.id}>
               <SwipeableMedRow
-                key={item.id}
                 item={item}
                 isTaken={isTaken}
                 onToggle={() => toggleMedication(item.id)}
@@ -492,6 +492,7 @@ export default function MedicationTracker() {
                 onSaveEdit={saveEdit}
                 onCancelEdit={() => setEditingId(null)}
               />
+              </React.Fragment>
             );
           })}
 

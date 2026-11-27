@@ -44,6 +44,11 @@ Kullanıcı siteyi çoğunlukla **iPhone'da ana ekran uygulaması (PWA)** olarak
 - `src/components/WeightChart.tsx` — recharts ana pakete girmesin diye ayrı, lazy yüklenir
 
 ## Dikkat
+- **Profil yükleme (AuthContext):** Firestore okuması başarısız/zaman aşımı olursa profil ASLA yeniden oluşturulmaz ya da
+  üzerine yazılmaz; sadece tekrar denenir. Yeni profil yalnızca sunucu kesin "yok" derse (`!metadata.fromCache`) ve `merge: true` ile yazılır.
+  Son bilinen profil `localStorage` `fitlife_user_profile_{uid}`'de tutulur. (Eskiden 4 sn zaman aşımında boş profil yazılıp bilgiler sıfırlanıyordu.)
+- **Metinler:** Kullanıcı sitenin "yapay zeka ile yapılmış" gibi görünmesini istemiyor. Arayüzde "AI", "yapay zeka", "Claude",
+  "Wellness AI", "PRO/Elit/Premium", "biyometrik" gibi ifadeler kullanma; sade Türkçe yaz ("Kişisel rapor", "Öneriler").
 - Açılır pencereleri/alt sayfaları `BottomSheet` (portal) ile yap; `main` içinde `fixed` kullanılırsa alt menünün altında kalabilir.
   Layout'taki sayfa geçişi bu yüzden sadece opaklık animasyonu kullanıyor (transform yok).
 - Kancalardan dönen nesneleri `useMemo` ile sabitle; `useEffect` bağımlılığında yeni nesne sonsuz yükleme döngüsü yapar.

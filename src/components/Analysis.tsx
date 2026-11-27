@@ -105,11 +105,11 @@ export default function Analysis() {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="px-3 py-1 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-[9px] font-mono font-extrabold rounded-lg uppercase tracking-widest shadow-md shadow-indigo-100">
-              PRO ANALİZ & RAPORLAMA
+              ANALİZ & RAPOR
             </span>
           </div>
-          <h1 className="text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">Sağlık Trendleri & Performans</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Garmin Connect entegrasyonu, InBody vücut kompozisyonu ve yapay zeka asistanınız.</p>
+          <h1 className="text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">Gelişimin</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Kilo ve sağlık gidişatın, vücut kompozisyonu ve kişisel değerlendirmen.</p>
         </div>
       </header>
 
@@ -125,7 +125,7 @@ export default function Analysis() {
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
-              📊 Garmin Hub & InBody
+              📊 Vücut & Aktivite
             </button>
             <button
               onClick={() => setActiveView('ai')}
@@ -135,7 +135,7 @@ export default function Analysis() {
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
-              ✨ Yapay Zeka (AI) Raporu
+              📝 Kişisel Rapor
             </button>
           </div>
 
@@ -264,7 +264,7 @@ export default function Analysis() {
                           <Brain className="h-9 w-9 text-slate-300 dark:text-slate-650" />
                         </div>
                         <h3 className="text-slate-905 dark:text-white text-lg font-display font-black tracking-tight">Raporunuz Hazırlanmayı Bekliyor</h3>
-                        <p className="text-slate-400 dark:text-slate-500 text-xs max-w-xs mx-auto mt-2 font-medium">Biyometrik verilerinizi profesyonel yapay zeka modelleri ile işlemek için yukarıdaki butona tıklayın.</p>
+                        <p className="text-slate-400 dark:text-slate-500 text-xs max-w-xs mx-auto mt-2 font-medium">Kayıtlarına göre kişisel değerlendirmeni görmek için yukarıdaki butona dokun.</p>
                       </motion.div>
                     )}
 
@@ -280,7 +280,7 @@ export default function Analysis() {
                           <Brain className="h-8 w-8 text-indigo-950 dark:text-indigo-200 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                         </div>
                         <h3 className="text-slate-900 dark:text-white text-lg font-display font-black mt-8 tracking-tight animate-pulse">Veriler Analiz Ediliyor...</h3>
-                        <p className="text-slate-400 dark:text-slate-500 text-xs mt-2 italic font-medium">Claude yapay zekası sağlık profilinizi optimize ediyor.</p>
+                        <p className="text-slate-400 dark:text-slate-500 text-xs mt-2 italic font-medium">Kayıtların değerlendiriliyor…</p>
                       </motion.div>
                     )}
 
@@ -396,7 +396,7 @@ export default function Analysis() {
       ) : (
         <div className="bg-white dark:bg-slate-900 p-12 md:p-16 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 text-center shadow-sm">
           <Calendar className="mx-auto h-16 w-16 text-slate-205 dark:text-slate-700 mb-6" />
-          <h2 className="text-2xl font-display font-black mb-3 text-slate-900 dark:text-white tracking-tight">AI Analiz İçin Veri Bekliyor</h2>
+          <h2 className="text-2xl font-display font-black mb-3 text-slate-900 dark:text-white tracking-tight">Analiz İçin Veri Bekleniyor</h2>
           <p className="text-slate-400 dark:text-slate-500 max-w-sm mx-auto font-medium text-sm leading-relaxed">
             Gelişmiş analizlerin kilidini açmak için ilk sağlık kaydınızı veya antrenmanınızı tamamlamalısınız.
           </p>

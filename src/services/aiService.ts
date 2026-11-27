@@ -42,7 +42,7 @@ export async function analyzeHealthData(records: any[], userProfile: any) {
 
     return {
       suggestion: "Biyometrik verilerinizi düzenli girmeye devam edin ve su dengesine odaklanın.",
-      feedback: `Health Tracker size özel yerel analiz yaptı: Vücut Kitle Endeksiniz (BMI) ${bmiVal.toFixed(1)} seviyesindedir. ${bmiVal > 25 ? 'Kilo yönetimi' : bmiVal < 18.5 ? 'Kas kazanımı' : 'Form koruma'} hedefleri için protein yoğunluklu beslenme ve planlı direnç egzersizleri kritik öneme sahiptir.`,
+      feedback: `Kayıtlarına göre değerlendirme: Vücut kitle endeksin (BMI) ${bmiVal.toFixed(1)} seviyesindedir. ${bmiVal > 25 ? 'Kilo yönetimi' : bmiVal < 18.5 ? 'Kas kazanımı' : 'Form koruma'} hedefleri için protein yoğunluklu beslenme ve planlı direnç egzersizleri kritik öneme sahiptir.`,
       score: scoreVal,
       categories: [
         {

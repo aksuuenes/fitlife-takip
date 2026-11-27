@@ -75,7 +75,7 @@ export default function Layout({ children }: LayoutProps) {
               </div>
               <div>
                 <span className="font-display font-black text-xl tracking-tight bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 dark:from-white dark:via-indigo-300 dark:to-emerald-400 bg-clip-text text-transparent">FitLife</span>
-                <span className="text-[10px] font-mono tracking-widest text-[#10b981] dark:text-emerald-400 font-black block -mt-1 uppercase">Wellness AI</span>
+                <span className="text-[10px] font-mono tracking-widest text-[#10b981] dark:text-emerald-400 font-black block -mt-1 uppercase">Sağlık Takibi</span>
               </div>
             </div>
 
@@ -230,7 +230,7 @@ export default function Layout({ children }: LayoutProps) {
                   {currentProfile?.name || profile?.displayName?.split(' ')[0] || user?.displayName?.split(' ')[0] || 'Misafir'}
                 </div>
                 <div className="text-[9px] text-[#10b981] dark:text-emerald-400 font-bold uppercase tracking-widest truncate">
-                  {user ? 'KİNETİK PRO' : 'MİSAFİR SEVİYE'}
+                  {user ? 'ÜYE' : 'MİSAFİR'}
                 </div>
               </div>
               
@@ -364,6 +364,7 @@ export default function Layout({ children }: LayoutProps) {
                   <LogOut className="w-4 h-4" /> Çıkış Yap
                 </button>
               )}
+              <p className="mt-3 text-center text-[10px] font-medium text-slate-400">Sürüm {__APP_VERSION__}</p>
             </motion.div>
           </motion.div>
         )}

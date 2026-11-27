@@ -120,7 +120,7 @@ export default function Dashboard() {
               </span>
             )}
           </div>
-          <p className="hidden md:block text-slate-500 dark:text-slate-400 font-medium italic">Haftalık ilerleme raporun ve AI analizlerin burada.</p>
+          <p className="hidden md:block text-slate-500 dark:text-slate-400 font-medium italic">Bugünkü özetin ve haftalık gidişatın burada.</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
@@ -280,7 +280,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 mb-6">
               <span className="p-2 bg-white/5 border border-white/10 rounded-xl text-yellow-500 text-lg">✨</span>
               <h2 className="text-lg font-display font-black tracking-tight text-white">
-                Kişiselleştirilmiş AI Önerileri
+                Sana Özel Öneriler
               </h2>
             </div>
             <div className="space-y-5">
@@ -304,7 +304,7 @@ export default function Dashboard() {
             to="/analysis" 
             className="mt-8 w-full py-3.5 bg-white text-slate-950 rounded-xl font-bold text-xs uppercase tracking-widest text-center hover:bg-slate-100 active:scale-98 transition-all shadow-md shadow-white/5 cursor-pointer"
           >
-            Gelişmiş AI Raporu Al
+            Detaylı Raporu Gör
           </Link>
         </section>
       </div>

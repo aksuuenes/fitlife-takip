@@ -6,7 +6,13 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
+  // Sürüm etiketi: yayın tarihi + commit (Vercel derlemesinde VERCEL_GIT_COMMIT_SHA gelir)
+  const sha = (process.env.VERCEL_GIT_COMMIT_SHA || '').slice(0, 7);
+  const built = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
   return {
+    define: {
+      __APP_VERSION__: JSON.stringify(sha ? `${built} · ${sha}` : built),
+    },
     plugins: [
       react(), 
       tailwindcss(),
@@ -18,7 +24,7 @@ export default defineConfig(({mode}) => {
           name: 'FitLife',
           lang: 'tr',
           short_name: 'FitLife',
-          description: 'Yapay Zeka Destekli Sağlık, Egzersiz, Fitness ve Yaşamsal Metrik Takip Platformu',
+          description: 'Kilo, beslenme, egzersiz ve sağlık takibi',
           theme_color: '#030712',
           background_color: '#030712',
           display: 'standalone',

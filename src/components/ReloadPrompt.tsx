@@ -8,8 +8,19 @@ export default function ReloadPrompt() {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegistered(r) {
-      console.log('Service Worker Registered');
+    onRegisteredSW(swUrl, r) {
+      if (!r) return;
+      // iPhone ana ekran uygulaması arka plandan dönünce sayfayı yeniden yüklemez;
+      // bu yüzden öne gelişte ve yarım saatte bir yeni sürümü kendimiz kontrol ediyoruz.
+      const check = () => {
+        if (!navigator.onLine) return;
+        fetch(swUrl, { cache: 'no-store' })
+          .then(res => { if (res.status === 200) r.update(); })
+          .catch(() => { /* çevrimdışı */ });
+      };
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+      window.addEventListener('focus', check);
+      setInterval(check, 30 * 60 * 1000);
     },
     onRegisterError(error) {
       console.log('Service Worker registration error', error);
@@ -21,10 +32,16 @@ export default function ReloadPrompt() {
     setNeedRefresh(false);
   };
 
+  React.useEffect(() => {
+    if (!offlineReady) return;
+    const t = setTimeout(() => setOfflineReady(false), 4000);
+    return () => clearTimeout(t);
+  }, [offlineReady, setOfflineReady]);
+
   if (!offlineReady && !needRefresh) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-[9999] p-5 bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900/40 rounded-2xl shadow-2xl flex flex-col gap-3 max-w-sm w-full sm:w-auto animate-in slide-in-from-bottom-5 fade-in duration-300">
+    <div className="fixed right-4 left-4 sm:left-auto bottom-[calc(76px+env(safe-area-inset-bottom))] md:bottom-4 z-[9999] p-5 bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900/40 rounded-2xl shadow-2xl flex flex-col gap-3 max-w-sm w-full sm:w-auto animate-in slide-in-from-bottom-5 fade-in duration-300">
       <div className="flex justify-between items-start gap-4">
         <div className="flex items-center gap-2">
           {needRefresh ? (
