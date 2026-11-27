@@ -103,11 +103,10 @@ export default function YogaPosterStudio() {
             YOGA ASANAS REHBERİ
           </span>
           <h1 className="text-3xl font-display font-black text-slate-900 dark:text-white mt-1.5 tracking-tight">
-            Kuşbaksı Yoga Stüdyosu 🧘‍♀️
+            Kuşbakışı Yoga Stüdyosu 🧘‍♀️
           </h1>
           <p className="text-slate-500 dark:text-slate-400 font-medium text-xs mt-1 leading-relaxed max-w-xl">
-            Aşağıdaki asana haritası, paylaştığınız posterdeki asanaların bire bir anatomik simülasyonunu içerir. 
-            Kartlara tıklayarak detaylı duruş rehberine ulaşabilir veya kendi dersinizi tasarlayabilirsiniz.
+            Aşağıdaki haritada temel yoga duruşları var. Bir karta dokunarak duruşun nasıl yapıldığını görebilir veya kendi dersini oluşturabilirsin.
           </p>
         </div>
         
@@ -171,7 +170,7 @@ export default function YogaPosterStudio() {
                       YOGA ASANAS
                     </h2>
                     <p className="text-[10px] uppercase font-mono tracking-widest text-emerald-600 dark:text-emerald-400 font-bold mt-1">
-                      ÖZEL GERÇEK ZAMANLI HİZALAMA VE ASANA KILAVUZU
+                      DURUŞ VE HİZALAMA REHBERİ
                     </p>
                   </div>
 
@@ -600,7 +599,7 @@ export default function YogaPosterStudio() {
           ) : (
             <div className="text-center py-20 text-slate-400">
               <Sparkles className="mx-auto h-8 w-8 mb-2 text-emerald-400 opacity-60 animate-pulse" />
-              <p className="text-sm font-semibold">Gelişmiş Değerlendirme</p>
+              <p className="text-sm font-semibold">Duruş rehberi</p>
               <p className="text-xs text-emerald-400/60 mt-1 max-w-[200px] mx-auto">Kartlardan birine tıklayarak asana kılavuzunu inceleyebilirsiniz.</p>
             </div>
           )}
@@ -635,7 +634,7 @@ export default function YogaPosterStudio() {
                     <Plus className="w-5 h-5 text-emerald-500 stroke-[3]" /> Asana Ekleme Paneli
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                    Özel ders akışınıza eklemek istediğiniz premium pozları seçin.
+                    Özel ders akışınıza eklemek istediğin duruşları seç.
                   </p>
                 </div>
                 <button

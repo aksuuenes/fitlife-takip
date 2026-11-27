@@ -88,52 +88,28 @@ export default function WorkoutSelection() {
   };
 
   return (
-    <div className={`${activeMode !== 'quick' || step === 1 ? 'max-w-7xl' : 'max-w-xl'} mx-auto px-4 py-8`}>
-      {/* Interactive Mode Picker Toggle */}
-      <div className="flex bg-slate-100 dark:bg-slate-900 border border-slate-205/10 dark:border-slate-800 p-1 rounded-2xl mb-8 shadow-sm gap-1 flex-wrap md:flex-nowrap">
-        <button
-          onClick={() => setActiveMode('quick')}
-          className={`flex-1 min-w-[120px] py-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-            activeMode === 'quick' 
-              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-black' 
-              : 'text-slate-450 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-355'
-          }`}
-        >
-          🏋️ Hızlı Program
-        </button>
-        <button
-          onClick={() => {
-            setActiveMode('yoga');
-            setFocus('yoga');
-          }}
-          className={`flex-1 min-w-[120px] py-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-            activeMode === 'yoga' 
-              ? 'bg-emerald-500 text-slate-950 shadow-sm font-black' 
-              : 'text-slate-450 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-355'
-          }`}
-        >
-          🧘 Yoga Atlası
-        </button>
-        <button
-          onClick={() => setActiveMode('planner')}
-          className={`flex-1 min-w-[120px] py-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-            activeMode === 'planner' 
-              ? 'bg-indigo-600 text-white shadow-sm font-black' 
-              : 'text-slate-450 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-355'
-          }`}
-        >
-          📋 Özel Planlayıcı
-        </button>
-        <button
-          onClick={() => setActiveMode('library')}
-          className={`flex-1 min-w-[120px] py-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-            activeMode === 'library' 
-              ? 'bg-blue-600 text-white shadow-sm font-black' 
-              : 'text-slate-450 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-355'
-          }`}
-        >
-          📖 Tüm Hareketler
-        </button>
+    <div className={`${activeMode !== 'quick' || step === 1 ? 'max-w-7xl' : 'max-w-xl'} mx-auto md:px-4 py-2 md:py-8`}>
+      {/* Bölüm seçici: telefonda 2×2, geniş ekranda tek sıra */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 bg-slate-100 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-1.5 rounded-2xl mb-6">
+        {([
+          { id: 'quick', label: 'Hızlı program', emoji: '🏋️', active: 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white' },
+          { id: 'yoga', label: 'Yoga', emoji: '🧘', active: 'bg-emerald-500 text-white' },
+          { id: 'planner', label: 'Planlayıcı', emoji: '📋', active: 'bg-indigo-600 text-white' },
+          { id: 'library', label: 'Hareketler', emoji: '📖', active: 'bg-blue-600 text-white' },
+        ] as const).map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => {
+              setActiveMode(tab.id);
+              if (tab.id === 'yoga') setFocus('yoga');
+            }}
+            className={`py-2.5 px-2 text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap ${
+              activeMode === tab.id ? `${tab.active} shadow-sm` : 'text-slate-500 dark:text-slate-400'
+            }`}
+          >
+            <span aria-hidden>{tab.emoji}</span> {tab.label}
+          </button>
+        ))}
       </div>
 
       {activeMode === 'yoga' ? (
@@ -201,13 +177,13 @@ export default function WorkoutSelection() {
                          6'lı Çelik Karın Programı
                       </h3>
                       <p className="text-xs text-slate-400 mt-1.5 leading-relaxed font-medium">
-                        Profesyonel 6 hareketlik orijinal karın sekansı. Bölgesel olarak sırayla üst karın, oblik ve alt karını dener.
+                        6 hareketlik karın programı: sırayla üst karın, yan karın ve alt karını çalıştırır.
                       </p>
                     </div>
                     
                     {/* Visual chips for the 6 moves */}
                     <div className="bg-slate-950/40 p-3 rounded-2xl border border-slate-800/60">
-                      <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest block mb-1">6 HAREKET SEKANSI (30 SN)</span>
+                      <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest block mb-1">6 HAREKET (30 SN)</span>
                       <div className="flex flex-wrap gap-1">
                         {[
                           'Crunch Hold',
@@ -258,13 +234,13 @@ export default function WorkoutSelection() {
                          Yoga & Esneme Akışı
                       </h3>
                       <p className="text-xs text-slate-400 mt-1.5 leading-relaxed font-medium">
-                        Zihinsel dekompresyon, derin fasyal esneme ve omurlar arası bütünlük için tasarlanmış özel asana sekansı.
+                        Gevşemek, derin esnemek ve sırtını rahatlatmak için hazırlanmış yoga akışı.
                       </p>
                     </div>
                     
                     {/* Visual chips for the 7 moves */}
                     <div className="bg-slate-950/40 p-3 rounded-2xl border border-slate-800/60">
-                      <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest block mb-1">7 PREMİUM ASANA (45 SN)</span>
+                      <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest block mb-1">7 DURUŞ (45 SN)</span>
                       <div className="flex flex-wrap gap-1">
                         {[
                           'Sukhasana',

@@ -206,14 +206,14 @@ export default function Dashboard() {
           })()}
         </div>
 
-        <div className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.01] hover:shadow-md dark:shadow-none duration-200 ${latestRecord?.injuries ? 'ring-2 ring-amber-500/20 shadow-amber-50 dark:ring-amber-500/20' : ''}`}>
+        <div className={`min-w-0 overflow-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.01] hover:shadow-md dark:shadow-none duration-200 ${latestRecord?.injuries ? 'ring-2 ring-amber-500/20 shadow-amber-50 dark:ring-amber-500/20' : ''}`}>
           <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold mb-1.5 block">DURUM</div>
-          <div className={`text-lg font-display font-black ${latestRecord?.injuries ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-slate-100'}`}>
-            {latestRecord?.injuries ? 'Sakatlık/Hassasiyet ⚠️' : 'Tamamen Aktif ⚡'}
+          <div className={`text-lg leading-tight break-words font-display font-black ${latestRecord?.injuries ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-slate-100'}`}>
+            {latestRecord?.injuries ? 'Hassas bölge ⚠️' : 'Tamamen Aktif ⚡'}
           </div>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium leading-relaxed">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-medium leading-relaxed break-words">
             {latestRecord?.injuries 
-              ? `Hassas Alan: ${latestRecord.injuries}`
+              ? latestRecord.injuries
               : 'Egzersizler için herhangi bir sakatlık kısıtlaması bulunmuyor.'}
           </p>
         </div>

@@ -393,6 +393,27 @@ export const firebaseService = {
     }
   },
 
+  /** Kullanıcının takviye listesi; hiç kaydedilmemişse null (varsayılan liste gösterilir). */
+  getSupplementList: async (userId: string, profileId: string): Promise<{ id: string, name: string, dosage: string }[] | null> => {
+    const path = `users/${userId}/profiles/${profileId}/supplementSettings/list`;
+    try {
+      const snap = await getDoc(doc(db, path));
+      return snap.exists() ? ((snap.data() as { items?: { id: string, name: string, dosage: string }[] }).items || []) : null;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.GET, path);
+      return null;
+    }
+  },
+
+  saveSupplementList: async (userId: string, profileId: string, items: { id: string, name: string, dosage: string }[]) => {
+    const path = `users/${userId}/profiles/${profileId}/supplementSettings/list`;
+    try {
+      await withWriteTimeout(setDoc(doc(db, path), sanitizeData({ items, lastUpdated: new Date().toISOString() })));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
   getMedicationList: async (userId: string, profileId: string): Promise<{ id: string, name: string, dosage: string }[]> => {
     const path = `users/${userId}/profiles/${profileId}/medicationConfig/list`;
     try {

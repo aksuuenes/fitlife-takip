@@ -10,12 +10,14 @@ import {
 } from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
 import { HealthRecord } from '../types';
+import { estimateBmr, estimateBodyFatPct, estimateSkeletalMuscle, Gender } from '../lib/bodyComp';
 
 interface GarminInBodyHubProps {
   records: HealthRecord[];
+  gender?: Gender;
 }
 
-export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
+export default function GarminInBodyHub({ records, gender }: GarminInBodyHubProps) {
   const [activeTab, setActiveTab] = useState<'bodyComp' | 'fitnessTrends' | 'dailyActivity'>('bodyComp');
   const [chartRange, setChartRange] = useState<'7d' | '30d' | 'all'>('7d');
   const [selectedSegment, setSelectedSegment] = useState<string>('gövde');
@@ -41,14 +43,22 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
   const height = latest.height || 175;
   const age = latest.age || 25;
   const bmi = latest.bmi || (weight / Math.pow(height / 100, 2));
-  const bodyFatPct = latest.bodyFat || (bmi * 1.2 + 0.23 * age - 5.4 - (bmi > 25 ? 2 : 0)); // estimate
+  const bodyFatPct = latest.bodyFat || estimateBodyFatPct(bmi, age, gender);
   const bodyFatMass = (weight * bodyFatPct) / 100;
-  const skeletalMuscleMass = latest.muscleMass || (weight * (0.4 + (bmi < 22 ? 0.05 : -0.02))); // estimate SMM
+  const skeletalMuscleMass = latest.muscleMass || estimateSkeletalMuscle(weight, bodyFatPct, gender);
   const bodyWater = weight * (1 - bodyFatPct / 100) * 0.73; // Total body water is roughly 73% of FFM
   const boneMass = weight * 0.045 + 0.5; // bones are ~4-5% of weight
   const leanMass = weight - bodyFatMass;
   const visceralFat = Math.round(Math.max(1, Math.min(20, (bmi * 0.45) + (age * 0.05) - 3))); // visceral fat rating
-  const bmr = Math.round(10 * weight + 6.25 * height - 5 * age + 5); // BMR Mifflin-St Jeor estimate
+  const bmr = estimateBmr(weight, height, age, gender);
+  // ACE yağ oranı aralıkları
+  const fatBand = (() => {
+    const [athletic, fit, normal] = gender === 'female' ? [21, 25, 32] : [14, 18, 25];
+    if (bodyFatPct < athletic) return { label: 'Sporcu düzeyi', color: 'text-emerald-500' };
+    if (bodyFatPct < fit) return { label: 'Fit', color: 'text-emerald-500' };
+    if (bodyFatPct < normal) return { label: 'Normal', color: 'text-sky-500' };
+    return { label: 'Yüksek', color: 'text-amber-500' };
+  })();
 
   // Garmin metrics estimation
   const restingHR = latest.heartRate ? Math.max(50, latest.heartRate - 12) : 62;
@@ -98,13 +108,13 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
     
     return records.slice(-limit).map(r => {
       const rBmi = r.bmi || r.weight / Math.pow(r.height / 100, 2);
-      const rFat = r.bodyFat || (rBmi * 1.2 + 0.23 * (r.age || 25) - 5.4);
+      const rFat = r.bodyFat || estimateBodyFatPct(rBmi, r.age || 25, gender);
       return {
         date: new Date(r.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
         dateRaw: r.date,
         kilo: r.weight,
         yagOrani: parseFloat(rFat.toFixed(1)),
-        kasKutlesi: parseFloat((r.muscleMass || r.weight * 0.43).toFixed(1)),
+        kasKutlesi: parseFloat((r.muscleMass || estimateSkeletalMuscle(r.weight, rFat, gender)).toFixed(1)),
         adim: r.steps || 0,
         kalori: r.caloriesBurned || 0,
         stres: r.stressLevel || 5,
@@ -140,6 +150,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
           <p>
             Bu bölümdeki kas, yağ, vücut suyu, enerji (pil) ve kalp değerleri <b>tahminidir</b>; sitede Garmin veya InBody bağlantısı yoktur.
             Gerçek ölçümlerin varsa "Kayıt Ekle"de yağ oranı ve kas kütlesini girersen onlar kullanılır.
+            {!gender && <> Tahminlerin doğru olması için <b>Profil</b> sayfasından cinsiyetini seç.</>}
           </p>
         </div>
       )}
@@ -165,7 +176,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
           }`}
         >
           <TrendingUp className="w-4 h-4 text-emerald-500" />
-          Ağırlık & Yağ Grafik Treni
+          Kilo & Yağ
         </button>
         <button
           onClick={() => setActiveTab('dailyActivity')}
@@ -216,7 +227,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
                   <div className="text-2xl font-display font-black text-slate-900 dark:text-white flex items-baseline gap-1">
                     {skeletalMuscleMass.toFixed(1)} <span className="text-xs font-sans font-medium text-slate-400">kg</span>
                   </div>
-                  <div className="mt-3 text-[10px] font-bold text-emerald-500">Normal Aralıkta (Fit)</div>
+                  <div className="mt-3 text-[10px] font-bold text-slate-500 dark:text-slate-400">Yağsız kütle: {leanMass.toFixed(1)} kg</div>
                 </div>
 
                 <div className="p-4 bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800 rounded-2xl">
@@ -224,7 +235,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
                   <div className="text-2xl font-display font-black text-slate-900 dark:text-white flex items-baseline gap-1">
                     {bodyFatMass.toFixed(1)} <span className="text-xs font-sans font-medium text-slate-400">kg</span>
                   </div>
-                  <div className="mt-3 text-[10px] font-bold text-indigo-500">Yağ Oranı: %{bodyFatPct.toFixed(1)}</div>
+                  <div className={`mt-3 text-[10px] font-bold ${fatBand.color}`}>Yağ oranı %{bodyFatPct.toFixed(1)} · {fatBand.label}</div>
                 </div>
 
                 <div className="p-4 bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800 rounded-2xl">

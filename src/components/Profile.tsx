@@ -399,7 +399,28 @@ export default function Profile() {
                 </div>
               </div>
 
-              <button 
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-mono font-extrabold uppercase tracking-widest text-slate-400 ml-1">CİNSİYET</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {([['male', 'Erkek'], ['female', 'Kadın']] as const).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setLocalProfile(prev => prev ? { ...prev, gender: value } : null)}
+                      className={`py-3.5 rounded-xl border font-bold text-sm transition-colors ${
+                        localProfile?.gender === value
+                          ? 'bg-indigo-600 border-indigo-600 text-white'
+                          : 'bg-slate-50 border-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[11px] text-slate-400 ml-1">Kalori hedefi ve vücut yağı tahmini buna göre hesaplanır.</p>
+              </div>
+
+              <button
                 type="submit"
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-display font-black text-xs uppercase tracking-widest flex items-center justify-center shadow-lg shadow-indigo-100 transition-all transform active:scale-[0.98] cursor-pointer"
               >
