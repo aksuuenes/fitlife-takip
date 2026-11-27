@@ -110,8 +110,8 @@ export default function HealthForm() {
 
     const steps = formData.steps ? parseInt(formData.steps) : undefined;
     const waterIntake = formData.waterIntake ? parseFloat(formData.waterIntake) : undefined;
-    const bodyFat = formData.bodyFat ? parseFloat(formData.bodyFat) : undefined;
-    const muscleMass = formData.muscleMass ? parseFloat(formData.muscleMass) : undefined;
+    const bodyFat = formData.bodyFat ? parseFloat(String(formData.bodyFat).replace(',', '.')) : undefined;
+    const muscleMass = formData.muscleMass ? parseFloat(String(formData.muscleMass).replace(',', '.')) : undefined;
 
     const newRecord: HealthRecord = {
       id: Date.now().toString(),
@@ -255,6 +255,30 @@ export default function HealthForm() {
 
 
 
+          {/* İsteğe bağlı: tartı / BIA ölçümleri */}
+          <div className="space-y-3">
+            <p className="text-[10px] font-mono font-extrabold uppercase tracking-widest text-slate-400 border-b border-slate-50 pb-2">
+              Akıllı tartı ölçümleri (isteğe bağlı)
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-slate-500 ml-1">YAĞ ORANI (%)</label>
+                <input type="number" inputMode="decimal" step="0.1" placeholder="Örn: 22"
+                  value={formData.bodyFat}
+                  onChange={(e) => setFormData({...formData, bodyFat: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3.5 focus:bg-white focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 font-semibold text-sm text-slate-800" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-slate-500 ml-1">KAS KÜTLESİ (KG)</label>
+                <input type="number" inputMode="decimal" step="0.1" placeholder="Örn: 35"
+                  value={formData.muscleMass}
+                  onChange={(e) => setFormData({...formData, muscleMass: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3.5 focus:bg-white focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 font-semibold text-sm text-slate-800" />
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-400 ml-1">Akıllı tartın ya da spor salonundaki ölçüm cihazın bu değerleri veriyorsa gir; boş bırakırsan tahmin edilir.</p>
+          </div>
+
           {/* SECTION 4: REST & LIFESTYLE */}
           <div className="space-y-6">
             <h3 className="text-[10px] font-mono font-extrabold uppercase tracking-widest text-slate-400 flex items-center gap-1.5 border-b border-slate-50 pb-2">
@@ -323,9 +347,8 @@ export default function HealthForm() {
         <div className="mt-8 p-4 bg-slate-50/70 rounded-2xl border border-slate-100 flex items-start">
           <Info className="h-4.5 w-4.5 text-indigo-500 mr-2.5 mt-0.5 shrink-0" />
           <p className="text-[11px] text-slate-400 leading-relaxed font-semibold">
-            Biyometrik verileriniz güvenli yerel veritabanınızda şifrelenir. 
-            Bu veriler fitness gelişim seviyeleriniz, yapay zeka tarafından hazırlanan antrenman programları 
-            ve haftalık fizyolojik trend analizleriniz için kullanılır.
+            Verileriniz giriş yaptıysanız hesabınızda (Firebase), misafir modundaysanız yalnızca bu cihazda saklanır.
+            Gelişim grafikleriniz, kalori hedefiniz ve analizleriniz bu kayıtlardan hesaplanır.
           </p>
         </div>
       </div>

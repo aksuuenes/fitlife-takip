@@ -25,9 +25,9 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
     return (
       <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-12 rounded-3xl text-center">
         <Info className="mx-auto h-12 w-12 text-slate-300 dark:text-slate-700 mb-4 animate-bounce" />
-        <h3 className="text-slate-900 dark:text-white text-lg font-display font-black">Garmin Hub Veri Bekliyor</h3>
+        <h3 className="text-slate-900 dark:text-white text-lg font-display font-black">Analiz Veri Bekliyor</h3>
         <p className="text-slate-400 dark:text-slate-500 text-xs mt-2 max-w-sm mx-auto">
-          Grafikler, InBody vücut kompozisyonu raporu ve Garmin Connect günlük aktivite analizlerini görebilmek için lütfen profilinizde en az bir sağlık kaydı oluşturun.
+          Grafikleri, tahmini vücut kompozisyonunu ve aktivite özetini görebilmek için önce "Kayıt Ekle" ile en az bir sağlık kaydı oluşturun.
         </p>
       </div>
     );
@@ -134,7 +134,16 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
 
   return (
     <div className="space-y-6">
-      {/* Dynamic Tab Selector in Garmin Sporty Style */}
+      {!(latest.bodyFat && latest.muscleMass) && (
+        <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-300 text-xs font-medium leading-relaxed">
+          <span className="text-base leading-none">ℹ️</span>
+          <p>
+            Bu bölümdeki kas, yağ, vücut suyu, enerji (pil) ve kalp değerleri <b>tahminidir</b>; sitede Garmin veya InBody bağlantısı yoktur.
+            Gerçek ölçümlerin varsa "Kayıt Ekle"de yağ oranı ve kas kütlesini girersen onlar kullanılır.
+          </p>
+        </div>
+      )}
+      {/* Dynamic Tab Selector */}
       <div className="flex bg-slate-100/80 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800 p-1.5 rounded-2xl w-full md:w-max">
         <button
           onClick={() => setActiveTab('bodyComp')}
@@ -145,7 +154,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
           }`}
         >
           <Layers className="w-4 h-4 text-indigo-500" />
-          InBody Vücut Kompozisyonu
+          Vücut Kompozisyonu
         </button>
         <button
           onClick={() => setActiveTab('fitnessTrends')}
@@ -167,7 +176,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
           }`}
         >
           <Zap className="w-4 h-4 text-cyan-500" />
-          Garmin Connect Aktivite
+          Aktivite
         </button>
       </div>
 
@@ -189,9 +198,9 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
                 <div>
                   <h3 className="text-xl font-display font-black text-slate-900 dark:text-white-800 flex items-center gap-2">
                     <PieChart className="w-5.5 h-5.5 text-indigo-500" />
-                    InBody Detaylı Analiz
+                    Detaylı Vücut Analizi
                   </h3>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Klinik biyo-elektrik empedans analizi (BIA) benzeri eşleştirilmiş raporlar.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Boy, kilo ve yaşından hesaplanan tahminlerdir; tartı veya BIA cihazı ölçümü değildir.</p>
                 </div>
                 <div className="text-right">
                   <span className="text-[9px] font-mono font-extrabold uppercase bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100/40 dark:border-indigo-900/40 px-3 py-1.5 rounded-lg">
@@ -237,7 +246,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
 
               {/* BIA Bar Indicators (Typical InBody style with C-S-D Curves!) */}
               <div className="space-y-6 bg-slate-50/50 dark:bg-slate-950/20 p-5 rounded-2xl border border-slate-100 dark:border-slate-800/60">
-                <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">InBody Kas-Yağ Kontrol Eğrisi (C-G-D Eğrisi)</h4>
+                <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">Kas-Yağ Dengesi (tahmini)</h4>
                 
                 {/* Weight Indicator */}
                 <div className="space-y-2">
@@ -289,7 +298,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
               <div className="mb-4">
                 <span className="text-[10px] font-mono font-extrabold uppercase bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-md">BÖLGESEL DAĞILIM</span>
                 <h4 className="text-lg font-display font-black text-slate-900 dark:text-white mt-1.5 leading-tight">Segmental Kas Dağılımı</h4>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">InBody analizi ile her bir vücut alanındaki lokal kas ağırlık tahmini.</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">Toplam kas kütlesinin bölgelere oransal dağılımı (tahmini).</p>
               </div>
 
               {/* Visual Humanoid / Box-Selector */}
@@ -552,7 +561,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
                   </div>
                   <Zap className="text-cyan-500 w-5 h-5 fill-current animate-pulse" />
                 </div>
-                <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Günlük enerji bilançonuzu temsil eden Garmin Connect patentli algoritmik skor.</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Uyku ve stres kayıtlarından hesaplanan tahmini günlük enerji skoru.</p>
 
                 {/* Battery percentage circle simulation */}
                 <div className="relative flex justify-center py-6">
@@ -652,7 +661,7 @@ export default function GarminInBodyHub({ records }: GarminInBodyHubProps) {
                   </div>
                   <Activity className="text-indigo-600 w-5 h-5" />
                 </div>
-                <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Garmin Connect&apos;in Dünya Sağlık Örgütü (WHO) kılavuzlarına göre haftalık 150 dakikalık kardiyo hedefini izlemesi.</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Dünya Sağlık Örgütü'nün haftalık 150 dakikalık hareket önerisine göre tahmini ilerleme.</p>
 
                 {/* Progress bar container */}
                 <div className="py-6 space-y-3">

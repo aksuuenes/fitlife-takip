@@ -617,7 +617,7 @@ export default function YogaPosterStudio() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsAddPanelOpen(false)}
-              className="fixed inset-0 z-40 bg-slate-950/60 md:backdrop-blur-"
+              className="fixed inset-0 z-[100] bg-slate-950/60 md:backdrop-blur-"
             />
             
             {/* Sliding Drawer */}
@@ -626,7 +626,7 @@ export default function YogaPosterStudio() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 z-50 w-full sm:w-[460px] bg-white dark:bg-slate-950 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-800"
+              className="fixed inset-y-0 right-0 z-[101] w-full sm:w-[460px] bg-white dark:bg-slate-950 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-800"
             >
               {/* Drawer Header */}
               <div className="p-6 border-b border-slate-100 dark:border-slate-900 flex items-center justify-between">

@@ -109,7 +109,7 @@ export default function Analysis() {
             </span>
           </div>
           <h1 className="text-3xl font-display font-black text-slate-900 dark:text-white tracking-tight">Sağlık Trendleri & Performans</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Garmin Connect entegrasyonu, InBody vücut kompozisyonu ve yapay zeka asistanınız.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Kilo ve sağlık trendlerin, tahmini vücut kompozisyonu ve yapay zeka asistanın.</p>
         </div>
       </header>
 
@@ -125,7 +125,7 @@ export default function Analysis() {
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
-              📊 Garmin Hub & InBody
+              📊 Vücut & Aktivite
             </button>
             <button
               onClick={() => setActiveView('ai')}
