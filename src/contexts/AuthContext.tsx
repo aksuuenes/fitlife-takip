@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   User, 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider, 
   signOut, 
   onAuthStateChanged 
@@ -50,6 +52,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     }, 3000);
 
+    getRedirectResult(auth).catch(err => {
+      console.error('Google yönlendirme girişi başarısız:', err);
+      try { sessionStorage.setItem('fitlife_auth_error', err?.code || String(err)); } catch { /* yoksay */ }
+    });
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
         setUser(user);
@@ -60,6 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         clearTimeout(fallbackTimer);
 
         if (user) {
+          localStorage.removeItem('fitlife_guest_mode');
           const docRef = doc(db, 'users', user.uid);
           const cacheKey = `fitlife_user_profile_${user.uid}`;
 
@@ -186,7 +194,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async () => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    provider.setCustomParameters({ prompt: 'select_account' });
+    const standalone = window.matchMedia?.('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+    // Ana ekran uygulamasında açılır pencere uygulamaya geri dönmüyor: yönlendirme kullan
+    if (standalone) {
+      await signInWithRedirect(auth, provider);
+      return;
+    }
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err: any) {
+      if (err?.code === 'auth/popup-blocked' || err?.code === 'auth/operation-not-supported-in-this-environment') {
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+      throw err;
+    }
   };
 
   const signUpWithEmail = async (email: string, pass: string, name: string) => {

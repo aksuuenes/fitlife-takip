@@ -6,9 +6,17 @@ import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// iPhone ana ekran uygulamasında Google girişi yönlendirme ile yapılır. Yönlendirmenin uygulamanın içinde
+// kalması için giriş sayfası sitenin kendi adresinden sunulur (/__/auth → vercel.json ile firebaseapp.com'a aktarılır).
+const isStandalone = typeof window !== 'undefined' && (
+  window.matchMedia?.('(display-mode: standalone)').matches || (window.navigator as any).standalone === true
+);
+const PROD_HOST = 'fitlife-takip.vercel.app';
+const authDomain = isStandalone && window.location.hostname === PROD_HOST ? PROD_HOST : 'fitlife-5cc6c.firebaseapp.com';
+
 const firebaseConfig = {
   apiKey: "AIzaSyBV56uOZ51Y-Coog2USjdlwLXWKFZ768IA",
-  authDomain: "fitlife-5cc6c.firebaseapp.com",
+  authDomain,
   projectId: "fitlife-5cc6c",
   storageBucket: "fitlife-5cc6c.firebasestorage.app",
   messagingSenderId: "402029535287",

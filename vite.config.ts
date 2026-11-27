@@ -53,7 +53,7 @@ export default defineConfig(({mode}) => {
             },
           ],
           navigateFallback: '/index.html',
-          navigateFallbackDenylist: [/^\/api\//],
+          navigateFallbackDenylist: [/^\/api\//, /^\/__\//],
           maximumFileSizeToCacheInBytes: 5000000
         },
         devOptions: {
