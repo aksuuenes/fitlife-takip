@@ -25,7 +25,7 @@ export interface NutritionSettings {
 
 export const DEFAULT_SETTINGS: NutritionSettings = { favorites: [], recents: [], weeklyRate: 0.5 };
 export const RATE_OPTIONS = [0.25, 0.5, 0.75, 1];
-const KCAL_PER_KG = 7700;
+export const KCAL_PER_KG = 7700;
 const MAX_RECENTS = 12;
 
 export interface BodyStats {
