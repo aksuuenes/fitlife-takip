@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import BottomSheet from '../ui/BottomSheet';
 import { X, Target, TrendingDown, TrendingUp, Minus as Equal } from 'lucide-react';
-import { BodyStats, Goals, NutritionSettings, RATE_OPTIONS, computeGoals, projectWeight } from '../../lib/nutrition';
+import { BodyStats, Goals, KCAL_PER_KG, NutritionSettings, RATE_OPTIONS, computeGoals, projectWeight } from '../../lib/nutrition';
 
 type Mode = 'target' | 'custom' | 'auto';
 
@@ -16,7 +16,11 @@ export default function GoalSheet({ goals, body, settings, onSave, onClose }: {
   const initialMode: Mode = settings.customKcal ? 'custom' : settings.targetWeight ? 'target' : 'auto';
   const [mode, setMode] = useState<Mode>(initialMode);
   const [target, setTarget] = useState(String(settings.targetWeight ?? (body.weight ? Math.round(body.weight - 5) : '')));
-  const [rate, setRate] = useState(settings.weeklyRate || 0.5);
+  const [rateText, setRateText] = useState(String(settings.weeklyRate || 0.5).replace('.', ','));
+  const parsedRate = Number(rateText.replace(',', '.'));
+  const rateValid = parsedRate >= 0.1 && parsedRate <= 3;
+  const rate = rateValid ? Math.round(parsedRate * 100) / 100 : settings.weeklyRate || 0.5;
+  const pickRate = (r: number) => setRateText(String(r).replace('.', ','));
   const [kcal, setKcal] = useState(String(settings.customKcal ?? goals.kcal));
 
   const targetNum = Number(target.replace(',', '.'));
@@ -31,11 +35,17 @@ export default function GoalSheet({ goals, body, settings, onSave, onClose }: {
     return null;
   }, [mode, targetNum, targetValid, rate, kcalNum, kcalValid, body, settings]);
 
+  // Kalori alt sınıra dayanırsa gerçek kayıp hızı seçilenden yavaş olur
+  const effectiveRate = preview && mode === 'target' && preview.direction === 'lose'
+    ? Math.min(rate, Math.max(0.05, ((preview.tdee - preview.kcal) * 7) / KCAL_PER_KG))
+    : rate;
+  const rateCapped = effectiveRate < rate - 0.02;
+
   const projection = mode === 'target' && targetValid && body.weight
-    ? projectWeight(body.weight, targetNum, rate, settings.targetWeight === targetNum ? settings.startWeight : body.weight)
+    ? projectWeight(body.weight, targetNum, effectiveRate, settings.targetWeight === targetNum ? settings.startWeight : body.weight)
     : null;
 
-  const canSave = mode === 'auto' || (mode === 'target' && targetValid && !!body.weight) || (mode === 'custom' && kcalValid);
+  const canSave = mode === 'auto' || (mode === 'target' && targetValid && rateValid && !!body.weight) || (mode === 'custom' && kcalValid);
 
   const save = () => {
     if (mode === 'target') {
@@ -96,15 +106,31 @@ export default function GoalSheet({ goals, body, settings, onSave, onClose }: {
               <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Haftalık hız</p>
               <div className="grid grid-cols-4 gap-1.5">
                 {RATE_OPTIONS.map(r => (
-                  <button key={r} onClick={() => setRate(r)}
-                    className={`py-2.5 rounded-xl text-xs font-black border transition-colors ${rate === r ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'}`}>
+                  <button key={r} onClick={() => pickRate(r)}
+                    className={`py-2.5 rounded-xl text-xs font-black border transition-colors ${rateValid && rate === r ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'}`}>
                     {String(r).replace('.', ',')} kg
                   </button>
                 ))}
               </div>
-              <p className="mt-1.5 text-[10px] text-slate-400">
-                {rate >= 1 ? 'Hızlı: sürdürmesi zor olabilir, bir uzmana danışman iyi olur.' : rate >= 0.75 ? 'Hızlı ama makul.' : 'Önerilen: sürdürülebilir ve kas kaybı riski düşük.'}
+              <label className="mt-2 flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 shrink-0">Ya da kendin yaz:</span>
+                <input type="text" inputMode="decimal" value={rateText}
+                  onChange={e => setRateText(e.target.value.replace(/[^0-9.,]/g, '').slice(0, 4))}
+                  className={`w-20 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border text-sm font-black text-center outline-none focus:ring-2 focus:ring-emerald-500/40 ${rateValid ? 'border-slate-100 dark:border-slate-700' : 'border-red-400'}`} />
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">kg / hafta</span>
+              </label>
+              <p className={`mt-1.5 text-[11px] ${!rateValid ? 'text-red-500' : rate > 1 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-400'}`}>
+                {!rateValid
+                  ? '0,1 ile 3 kg arasında bir değer yaz.'
+                  : rate > 1
+                    ? 'Çok hızlı: haftada 1 kg üstü kas kaybı ve halsizlik yapabilir. Bir doktora ya da diyetisyene danış.'
+                    : rate >= 0.75 ? 'Hızlı ama makul.' : 'Önerilen: sürdürülebilir ve kas kaybı riski düşük.'}
               </p>
+              {rateCapped && rateValid && (
+                <p className="mt-1 text-[11px] text-amber-600 dark:text-amber-400">
+                  Günlük kalori güvenli alt sınıra ({preview?.kcal} kcal) dayandı. Bu yüzden tahmini hız haftada yaklaşık {String(Math.round(effectiveRate * 10) / 10).replace('.', ',')} kg.
+                </p>
+              )}
             </div>
 
             {projection && (

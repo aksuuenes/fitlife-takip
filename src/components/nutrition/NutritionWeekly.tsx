@@ -3,7 +3,7 @@ import { Flame, Loader2, Target, TrendingDown, TrendingUp, Scale } from 'lucide-
 import { useMealStore } from '../../hooks/useNutrition';
 import {
   BodyStats, Goals, NutritionSettings, actualWeeklyTrend, addDays, dayOnTarget, lastNDays,
-  projectWeight, sumEntries, targetStreak, toDateKey,
+  projectWeight, sumEntries, targetStreak, toDateKey, KCAL_PER_KG,
 } from '../../lib/nutrition';
 
 const DAY_SHORT = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'];
@@ -134,7 +134,10 @@ function WeightGoalCard({ body, records, settings, goals, onEditGoal }: {
   }
 
   const target = settings.targetWeight;
-  const p = projectWeight(body.weight, target, settings.weeklyRate || 0.5, settings.startWeight);
+  const planRate = settings.weeklyRate || 0.5;
+  // Kalori alt sınıra dayandıysa gerçek hız daha yavaş
+  const rate = goals.direction === 'lose' ? Math.min(planRate, Math.max(0.05, ((goals.tdee - goals.kcal) * 7) / KCAL_PER_KG)) : planRate;
+  const p = projectWeight(body.weight, target, rate, settings.startWeight);
   const start = settings.startWeight ?? body.weight;
   const wantLose = target < start;
   const trendGood = trend !== null && (wantLose ? trend < -0.05 : trend > 0.05);
@@ -164,7 +167,7 @@ function WeightGoalCard({ body, records, settings, goals, onEditGoal }: {
         <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">🎉 Hedefine ulaştın! Kilonu korumak için günlük {goals.kcal} kcal civarında kal.</p>
       ) : (
         <div className="space-y-2 text-sm">
-          <Row icon={wantLose ? TrendingDown : TrendingUp} label={`Plana göre (haftada ${String(settings.weeklyRate || 0.5).replace('.', ',')} kg)`} value={fmt(p.eta)} />
+          <Row icon={wantLose ? TrendingDown : TrendingUp} label={`Plana göre (haftada ${String(Math.round(rate * 100) / 100).replace('.', ',')} kg)`} value={fmt(p.eta)} />
           {trend !== null && (
             <Row icon={trend < 0 ? TrendingDown : TrendingUp}
               label={`Gerçek gidişat: haftada ${trend > 0 ? '+' : ''}${String(trend).replace('.', ',')} kg`}
