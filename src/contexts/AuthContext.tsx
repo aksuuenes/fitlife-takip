@@ -68,6 +68,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (user) {
           localStorage.removeItem('fitlife_guest_mode');
+          // Misafirken kalan 'local' profil kimliğiyle hesabın verileri aranmasın; profil yüklenince doğru kimlik seçilir
+          if (localStorage.getItem('activeProfileId') === 'local') {
+            localStorage.removeItem('activeProfileId');
+            setActiveProfileId(null);
+          }
           const docRef = doc(db, 'users', user.uid);
           const cacheKey = `fitlife_user_profile_${user.uid}`;
 
@@ -128,12 +133,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 };
                 await setDoc(docRef, initialProfile, { merge: true });
                 applyProfile(initialProfile);
-              } else if (attempt < 5) {
-                setTimeout(() => { loadRemote(attempt + 1); }, 3000);
+              } else if (attempt < 20) {
+                setTimeout(() => { loadRemote(attempt + 1); }, Math.min(3000 * (attempt + 1), 30000));
               }
             } catch (err) {
               console.error('Profil okunamadı, tekrar denenecek:', err);
-              if (attempt < 5) setTimeout(() => { loadRemote(attempt + 1); }, 2000 * (attempt + 1));
+              if (attempt < 20) setTimeout(() => { loadRemote(attempt + 1); }, Math.min(2000 * (attempt + 1), 30000));
             }
           };
           loadRemote();
