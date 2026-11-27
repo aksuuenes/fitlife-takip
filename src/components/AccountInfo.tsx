@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { terminate, clearIndexedDbPersistence, doc, getDocFromServer } from 'firebase/firestore';
+import { doc, getDocFromServer } from 'firebase/firestore';
 import { db, firestoreCacheMode } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -57,17 +57,6 @@ export default function AccountInfo({ className = '' }: { className?: string }) 
     setBusy(false);
   };
 
-  const resetCache = async () => {
-    setBusy(true);
-    try {
-      await terminate(db);
-      await clearIndexedDbPersistence(db);
-    } catch (e) {
-      console.error('Önbellek temizlenemedi:', e);
-    }
-    window.location.reload();
-  };
-
   return (
     <div className={`text-center space-y-0.5 ${className}`}>
       <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 break-all">{email}</p>
@@ -82,12 +71,6 @@ export default function AccountInfo({ className = '' }: { className?: string }) 
           className="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 disabled:opacity-50">
           {busy ? 'Deneniyor…' : 'Bağlantı testi'}
         </button>
-        {!currentProfile && (
-          <button onClick={resetCache} disabled={busy}
-            className="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 disabled:opacity-50">
-            Verileri yeniden yükle
-          </button>
-        )}
       </div>
       {results && (
         <div className="mt-2 text-left text-[10px] font-mono leading-relaxed text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950/60 rounded-lg p-2 break-words">
