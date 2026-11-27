@@ -154,7 +154,7 @@ export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
           </div>
           <div>
             <span className="font-display font-black text-2xl tracking-tight bg-gradient-to-r from-white via-indigo-100 to-emerald-300 bg-clip-text text-transparent">FitLife</span>
-            <span className="text-[10px] font-mono tracking-widest text-emerald-400 font-black block -mt-1 uppercase">Wellness AI</span>
+            <span className="text-[10px] font-mono tracking-widest text-emerald-400 font-black block -mt-1 uppercase">Sağlık Takibi</span>
           </div>
         </div>
 
@@ -162,7 +162,7 @@ export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
         <div className="z-10 max-w-lg mb-12">
           <div className="inline-flex items-center gap-2 py-1.5 px-3 rounded-full bg-white/5 border border-white/10 text-emerald-400 font-mono text-[10px] uppercase tracking-widest font-black mb-6">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Yapay Zekâ Destekli Sağlık Takibi
+            Kişisel Sağlık ve Beslenme Takibi
           </div>
           
           <h1 className="text-4xl md:text-5xl font-display font-black tracking-tight leading-[1.05] text-white">
@@ -187,7 +187,7 @@ export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
 
         {/* Footer credits */}
         <div className="text-[10px] font-mono text-slate-500 z-10">
-          © {new Date().getFullYear()} FitLife Wellness. Tüm hakları saklıdır.
+          © {new Date().getFullYear()} FitLife. Tüm hakları saklıdır.
         </div>
       </div>
 
@@ -204,8 +204,8 @@ export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
             <div className="w-14 h-14 bg-gradient-to-tr from-emerald-500 via-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center text-white font-display font-black italic shadow-md mb-3">
               F
             </div>
-            <h2 className="text-2xl font-display font-black text-slate-900 dark:text-white tracking-tight">FitLife Wellness</h2>
-            <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Yapay Zekâ Egzersiz & Sağlık Platformu</p>
+            <h2 className="text-2xl font-display font-black text-slate-900 dark:text-white tracking-tight">FitLife</h2>
+            <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Egzersiz, Beslenme & Sağlık Takibi</p>
           </div>
 
           <div className="text-center hidden lg:block">

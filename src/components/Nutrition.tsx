@@ -637,7 +637,7 @@ function PhotoTab({ meal, onAddMany }: { meal: MealType; onAddMany: (e: NewEntry
           </div>
           <div>
             <p className="font-display font-black text-slate-900 dark:text-white">Tabağının fotoğrafını çek</p>
-            <p className="text-xs text-slate-400 mt-1">Claude yemekleri ve porsiyonları tahmin eder, sen kontrol edip kaydedersin.</p>
+            <p className="text-xs text-slate-400 mt-1">Yemekler ve porsiyonlar fotoğraftan tahmin edilir, sen kontrol edip kaydedersin.</p>
           </div>
           <div className="flex gap-2">
             <button onClick={() => cameraRef.current?.click()} className="flex-1 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-black">Fotoğraf çek</button>
@@ -652,7 +652,7 @@ function PhotoTab({ meal, onAddMany }: { meal: MealType; onAddMany: (e: NewEntry
 
       {status === 'loading' && (
         <div className="flex items-center justify-center gap-2 py-6 text-sm font-bold text-slate-500">
-          <Sparkles className="w-4 h-4 text-emerald-500 animate-pulse" /> Claude tabağı inceliyor…
+          <Sparkles className="w-4 h-4 text-emerald-500 animate-pulse" /> Tabak inceleniyor…
         </div>
       )}
 

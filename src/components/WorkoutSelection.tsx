@@ -78,7 +78,7 @@ export default function WorkoutSelection() {
       .filter((x): x is typeof activeYoga[0] => !!x);
 
     sessionStorage.setItem('current_workout', JSON.stringify(ordered));
-    sessionStorage.setItem('workout_params', JSON.stringify({ goal: 'get_fit', level: 'beginner', energy: 'medium', title: 'Günün Elit Yoga Akışı' }));
+    sessionStorage.setItem('workout_params', JSON.stringify({ goal: 'get_fit', level: 'beginner', energy: 'medium', title: 'Günün Yoga Akışı' }));
     navigate('/workout-active');
   };
 
@@ -189,7 +189,7 @@ export default function WorkoutSelection() {
                   <div className="relative z-10 space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 text-[9px] font-black uppercase rounded-lg tracking-widest">
-                        GÜNÜN ELİT PROGRAMI
+                        GÜNÜN PROGRAMI
                       </span>
                       <div className="flex gap-1 items-center font-mono text-[9px] text-amber-500 font-bold bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
                         <Zap className="w-3 h-3 fill-current animate-pulse text-amber-500" /> CORE KUVVET
@@ -246,7 +246,7 @@ export default function WorkoutSelection() {
                   <div className="relative z-10 space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-[9px] font-black uppercase rounded-lg tracking-widest">
-                        GÜNÜN REKLAMSIZ ELİT AKIŞI
+                        GÜNÜN YOGA AKIŞI
                       </span>
                       <div className="flex gap-1 items-center font-mono text-[9px] text-emerald-400 font-bold bg-emerald-555/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
                         🧘 ESNEKLİK & DURUŞ
@@ -255,7 +255,7 @@ export default function WorkoutSelection() {
                     
                     <div>
                       <h3 className="text-lg font-display font-black text-white tracking-tight">
-                         Premium Yoga & Mobilite Akışı
+                         Yoga & Esneme Akışı
                       </h3>
                       <p className="text-xs text-slate-400 mt-1.5 leading-relaxed font-medium">
                         Zihinsel dekompresyon, derin fasyal esneme ve omurlar arası bütünlük için tasarlanmış özel asana sekansı.

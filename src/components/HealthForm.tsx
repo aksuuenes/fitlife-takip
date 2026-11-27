@@ -173,7 +173,7 @@ export default function HealthForm() {
               <ShieldCheck className="h-4 w-4" />
             </div>
             <div>
-              <p className="text-[11px] font-mono font-extrabold uppercase tracking-widest text-indigo-700">Akıllı Profillendirme</p>
+              <p className="text-[11px] font-mono font-extrabold uppercase tracking-widest text-indigo-700">Bilgilerin Dolduruldu</p>
               <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">Mevcut profil bilgileriniz ve en son sağlık verileriniz otomatik aktarıldı.</p>
             </div>
           </div>
@@ -190,9 +190,9 @@ export default function HealthForm() {
       <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm shadow-slate-100/40 border border-slate-100">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8 border-b border-slate-50 pb-6">
           <div>
-            <span className="text-[10px] font-mono font-extrabold uppercase bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md tracking-widest">PRO VE RESMİ VERİ GİRİŞİ</span>
+            <span className="text-[10px] font-mono font-extrabold uppercase bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md tracking-widest">YENİ KAYIT</span>
             <h2 className="text-2xl font-display font-black text-slate-900 mt-2">Sağlık & Fiziksel Veri Girişi</h2>
-            <p className="text-xs text-slate-400 mt-1">Ölçümlerinizi girerek detaylı analiz, yapay zeka tavsiyeleri ve gelişim grafikleri oluşturun.</p>
+            <p className="text-xs text-slate-400 mt-1">Ölçümlerini gir; gelişim grafiklerin, kalori hedefin ve önerilerin buna göre güncellensin.</p>
           </div>
           {preview && (() => {
             const status = getBMIStatus(preview.bmi);
@@ -337,7 +337,7 @@ export default function HealthForm() {
               ) : (
                 <>
                   <Save className="mr-2 h-4 w-4" />
-                  Ölçümleri ve Biyometrikleri Kaydet
+                  Kaydet
                 </>
               )}
             </button>

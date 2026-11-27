@@ -24,7 +24,7 @@ export default defineConfig(({mode}) => {
           name: 'FitLife',
           lang: 'tr',
           short_name: 'FitLife',
-          description: 'Yapay Zeka Destekli Sağlık, Egzersiz, Fitness ve Yaşamsal Metrik Takip Platformu',
+          description: 'Kilo, beslenme, egzersiz ve sağlık takibi',
           theme_color: '#030712',
           background_color: '#030712',
           display: 'standalone',
