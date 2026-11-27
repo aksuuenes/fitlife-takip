@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import WorkoutTracker from './WorkoutTracker';
 import WaterTracker from './WaterTracker';
+import NutritionTodayCard from './nutrition/NutritionTodayCard';
 import SupplementTracker from './SupplementTracker';
 import MedicationTracker from './MedicationTracker';
 import WorkoutCalendar from './WorkoutCalendar';
@@ -217,6 +218,11 @@ export default function Dashboard() {
               : 'Egzersizler için herhangi bir sakatlık kısıtlaması bulunmuyor.'}
           </p>
         </div>
+      </section>
+
+      {/* Bugünün beslenme özeti */}
+      <section className="w-full">
+        <NutritionTodayCard />
       </section>
 
       {/* Daily Trackers Row (Perfectly Aligned side-by-side) */}

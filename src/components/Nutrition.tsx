@@ -1,12 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Salad, Sun, Soup, Moon, Apple, Plus, Minus, X, Search, Trash2, ChevronLeft, ChevronRight, Loader2, Pencil, Target, Check, Camera, Sparkles, AlertCircle } from 'lucide-react';
+import { Salad, Sun, Soup, Moon, Apple, Plus, Minus, X, Search, Trash2, ChevronLeft, ChevronRight, Loader2, Pencil, Target, Check, Camera, Sparkles, AlertCircle, Star, Clock, Copy, CalendarDays, ClipboardList } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { firebaseService } from '../services/firebaseService';
-import { storageService } from '../services/storageService';
-import { useAuth } from '../contexts/AuthContext';
 import { MealEntry, MealType } from '../types';
-import { FoodItem, FOOD_CATEGORY_LABELS, FoodCategory, TURKISH_FOODS, searchFoods } from '../lib/turkishFoods';
+import { FoodItem, FOOD_CATEGORY_LABELS, FoodCategory, TURKISH_FOODS, searchFoods, servingsText, unitStep, unitTitle } from '../lib/turkishFoods';
 import { analyzeFoodPhoto, resizeImage, PhotoFoodItem, isAIEnabled } from '../services/aiService';
+import { useMealStore, useNutritionGoals } from '../hooks/useNutrition';
+import { QuickFood, addDays, entryToQuick, pushRecent, quickKey, round1, sumEntries, toDateKey, toggleFavorite } from '../lib/nutrition';
+import GoalSheet from './nutrition/GoalSheet';
+import NutritionWeekly from './nutrition/NutritionWeekly';
+import NutritionPlan from './nutrition/NutritionPlan';
+import BottomSheet from './ui/BottomSheet';
 
 const MEALS: { type: MealType; label: string; icon: React.ElementType; tint: string }[] = [
   { type: 'breakfast', label: 'Kahvaltı', icon: Sun, tint: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' },
@@ -15,116 +18,47 @@ const MEALS: { type: MealType; label: string; icon: React.ElementType; tint: str
   { type: 'snack', label: 'Ara Öğün', icon: Apple, tint: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10' },
 ];
 
-const toDateKey = (d: Date) => {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-};
-
-const round1 = (n: number) => Math.round(n * 10) / 10;
-
-function ageFrom(birthDate?: string): number | null {
-  if (!birthDate) return null;
-  const b = new Date(birthDate);
-  if (isNaN(b.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - b.getFullYear();
-  if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) age--;
-  return age;
-}
-
 export default function Nutrition() {
-  const { user, profile, activeProfileId, currentProfile } = useAuth();
+  const [view, setView] = useState<'day' | 'week' | 'plan'>('day');
   const [date, setDate] = useState(() => new Date());
   const [entries, setEntries] = useState<MealEntry[]>([]);
+  const [yesterday, setYesterday] = useState<MealEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [body, setBody] = useState<{ weight?: number; height?: number; age?: number }>({});
   const [sheetMeal, setSheetMeal] = useState<MealType | null>(null);
-  const [editingGoal, setEditingGoal] = useState(false);
-  const [customGoal, setCustomGoal] = useState<number | null>(null);
+  const [goalOpen, setGoalOpen] = useState(false);
+  const store = useMealStore();
+  const { goals, body, records, settings, update } = useNutritionGoals();
 
   const dateKey = toDateKey(date);
   const isToday = dateKey === toDateKey(new Date());
-  const goalKey = `fitlife_kcal_goal_${activeProfileId || 'local'}`;
 
-  // Kayıtları yükle
+  // Seçili günün ve bir önceki günün öğünleri
   useEffect(() => {
+    if (!store.ready) return;
     let cancelled = false;
-    const load = async () => {
+    (async () => {
       setLoading(true);
       try {
-        let list: MealEntry[] = [];
-        if (user && activeProfileId) list = await firebaseService.getMeals(user.uid, activeProfileId, dateKey);
-        else if (activeProfileId) list = storageService.getMeals(dateKey, activeProfileId);
-        if (!cancelled) setEntries(list);
+        const [list, prev] = await Promise.all([store.load(dateKey), store.load(toDateKey(addDays(date, -1)))]);
+        if (!cancelled) { setEntries(list); setYesterday(prev); }
       } catch (e) {
         console.error('Meal fetch error:', e);
       } finally {
         if (!cancelled) setLoading(false);
       }
-    };
-    load();
+    })();
     return () => { cancelled = true; };
-  }, [user, activeProfileId, dateKey]);
+  }, [store, dateKey]);
 
-  // Vücut bilgileri (hedef hesaplamak için) ve kayıtlı özel hedef
-  useEffect(() => {
-    const loadBody = async () => {
-      try {
-        let latest: { weight?: number; height?: number; age?: number } | undefined;
-        if (user && activeProfileId) {
-          const records = await firebaseService.getHealthRecords(user.uid, activeProfileId);
-          latest = records[0];
-        } else if (activeProfileId) {
-          const records = storageService.getRecords(activeProfileId);
-          latest = records[records.length - 1];
-        }
-        setBody({
-          weight: latest?.weight || currentProfile?.initialWeight || profile?.initialWeight,
-          height: latest?.height || currentProfile?.initialHeight || profile?.initialHeight,
-          age: latest?.age || ageFrom(currentProfile?.birthDate || profile?.birthDate) || undefined,
-        });
-      } catch (e) {
-        console.error('Body data error:', e);
-      }
-    };
-    loadBody();
-    try {
-      const saved = localStorage.getItem(goalKey);
-      setCustomGoal(saved ? Number(saved) : null);
-    } catch { setCustomGoal(null); }
-  }, [user, activeProfileId, currentProfile, profile, goalKey]);
-
-  // Günlük hedef: Mifflin-St Jeor, hafif aktivite, ~400 kcal açık
-  const goals = useMemo(() => {
-    const weight = body.weight || 70;
-    const height = body.height || 170;
-    const age = body.age || 30;
-    const gender = currentProfile?.gender || profile?.gender;
-    const bmr = 10 * weight + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5);
-    const tdee = bmr * 1.375;
-    const auto = Math.max(1200, Math.round((tdee - 400) / 10) * 10);
-    const kcal = customGoal && customGoal >= 800 ? customGoal : auto;
-    const protein = Math.round(Math.min(weight * 1.6, (kcal * 0.35) / 4));
-    const fat = Math.round((kcal * 0.28) / 9);
-    const carbs = Math.max(0, Math.round((kcal - protein * 4 - fat * 9) / 4));
-    return { kcal, protein, fat, carbs, auto, isCustom: !!customGoal, hasBody: !!body.weight };
-  }, [body, customGoal, currentProfile, profile]);
-
-  const totals = useMemo(() => entries.reduce(
-    (t, e) => ({ kcal: t.kcal + e.kcal, protein: t.protein + e.protein, carbs: t.carbs + e.carbs, fat: t.fat + e.fat }),
-    { kcal: 0, protein: 0, carbs: 0, fat: 0 },
-  ), [entries]);
+  const totals = useMemo(() => sumEntries(entries), [entries]);
 
   const persist = async (next: MealEntry[]) => {
     const prev = entries;
     setEntries(next);
     setSaving(true);
     try {
-      if (user && activeProfileId) await firebaseService.saveMeals(user.uid, activeProfileId, dateKey, next);
-      else if (activeProfileId) storageService.saveMeals(dateKey, next, activeProfileId);
+      await store.save(dateKey, next);
     } catch (e) {
       console.error('Meal save error:', e);
       setEntries(prev);
@@ -134,23 +68,34 @@ export default function Nutrition() {
     }
   };
 
+  const rememberRecents = (list: NewEntry[]) => {
+    update(s => ({ recents: list.reduce((r, e) => pushRecent(r, entryToQuick(e as MealEntry)), s.recents) }));
+  };
+
+  // Plan sekmesinden: belirli bir güne öğün ekle
+  const applyToDate = async (key: string, list: NewEntry[]) => {
+    const now = new Date().toISOString();
+    const withIds = list.map((e, i) => ({ ...e, id: `${Date.now()}-${i}-${Math.random().toString(36).slice(2, 7)}`, createdAt: now }));
+    if (key === dateKey) {
+      await persist([...entries, ...withIds]);
+    } else {
+      const existing = await store.load(key);
+      await store.save(key, [...existing, ...withIds]);
+    }
+    setDate(new Date(key + 'T12:00:00'));
+    setView('day');
+  };
+
   const addEntry = (entry: Omit<MealEntry, 'id' | 'createdAt'>) => {
+    rememberRecents([entry]);
     persist([...entries, { ...entry, id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, createdAt: new Date().toISOString() }]);
   };
   const addEntries = (list: Omit<MealEntry, 'id' | 'createdAt'>[]) => {
+    rememberRecents(list);
     const now = new Date().toISOString();
     persist([...entries, ...list.map((e, i) => ({ ...e, id: `${Date.now()}-${i}-${Math.random().toString(36).slice(2, 7)}`, createdAt: now }))]);
   };
   const removeEntry = (id: string) => persist(entries.filter(e => e.id !== id));
-
-  const saveGoal = (value: number | null) => {
-    try {
-      if (value) localStorage.setItem(goalKey, String(value));
-      else localStorage.removeItem(goalKey);
-    } catch { /* yoksay */ }
-    setCustomGoal(value);
-    setEditingGoal(false);
-  };
 
   const shiftDay = (delta: number) => {
     const d = new Date(date);
@@ -182,6 +127,7 @@ export default function Nutrition() {
             <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Öğünlerini kaydet, hedefini takip et</p>
           </div>
         </div>
+        {view === 'day' && (
         <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-1">
           <button onClick={() => shiftDay(-1)} className="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500" aria-label="Önceki gün">
             <ChevronLeft className="w-4 h-4" />
@@ -191,8 +137,31 @@ export default function Nutrition() {
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
+        )}
       </div>
 
+      {/* Görünüm seçici */}
+      <div className="grid grid-cols-3 gap-1 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+        {([
+          ['day', 'Günlük', Salad],
+          ['week', 'Hafta', CalendarDays],
+          ['plan', 'Plan', ClipboardList],
+        ] as const).map(([v, label, Icon]) => (
+          <button key={v} onClick={() => setView(v)}
+            className={`flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black transition-colors ${view === v ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-500'}`}>
+            <Icon className="w-3.5 h-3.5" /> {label}
+          </button>
+        ))}
+      </div>
+
+      {view === 'week' && (
+        <NutritionWeekly goals={goals} body={body} records={records} settings={settings} onEditGoal={() => setGoalOpen(true)} />
+      )}
+      {view === 'plan' && (
+        <NutritionPlan goals={goals} onApply={applyToDate} />
+      )}
+
+      {view === 'day' && (<>
       {/* Özet kartı */}
       <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm shadow-slate-100/40 dark:shadow-none">
         <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -229,15 +198,11 @@ export default function Nutrition() {
             <MacroBar label="Yağ" value={totals.fat} goal={goals.fat} color="bg-rose-400" />
 
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-              {editingGoal ? (
-                <GoalEditor initial={goals.kcal} auto={goals.auto} onSave={saveGoal} onCancel={() => setEditingGoal(false)} />
-              ) : (
-                <button onClick={() => setEditingGoal(true)} className="flex items-center gap-2 text-[11px] font-bold text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                  <Target className="w-3.5 h-3.5" />
-                  Günlük hedef: {goals.kcal} kcal {goals.isCustom ? '(özel)' : goals.hasBody ? '(otomatik)' : '(varsayılan)'}
-                  <Pencil className="w-3 h-3" />
-                </button>
-              )}
+              <button onClick={() => setGoalOpen(true)} className="flex items-center gap-2 text-[11px] font-bold text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Target className="w-3.5 h-3.5" />
+                Günlük hedef: {goals.kcal} kcal {goals.mode === 'custom' ? '(elle)' : goals.mode === 'target' ? `(hedef ${settings.targetWeight} kg)` : goals.hasBody ? '(otomatik)' : '(varsayılan)'}
+                <Pencil className="w-3 h-3" />
+              </button>
             </div>
           </div>
         </div>
@@ -284,7 +249,7 @@ export default function Nutrition() {
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{item.name}</p>
                           <p className="text-[11px] text-slate-400 truncate">
-                            {item.servings !== 1 ? `${item.servings} × ` : ''}{item.portion} · P {round1(item.protein)} · K {round1(item.carbs)} · Y {round1(item.fat)}
+                            {servingsText(item.servings, item.unit, item.portion)} · P {round1(item.protein)} · K {round1(item.carbs)} · Y {round1(item.fat)}
                           </p>
                         </div>
                         <span className="text-xs font-black text-slate-600 dark:text-slate-300 tabular-nums">{Math.round(item.kcal)}</span>
@@ -308,13 +273,21 @@ export default function Nutrition() {
       )}
 
       <p className="text-[10px] text-center text-slate-400 dark:text-slate-600 px-6">
-        Besin değerleri ortalama porsiyonlara göre yaklaşıktır. Otomatik hedef; boy, kilo ve yaşına göre hafif aktivite ve haftada ~0,4 kg kayıp varsayımıyla hesaplanır.
+        Besin değerleri ortalama porsiyonlara göre yaklaşıktır. Hedef; boy, kilo, yaş ve hafif aktivite varsayımıyla hesaplanır.
       </p>
+      </>)}
 
       <AnimatePresence>
+        {goalOpen && (
+          <GoalSheet goals={goals} body={body} settings={settings} onSave={update} onClose={() => setGoalOpen(false)} />
+        )}
         {sheetMeal && (
           <AddFoodSheet
             meal={sheetMeal}
+            favorites={settings.favorites}
+            recents={settings.recents}
+            onToggleFavorite={(q) => update(s => ({ favorites: toggleFavorite(s.favorites, q) }))}
+            yesterday={yesterday.filter(e => e.meal === sheetMeal)}
             onClose={() => setSheetMeal(null)}
             onAdd={(entry) => { addEntry(entry); setSheetMeal(null); }}
             onAddMany={(list) => { addEntries(list); setSheetMeal(null); }}
@@ -340,33 +313,68 @@ function MacroBar({ label, value, goal, color }: { label: string; value: number;
   );
 }
 
-function GoalEditor({ initial, auto, onSave, onCancel }: { initial: number; auto: number; onSave: (v: number | null) => void; onCancel: () => void }) {
-  const [value, setValue] = useState(String(initial));
-  const num = Number(value);
-  const valid = num >= 800 && num <= 6000;
+type NewEntry = Omit<MealEntry, 'id' | 'createdAt'>;
+
+const foodToQuick = (f: FoodItem): QuickFood => ({
+  foodId: f.id, name: f.name, portion: f.portion, unit: f.unit, kcal: f.kcal, protein: f.protein, carbs: f.carbs, fat: f.fat,
+});
+
+function FoodRow({ item, fav, onPick, onQuickAdd }: { item: QuickFood; fav: boolean; onPick: () => void; onQuickAdd: () => void }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <input
-        type="number" inputMode="numeric" value={value} onChange={e => setValue(e.target.value)}
-        className="w-24 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold"
-      />
-      <span className="text-xs text-slate-400">kcal</span>
-      <button disabled={!valid} onClick={() => onSave(num)} className="p-1.5 rounded-lg bg-emerald-500 text-white disabled:opacity-40" aria-label="Kaydet"><Check className="w-4 h-4" /></button>
-      <button onClick={onCancel} className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500" aria-label="Vazgeç"><X className="w-4 h-4" /></button>
-      <button onClick={() => onSave(null)} className="text-[11px] font-bold text-slate-400 underline">Otomatiğe dön ({auto})</button>
+    <div className="flex items-center gap-1 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800">
+      <button onClick={onPick} className="flex-1 min-w-0 flex items-center gap-3 pl-3 py-3 text-left">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate flex items-center gap-1">
+            {fav && <Star className="w-3 h-3 text-amber-500 shrink-0" fill="currentColor" />}{item.name}
+          </p>
+          <p className="text-[11px] text-slate-400 truncate">{item.portion}</p>
+        </div>
+        <span className="text-sm font-black text-slate-700 dark:text-slate-200 tabular-nums">{Math.round(item.kcal)}</span>
+        <span className="text-[10px] text-slate-400">kcal</span>
+      </button>
+      <button onClick={onQuickAdd} aria-label={`${item.name} ekle`}
+        className="w-9 h-9 mr-2 shrink-0 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center active:scale-95">
+        <Plus className="w-4 h-4" />
+      </button>
     </div>
   );
 }
 
-type NewEntry = Omit<MealEntry, 'id' | 'createdAt'>;
+function QuickSection({ title, icon: Icon, items, isFav, onPick, onQuickAdd }: {
+  title: string; icon: React.ElementType; items: QuickFood[]; isFav: (q: QuickFood) => boolean;
+  onPick: (q: QuickFood) => void; onQuickAdd: (q: QuickFood) => void;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div className="mb-2">
+      <p className="px-3 pt-1 pb-1 text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+        <Icon className="w-3 h-3" /> {title}
+      </p>
+      {items.map(q => (
+        <div key={quickKey(q)}>
+          <FoodRow item={q} fav={isFav(q)} onPick={() => onPick(q)} onQuickAdd={() => onQuickAdd(q)} />
+        </div>
+      ))}
+    </div>
+  );
+}
 
-function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onClose: () => void; onAdd: (e: NewEntry) => void; onAddMany: (e: NewEntry[]) => void }) {
+function AddFoodSheet({ meal, favorites, recents, onToggleFavorite, yesterday, onClose, onAdd, onAddMany }: {
+  meal: MealType;
+  favorites: QuickFood[];
+  recents: QuickFood[];
+  onToggleFavorite: (q: QuickFood) => void;
+  yesterday: MealEntry[];
+  onClose: () => void;
+  onAdd: (e: NewEntry) => void;
+  onAddMany: (e: NewEntry[]) => void;
+}) {
   const [tab, setTab] = useState<'search' | 'photo' | 'custom'>('search');
   const [photoEnabled, setPhotoEnabled] = useState(false);
   useEffect(() => { isAIEnabled().then(setPhotoEnabled); }, []);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<FoodCategory | 'all'>('all');
-  const [selected, setSelected] = useState<FoodItem | null>(null);
+  const [selected, setSelected] = useState<QuickFood | null>(null);
   const [servings, setServings] = useState(1);
   const [custom, setCustom] = useState({ name: '', kcal: '', protein: '', carbs: '', fat: '' });
 
@@ -376,14 +384,17 @@ function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onC
     return category === 'all' ? base : base.filter(f => f.category === category);
   }, [query, category]);
 
-  const addSelected = () => {
-    if (!selected) return;
-    onAdd({
-      meal, foodId: selected.id, name: selected.name, portion: selected.portion, servings,
-      kcal: round1(selected.kcal * servings), protein: round1(selected.protein * servings),
-      carbs: round1(selected.carbs * servings), fat: round1(selected.fat * servings),
-    });
-  };
+  const favKeys = useMemo(() => new Set(favorites.map(quickKey)), [favorites]);
+  const isFav = (q: QuickFood) => favKeys.has(quickKey(q));
+  const showQuick = !query && category === 'all';
+  const yesterdayKcal = yesterday.reduce((t, e) => t + e.kcal, 0);
+
+  const toEntry = (q: QuickFood, n: number): NewEntry => ({
+    meal, foodId: q.foodId, name: q.name, portion: q.portion, unit: q.unit, servings: n,
+    kcal: round1(q.kcal * n), protein: round1(q.protein * n), carbs: round1(q.carbs * n), fat: round1(q.fat * n),
+  });
+  const addSelected = () => { if (selected) onAdd(toEntry(selected, servings)); };
+  const copyYesterday = () => onAddMany(yesterday.map(({ id, createdAt, ...rest }) => ({ ...rest, meal })));
 
   const addCustom = () => {
     const kcal = Number(custom.kcal);
@@ -395,20 +406,13 @@ function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onC
   };
 
   return (
-    <motion.div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <div className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onClick={onClose} />
-      <motion.div
-        initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
-        transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-        className="relative w-full md:max-w-lg max-h-[88vh] flex flex-col bg-white dark:bg-slate-900 rounded-t-[28px] md:rounded-3xl shadow-2xl"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-      >
-        <div className="flex items-center justify-between p-5 pb-3">
+    <BottomSheet onClose={onClose}>
+        <div className="flex items-center justify-between p-5 pb-3 shrink-0">
           <h2 className="text-lg font-display font-black text-slate-900 dark:text-white">{mealLabel} · Besin ekle</h2>
           <button onClick={onClose} className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500" aria-label="Kapat"><X className="w-4 h-4" /></button>
         </div>
 
-        <div className="px-5 flex gap-1 mb-3">
+        <div className="px-5 flex gap-1 mb-3 shrink-0">
           {(photoEnabled ? (['search', 'photo', 'custom'] as const) : (['search', 'custom'] as const)).map(t => (
             <button key={t} onClick={() => { setTab(t); setSelected(null); }}
               className={`flex-1 py-2 rounded-xl text-xs font-black transition-colors ${tab === t ? 'bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
@@ -419,10 +423,10 @@ function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onC
 
         {tab === 'search' && !selected && (
           <>
-            <div className="px-5">
+            <div className="px-5 shrink-0">
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder="Örn. mercimek, simit, ayran…"
+                <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Örn. mercimek, simit, ayran…"
                   className="w-full pl-9 pr-3 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/40" />
               </div>
               <div className="flex gap-1.5 overflow-x-auto py-3 -mx-5 px-5 no-scrollbar">
@@ -434,42 +438,67 @@ function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onC
                 ))}
               </div>
             </div>
-            <ul className="flex-1 overflow-y-auto px-3 pb-4">
-              {results.length === 0 && (
-                <li className="text-center text-sm text-slate-400 py-8">
-                  Bulunamadı. <button className="text-emerald-600 font-bold underline" onClick={() => { setTab('custom'); setCustom(c => ({ ...c, name: query })); }}>Kendin ekle</button>
-                </li>
+            <div className="flex-1 overflow-y-auto px-3 pb-4">
+              {showQuick && yesterday.length > 0 && (
+                <button onClick={copyYesterday}
+                  className="w-full mb-3 flex items-center gap-3 p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 text-left active:scale-[0.99] transition-transform">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0"><Copy className="w-4 h-4" /></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-black text-emerald-700 dark:text-emerald-300">Dünden kopyala · {mealLabel}</p>
+                    <p className="text-[11px] text-emerald-700/70 dark:text-emerald-300/70 truncate">{yesterday.map(e => e.name).join(', ')}</p>
+                  </div>
+                  <span className="text-sm font-black text-emerald-700 dark:text-emerald-300 tabular-nums">{Math.round(yesterdayKcal)}</span>
+                </button>
               )}
-              {results.map(food => (
-                <li key={food.id}>
-                  <button onClick={() => { setSelected(food); setServings(1); }}
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{food.name}</p>
-                      <p className="text-[11px] text-slate-400 truncate">{food.portion}</p>
-                    </div>
-                    <span className="text-sm font-black text-slate-700 dark:text-slate-200 tabular-nums">{food.kcal}</span>
-                    <span className="text-[10px] text-slate-400">kcal</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+              {showQuick && favorites.length > 0 && (
+                <QuickSection title="Favoriler" icon={Star} items={favorites} isFav={isFav}
+                  onPick={q => { setSelected(q); setServings(1); }} onQuickAdd={q => onAdd(toEntry(q, 1))} />
+              )}
+              {showQuick && recents.length > 0 && (
+                <QuickSection title="Son yediklerin" icon={Clock} items={recents.filter(r => !isFav(r)).slice(0, 8)} isFav={isFav}
+                  onPick={q => { setSelected(q); setServings(1); }} onQuickAdd={q => onAdd(toEntry(q, 1))} />
+              )}
+              {showQuick && (favorites.length > 0 || recents.length > 0) && (
+                <p className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">Tüm besinler</p>
+              )}
+              <ul>
+                {results.length === 0 && (
+                  <li className="text-center text-sm text-slate-400 py-8">
+                    Bulunamadı. <button className="text-emerald-600 font-bold underline" onClick={() => { setTab('custom'); setCustom(c => ({ ...c, name: query })); }}>Kendin ekle</button>
+                  </li>
+                )}
+                {results.map(food => {
+                  const q = foodToQuick(food);
+                  return (
+                    <li key={food.id}>
+                      <FoodRow item={q} fav={isFav(q)} onPick={() => { setSelected(q); setServings(1); }} onQuickAdd={() => onAdd(toEntry(q, 1))} />
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </>
         )}
 
         {tab === 'search' && selected && (
-          <div className="px-5 pb-5 space-y-4">
+          <div className="px-5 pb-5 space-y-4 overflow-y-auto">
             <button onClick={() => setSelected(null)} className="text-xs font-bold text-slate-400 flex items-center gap-1"><ChevronLeft className="w-3.5 h-3.5" /> Listeye dön</button>
-            <div>
-              <h3 className="text-xl font-display font-black text-slate-900 dark:text-white">{selected.name}</h3>
-              <p className="text-xs text-slate-400">{selected.portion}</p>
+            <div className="flex items-start gap-3">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl font-display font-black text-slate-900 dark:text-white">{selected.name}</h3>
+                <p className="text-xs text-slate-400">{selected.portion}</p>
+              </div>
+              <button onClick={() => onToggleFavorite(selected)} aria-label={isFav(selected) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-colors ${isFav(selected) ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-500' : 'border-slate-200 dark:border-slate-700 text-slate-400'}`}>
+                <Star className="w-5 h-5" fill={isFav(selected) ? 'currentColor' : 'none'} />
+              </button>
             </div>
             <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 rounded-2xl p-3">
-              <span className="text-sm font-bold text-slate-600 dark:text-slate-300">Porsiyon</span>
+              <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{unitTitle(selected.unit)}</span>
               <div className="flex items-center gap-3">
-                <button onClick={() => setServings(s => Math.max(0.5, s - 0.5))} className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Azalt"><Minus className="w-4 h-4" /></button>
-                <span className="w-10 text-center text-lg font-black tabular-nums">{servings}</span>
-                <button onClick={() => setServings(s => Math.min(10, s + 0.5))} className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Artır"><Plus className="w-4 h-4" /></button>
+                <button onClick={() => setServings(s => Math.max(unitStep(selected.unit), s - unitStep(selected.unit)))} className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Azalt"><Minus className="w-4 h-4" /></button>
+                <span className="w-10 text-center text-lg font-black tabular-nums">{String(servings).replace('.', ',')}</span>
+                <button onClick={() => setServings(s => Math.min(20, s + unitStep(selected.unit)))} className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Artır"><Plus className="w-4 h-4" /></button>
               </div>
             </div>
             <div className="grid grid-cols-4 gap-2 text-center">
@@ -508,8 +537,7 @@ function AddFoodSheet({ meal, onClose, onAdd, onAddMany }: { meal: MealType; onC
             </button>
           </div>
         )}
-      </motion.div>
-    </motion.div>
+    </BottomSheet>
   );
 }
 
@@ -558,7 +586,8 @@ function PhotoTab({ meal, onAddMany }: { meal: MealType; onAddMany: (e: NewEntry
       const result = await analyzeFoodPhoto(img.data, img.mediaType, catalog);
       const list: ReviewItem[] = (result.items || []).map((it, i) => {
         const food = it.foodId ? TURKISH_FOODS.find(f => f.id === it.foodId) : undefined;
-        const servings = Math.max(0.5, Math.round((Number(it.servings) || 1) * 2) / 2);
+        const step = unitStep(food?.unit);
+        const servings = Math.max(step, Math.round((Number(it.servings) || 1) / step) * step);
         return {
           ...it,
           name: food?.name || it.name,
@@ -587,7 +616,7 @@ function PhotoTab({ meal, onAddMany }: { meal: MealType; onAddMany: (e: NewEntry
     onAddMany(selected.map(it => {
       const v = scaleItem(it);
       return {
-        meal, foodId: it.food?.id, name: it.name, portion: it.food ? it.food.portion : it.portion,
+        meal, foodId: it.food?.id, name: it.name, portion: it.food ? it.food.portion : it.portion, unit: it.food?.unit,
         servings: it.food ? it.servings : 1,
         kcal: round1(v.kcal), protein: round1(v.protein), carbs: round1(v.carbs), fat: round1(v.fat),
       };
@@ -664,9 +693,9 @@ function PhotoTab({ meal, onAddMany }: { meal: MealType; onAddMany: (e: NewEntry
                         </p>
                       </div>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => update(it.key, { servings: Math.max(0.5, it.servings - 0.5) })} className="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Azalt"><Minus className="w-3 h-3" /></button>
+                        <button onClick={() => update(it.key, { servings: Math.max(unitStep(it.food?.unit), it.servings - unitStep(it.food?.unit)) })} className="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Azalt"><Minus className="w-3 h-3" /></button>
                         <span className="w-7 text-center text-xs font-black tabular-nums">{it.servings}</span>
-                        <button onClick={() => update(it.key, { servings: Math.min(10, it.servings + 0.5) })} className="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Artır"><Plus className="w-3 h-3" /></button>
+                        <button onClick={() => update(it.key, { servings: Math.min(20, it.servings + unitStep(it.food?.unit)) })} className="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center" aria-label="Artır"><Plus className="w-3 h-3" /></button>
                       </div>
                       <span className="w-10 text-right text-sm font-black tabular-nums text-slate-700 dark:text-slate-200">{Math.round(v.kcal)}</span>
                     </li>

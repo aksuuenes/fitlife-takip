@@ -1,4 +1,5 @@
 import { HealthRecord, UserProfile, Note, MealEntry } from '../types';
+import type { NutritionSettings } from '../lib/nutrition';
 
 // Mock/LocalStorage Fallback Service
 const STORAGE_KEY_RECORDS = 'fitlife_records';
@@ -46,6 +47,12 @@ export const storageService = {
     try { all = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { all = {}; }
     all[date] = entries;
     localStorage.setItem(key, JSON.stringify(all));
+  },
+  getNutritionSettings: (profileId: string = 'local'): Partial<NutritionSettings> | null => {
+    try { return JSON.parse(localStorage.getItem(`fitlife_nutrition_settings_${profileId}`) || 'null'); } catch { return null; }
+  },
+  saveNutritionSettings: (settings: NutritionSettings, profileId: string = 'local') => {
+    localStorage.setItem(`fitlife_nutrition_settings_${profileId}`, JSON.stringify(settings));
   },
   getWaterIntake: (date: string, profileId: string = 'local'): number => {
     const key = `${STORAGE_KEY_WATER}_${profileId}`;

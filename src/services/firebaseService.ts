@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
 import { HealthRecord, UserProfile, Note, MealEntry } from '../types';
+import type { NutritionSettings } from '../lib/nutrition';
 
 const TIMEOUT_MS = 2000;
 
@@ -184,6 +185,26 @@ export const firebaseService = {
     const path = `users/${userId}/profiles/${profileId}/supplementSettings/meals/days/${date}`;
     try {
       await withWriteTimeout(setDoc(doc(db, path), sanitizeData({ entries, lastUpdated: new Date().toISOString() })));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
+  getNutritionSettings: async (userId: string, profileId: string): Promise<Partial<NutritionSettings> | null> => {
+    const path = `users/${userId}/profiles/${profileId}/supplementSettings/nutrition`;
+    try {
+      const snap = await getDoc(doc(db, path));
+      return snap.exists() ? (snap.data() as Partial<NutritionSettings>) : null;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.GET, path);
+      return null;
+    }
+  },
+
+  saveNutritionSettings: async (userId: string, profileId: string, settings: NutritionSettings) => {
+    const path = `users/${userId}/profiles/${profileId}/supplementSettings/nutrition`;
+    try {
+      await withWriteTimeout(setDoc(doc(db, path), sanitizeData({ ...settings, updatedAt: new Date().toISOString() })));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
     }
