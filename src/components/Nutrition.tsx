@@ -273,7 +273,7 @@ export default function Nutrition() {
       )}
 
       <p className="text-[10px] text-center text-slate-400 dark:text-slate-600 px-6">
-        Besin değerleri ortalama porsiyonlara göre yaklaşıktır. Hedef; boy, kilo, yaş ve hafif aktivite varsayımıyla hesaplanır.
+        Besin değerleri USDA besin veritabanı ve standart tariflerden hesaplanmıştır; ev yemeklerinde tarife göre ±%15 değişebilir. Hedef; boy, kilo, yaş ve hafif aktivite varsayımıyla hesaplanır.
       </p>
       </>)}
 
