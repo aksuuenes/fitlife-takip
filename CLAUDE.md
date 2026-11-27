@@ -47,6 +47,10 @@ Kullanıcı siteyi çoğunlukla **iPhone'da ana ekran uygulaması (PWA)** olarak
 - **Profil yükleme (AuthContext):** Firestore okuması başarısız/zaman aşımı olursa profil ASLA yeniden oluşturulmaz ya da
   üzerine yazılmaz; sadece tekrar denenir. Yeni profil yalnızca sunucu kesin "yok" derse (`!metadata.fromCache`) ve `merge: true` ile yazılır.
   Son bilinen profil `localStorage` `fitlife_user_profile_{uid}`'de tutulur. (Eskiden 4 sn zaman aşımında boş profil yazılıp bilgiler sıfırlanıyordu.)
+- **Google girişi:** Ana ekran uygulamasında (standalone) `signInWithRedirect` + `authDomain = fitlife-takip.vercel.app`;
+  `/__/auth` ve `/__/firebase` `vercel.json` ile `fitlife-5cc6c.firebaseapp.com`'a aktarılır. Google Cloud OAuth istemcisinde
+  `https://fitlife-takip.vercel.app/__/auth/handler` yönlendirme adresi kayıtlı olmalı. Tarayıcıda popup kullanılır.
+- **Aktif profil:** Hesaptaki `activeProfileId` önceliklidir (cihazlar aynı profili göstersin).
 - **Metinler:** Kullanıcı sitenin "yapay zeka ile yapılmış" gibi görünmesini istemiyor. Arayüzde "AI", "yapay zeka", "Claude",
   "Wellness AI", "PRO/Elit/Premium", "biyometrik" gibi ifadeler kullanma; sade Türkçe yaz ("Kişisel rapor", "Öneriler").
 - Açılır pencereleri/alt sayfaları `BottomSheet` (portal) ile yap; `main` içinde `fixed` kullanılırsa alt menünün altında kalabilir.

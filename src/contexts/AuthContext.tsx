@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   User, 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider, 
   signOut, 
   onAuthStateChanged 
@@ -50,6 +52,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     }, 3000);
 
+    getRedirectResult(auth).catch(err => {
+      console.error('Google yönlendirme girişi başarısız:', err);
+      try { sessionStorage.setItem('fitlife_auth_error', err?.code || String(err)); } catch { /* yoksay */ }
+    });
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
         setUser(user);
@@ -60,6 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         clearTimeout(fallbackTimer);
 
         if (user) {
+          localStorage.removeItem('fitlife_guest_mode');
           const docRef = doc(db, 'users', user.uid);
           const cacheKey = `fitlife_user_profile_${user.uid}`;
 
@@ -67,10 +75,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const applyProfile = (data: UserProfile) => {
             setProfile(data);
             try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch { /* yoksay */ }
-            const savedId = localStorage.getItem('activeProfileId') || data.activeProfileId;
-            const isValidId = !!data.profiles?.some(p => p.id === savedId);
+            // Hesapta kayıtlı aktif profil önceliklidir: telefon ve bilgisayar aynı profili göstersin.
+            const serverId = data.activeProfileId;
+            const localId = localStorage.getItem('activeProfileId');
+            const isValid = (id?: string | null) => !!id && !!data.profiles?.some(p => p.id === id);
+            const savedId = isValid(serverId) ? serverId : localId;
+            const isValidId = isValid(savedId);
             if (isValidId && savedId) {
               setActiveProfileId(savedId);
+              localStorage.setItem('activeProfileId', savedId);
             } else if (data.profiles && data.profiles.length > 0) {
               const firstId = data.profiles[0].id;
               setActiveProfileId(firstId);
@@ -181,7 +194,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async () => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    provider.setCustomParameters({ prompt: 'select_account' });
+    const standalone = window.matchMedia?.('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+    // Ana ekran uygulamasında açılır pencere uygulamaya geri dönmüyor: yönlendirme kullan
+    if (standalone) {
+      await signInWithRedirect(auth, provider);
+      return;
+    }
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err: any) {
+      if (err?.code === 'auth/popup-blocked' || err?.code === 'auth/operation-not-supported-in-this-environment') {
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+      throw err;
+    }
   };
 
   const signUpWithEmail = async (email: string, pass: string, name: string) => {
@@ -253,7 +281,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       createdAt: new Date().toISOString()
     };
     const updatedProfiles = [...(profile.profiles || []), newProfile];
-    await updateProfile({ profiles: updatedProfiles });
+    await updateProfile({ profiles: updatedProfiles, activeProfileId: newProfile.id });
     setActiveProfileId(newProfile.id);
     localStorage.setItem('activeProfileId', newProfile.id);
   };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User as UserIcon, Mail, Lock, ShieldCheck, Activity, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
@@ -15,6 +15,22 @@ export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<React.ReactNode | string>('');
   const [resetMessage, setResetMessage] = useState('');
+
+  // Google yönlendirme girişinden dönen hatayı göster
+  useEffect(() => {
+    const check = () => {
+      try {
+        const code = sessionStorage.getItem('fitlife_auth_error');
+        if (code) {
+          sessionStorage.removeItem('fitlife_auth_error');
+          setAuthError(`Google ile giriş tamamlanamadı (${code}). E-posta ve şifre ile girişi deneyebilirsin.`);
+        }
+      } catch { /* yoksay */ }
+    };
+    check();
+    const t = setTimeout(check, 1500);
+    return () => clearTimeout(t);
+  }, []);
 
   const handleResetPassword = async () => {
     if (!authData.email) {
