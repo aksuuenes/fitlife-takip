@@ -7,12 +7,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { parseNumber, getBMIStatus } from '../lib/utils';
 
 export default function Profile() {
-  const { user, profile: authProfile, login, logout, updateProfile, updateActiveSubProfile, loading, signUpWithEmail, loginWithEmail, activeProfileId, currentProfile, switchProfile, addProfile, deleteProfile } = useAuth();
+  const { user, profile: authProfile, login, logout, updateProfile, updateActiveSubProfile, loading, signUpWithEmail, loginWithEmail, resetPassword, activeProfileId, currentProfile, switchProfile, addProfile, deleteProfile } = useAuth();
   const [localProfile, setLocalProfile] = useState<any>(null);
   const [isSignUp, setIsSignUp] = useState(false);
   const [authData, setAuthData] = useState({ email: '', password: '', name: '' });
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [resetMessage, setResetMessage] = useState('');
   const [showAddProfile, setShowAddProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
 
@@ -95,7 +96,16 @@ export default function Profile() {
         if (error.message.includes('operation-not-allowed')) {
           setAuthError('HATA: E-posta ile giriş henüz aktif değil. Firebase Console > Authentication > Sign-in Method kısmından "Email/Password" seçeneğini aktif etmelisiniz. Şimdilik alttaki "Google ile Devam Et" butonunu kullanabilirsiniz.');
         } else {
-          setAuthError(error.message || 'Bir hata oluştu. Lütfen bilgilerinizi kontrol edin.');
+          const code = String(error?.code || error?.message || '');
+          setAuthError(
+            code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found')
+              ? 'E-posta veya şifre hatalı. Şifreni hatırlamıyorsan aşağıdaki "Şifremi unuttum" bağlantısını kullan.'
+              : code.includes('too-many-requests')
+                ? 'Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene ya da şifreni sıfırla.'
+                : code.includes('email-already-in-use')
+                  ? 'Bu e-posta ile zaten bir hesap var. Giriş yap ya da şifreni sıfırla.'
+                  : (error.message || 'Bir hata oluştu. Lütfen bilgilerinizi kontrol edin.')
+          );
         }
       } finally {
         setAuthLoading(false);
@@ -156,7 +166,31 @@ export default function Profile() {
                 value={authData.password}
                 onChange={(e) => setAuthData({...authData, password: e.target.value})}
               />
+              {!isSignUp && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setAuthError(''); setResetMessage('');
+                    if (!authData.email) { setAuthError('Şifre sıfırlama bağlantısı için önce e-posta adresini yaz.'); return; }
+                    try {
+                      await resetPassword(authData.email);
+                      setResetMessage(`Şifre sıfırlama bağlantısı ${authData.email} adresine gönderildi. Gelen kutunu ve spam klasörünü kontrol et.`);
+                    } catch (e: any) {
+                      setAuthError('Sıfırlama e-postası gönderilemedi. E-posta adresini kontrol edip tekrar dene.');
+                    }
+                  }}
+                  className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 ml-1 mt-1"
+                >
+                  Şifremi unuttum
+                </button>
+              )}
             </div>
+
+            {resetMessage && (
+              <p className="text-emerald-700 dark:text-emerald-300 text-xs font-semibold bg-emerald-500/10 p-3.5 rounded-xl border border-emerald-500/20">
+                {resetMessage}
+              </p>
+            )}
 
             {authError && (
               <p className="text-red-600 text-xs font-semibold bg-red-50 p-3.5 rounded-xl border border-red-100">
