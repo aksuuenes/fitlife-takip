@@ -154,7 +154,7 @@ export default function AuthGate({ onEnterGuestMode }: AuthGateProps) {
           </div>
           <div>
             <span className="font-display font-black text-2xl tracking-tight bg-gradient-to-r from-white via-indigo-100 to-emerald-300 bg-clip-text text-transparent">FitLife</span>
-            <span className="text-[10px] font-mono tracking-widest text-emerald-400 font-black block -mt-1 uppercase">Wellness AI Studio</span>
+            <span className="text-[10px] font-mono tracking-widest text-emerald-400 font-black block -mt-1 uppercase">Wellness AI</span>
           </div>
         </div>
 

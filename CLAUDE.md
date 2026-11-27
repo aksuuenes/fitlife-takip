@@ -1,0 +1,42 @@
+# FitLife — proje notları
+
+Kişisel sağlık/fitness takip uygulaması. Sahibi Enes Aksu (aksuuenes). Türkçe arayüz; kullanıcıyla Türkçe konuşulur.
+Kullanıcı siteyi çoğunlukla **iPhone'da ana ekran uygulaması (PWA)** olarak kullanır, mobil görünüm önceliklidir.
+Önceden Google AI Studio (Gemini) ile yazıldı; Kasım 2026'dan itibaren Claude ile geliştiriliyor. AI Studio'nun GitHub erişimi kaldırıldı.
+
+## Teknoloji
+- React 19 + Vite + TypeScript + Tailwind v4, `motion/react` animasyonlar, `lucide-react` ikonlar, `recharts` grafikler
+- Firebase Auth + Firestore (proje: `fitlife-5cc6c`, varsayılan veritabanı). Ayar: `src/firebase.ts`, `src/lib/firebase.ts`
+- Misafir modu: veriler `localStorage`'da (`src/services/storageService.ts`)
+- Yayın: Vercel (`fitlife-takip.vercel.app`), `master` dalına her push otomatik yayınlanır
+- PWA: `vite-plugin-pwa` (`vite.config.ts`), iPhone simge/açılış ekranları `public/` ve `public/splash/`
+
+## Yapay zeka
+- Tüm AI çağrıları `api/ai.ts` (Vercel sunucu fonksiyonu) üzerinden Claude API'ye gider; anahtar tarayıcıya inmez.
+- Ortam değişkenleri (Vercel): `ANTHROPIC_API_KEY` (zorunlu), `CLAUDE_MODEL`, `ALLOWED_ORIGINS` (isteğe bağlı).
+- **Şu an anahtar tanımlı değil** (kullanıcı ücretsiz ilerlemek istedi). `GET /api/ai` → `{enabled:false}` döner;
+  Beslenme'deki 📷 Fotoğraf sekmesi bu yüzden gizli, Analizler yerel yedek analizi gösterir.
+- Görevler: `health-analysis`, `food-photo`. İstemci tarafı: `src/services/aiService.ts`.
+- `npm run dev` `/api` fonksiyonlarını çalıştırmaz; AI'yi yerelde denemek için `npx vercel dev`.
+
+## Veri yolları (Firestore)
+`users/{uid}/profiles/{profileId}/` altında: `records`, `water/{date}`, `workouts`, `routines`, `notes`,
+`supplements/{date}`, `medicationConfig`, `medicationLogs/{date}`, `supplementSettings/**`.
+- **Öğünler (Beslenme):** `supplementSettings/meals/days/{date}` → `{ entries: MealEntry[] }`.
+  Bilerek burada: `supplementSettings/{document=**}` kuralı zaten izinli olduğu için Firestore kural değişikliği gerekmedi
+  (kullanıcı Firebase konsolunu telefondan kullanamadı). Yeni bir koleksiyon eklemek kural yüklemeyi gerektirir.
+- `firestore.rules` repoda var ama otomatik yüklenmez; kural değişiklikleri Firebase konsolundan ya da
+  `firebase deploy --only firestore:rules` ile elle yüklenmeli.
+
+## Önemli dosyalar
+- `src/components/Layout.tsx` — masaüstü yan menü + mobil üst çubuk ve 5 sekmeli alt menü ("Daha Fazla" sayfası)
+- `src/components/Nutrition.tsx` — Beslenme sekmesi; besin veritabanı `src/lib/turkishFoods.ts` (~90 Türk yemeği, porsiyon başına)
+- `src/index.css` — en altta `@media (max-width: 767px)` mobil sıkılaştırma kuralları (`.app-main` altında)
+- `src/components/WeightChart.tsx` — recharts ana pakete girmesin diye ayrı, lazy yüklenir
+
+## Dikkat
+- Hook'ları erken `return`'lerden önce çağır (Analysis'ta React #310 çökmesi bu yüzdendi).
+- Görselleri service worker önbelleğine (`globPatterns`) ekleme; `public/images` çalışma anında önbelleğe alınıyor. Yeni görselleri ≤640px ve sıkıştırılmış ekle.
+- Mobilde input yazı boyutu 16px (iOS yakınlaştırmasını önler) — `index.css`.
+- Değişiklikleri ayrı dalda yap, PR aç; `master`'a birleştirmeden önce kullanıcıya sor (birleştirme = canlı yayın).
+- Build kontrolü: `npm run build` ve `npx tsc --noEmit`.
