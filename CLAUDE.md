@@ -25,10 +25,14 @@ Kullanıcı siteyi çoğunlukla **iPhone'da ana ekran uygulaması (PWA)** olarak
 - **Öğünler (Beslenme):** `supplementSettings/meals/days/{date}` → `{ entries: MealEntry[] }`.
 - **Beslenme ayarları:** `supplementSettings/nutrition` → favoriler, son yenenler, hedef kilo, haftalık hız, elle kcal (`NutritionSettings`).
   Misafirde `localStorage` `fitlife_nutrition_settings_{profileId}`.
-  Bilerek burada: `supplementSettings/{document=**}` kuralı zaten izinli olduğu için Firestore kural değişikliği gerekmedi
-  (kullanıcı Firebase konsolunu telefondan kullanamadı). Yeni bir koleksiyon eklemek kural yüklemeyi gerektirir.
-- `firestore.rules` repoda var ama otomatik yüklenmez; kural değişiklikleri Firebase konsolundan ya da
-  `firebase deploy --only firestore:rules` ile elle yüklenmeli.
+  (Tarihsel nedenle `supplementSettings` altında; artık kural tüm `users/{uid}/**` ağacını kapsıyor.)
+- **Firestore veritabanı 27 Kasım 2026'ya kadar HİÇ OLUŞTURULMAMIŞTI** (proje `fitlife-5cc6c`). O tarihe kadar veriler
+  sadece her cihazın tarayıcı önbelleğinde (bekleyen yazmalar) duruyordu; cihazlar arası veri farkı bundandı.
+  27 Kasım'da `(default)` veritabanı `eur3` konumunda oluşturuldu, bilgisayardaki bekleyen yazmalar sunucuya gitti.
+- `firestore.rules` = konsolda yayınlı kural (kullanıcı yalnızca `users/{uid}/**`). Otomatik yüklenmez; değişirse
+  Firebase konsolu → Firestore → Rules'tan elle yayınlanmalı.
+- iOS / ana ekran uygulamasında Firestore `memoryLocalCache` (IndexedDB yok); masaüstünde `persistentMultipleTabManager`.
+- Teşhis: Daha Fazla / yan menüdeki **Bağlantı testi** (token, REST, SDK okuması). 403 = kural/veritabanı sorunu.
 
 ## Önemli dosyalar
 - `src/components/Layout.tsx` — masaüstü yan menü + mobil üst çubuk ve 5 sekmeli alt menü ("Daha Fazla" sayfası)
