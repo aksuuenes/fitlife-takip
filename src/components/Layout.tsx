@@ -364,6 +364,7 @@ export default function Layout({ children }: LayoutProps) {
                   <LogOut className="w-4 h-4" /> Çıkış Yap
                 </button>
               )}
+              <p className="mt-3 text-center text-[10px] font-medium text-slate-400">Sürüm {__APP_VERSION__}</p>
             </motion.div>
           </motion.div>
         )}
