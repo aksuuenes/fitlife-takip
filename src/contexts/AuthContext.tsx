@@ -19,6 +19,7 @@ interface AuthContextType {
   activeProfileId: string | null;
   currentProfile: SubProfile | null;
   loading: boolean;
+  profileLoadError: string | null;
   login: () => Promise<void>;
   signUpWithEmail: (email: string, pass: string, name: string) => Promise<void>;
   loginWithEmail: (email: string, pass: string) => Promise<void>;
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoadError, setProfileLoadError] = useState<string | null>(null);
 
   const currentProfile = profile?.profiles?.find(p => p.id === activeProfileId) || null;
 
@@ -107,8 +109,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           //    (Eskiden 4 sn zaman aşımında boş profil yazılıyor, kullanıcının bilgileri sıfırlanıyordu.)
           const loadRemote = async (attempt = 0): Promise<void> => {
             try {
-              const snap = await getDoc(docRef);
+              const watchdog = setTimeout(() => setProfileLoadError('sunucudan 15 sn içinde yanıt gelmedi, bekleniyor…'), 15000);
+              const snap = await getDoc(docRef).finally(() => clearTimeout(watchdog));
               const fromServer = !snap.metadata.fromCache;
+              setProfileLoadError(snap.exists() || fromServer ? null : 'sunucuya ulaşılamadı (yalnızca önbellek)');
               if (snap.exists()) {
                 const data = snap.data() as UserProfile;
                 if (!data.profiles || data.profiles.length === 0) {
@@ -138,6 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               }
             } catch (err) {
               console.error('Profil okunamadı, tekrar denenecek:', err);
+              setProfileLoadError(`${(err as any)?.code || ''} ${(err as any)?.message || String(err)}`.trim().slice(0, 160));
               if (attempt < 20) setTimeout(() => { loadRemote(attempt + 1); }, Math.min(2000 * (attempt + 1), 30000));
             }
           };
@@ -321,7 +326,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ 
-      user, profile, activeProfileId, currentProfile, loading, login, logout, 
+      user, profile, activeProfileId, currentProfile, loading, profileLoadError, login, logout, 
       updateProfile, updateActiveSubProfile, signUpWithEmail, loginWithEmail, switchProfile, addProfile, deleteProfile, resetPassword 
     }}>
       {children}

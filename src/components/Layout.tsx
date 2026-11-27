@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AccountInfo from './AccountInfo';
 import { Link, useLocation } from 'react-router-dom';
 import { Activity, User as UserIcon, ClipboardList, BarChart3, Settings, Calendar, Users, Loader2, Trash2, Sun, Moon, StickyNote, LogOut, Droplets, Salad, Plus, Menu, X, ChevronRight, Home } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -244,6 +245,7 @@ export default function Layout({ children }: LayoutProps) {
                 </button>
               )}
             </div>
+            <AccountInfo className="mt-2 px-1" />
 
             {!user && (
               <button
@@ -364,9 +366,7 @@ export default function Layout({ children }: LayoutProps) {
                   <LogOut className="w-4 h-4" /> Çıkış Yap
                 </button>
               )}
-              <p className="mt-3 text-center text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                {user ? `${user.email || 'Hesap'} · ${currentProfile?.name || 'profil yükleniyor…'}` : 'Misafir · veriler sadece bu cihazda'}
-              </p>
+              <AccountInfo className="mt-3" />
               <p className="mt-1 text-center text-[10px] font-medium text-slate-400">Sürüm {__APP_VERSION__}</p>
             </motion.div>
           </motion.div>
