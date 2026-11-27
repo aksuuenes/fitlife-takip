@@ -4,7 +4,8 @@ import { app } from '../firebase';
 
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache(),
-  // Otomatik algılama: normal ağlarda hızlı WebChannel, gerekirse long-polling
-  experimentalAutoDetectLongPolling: true
+  // iPhone Safari / ana ekran uygulamasında WebChannel bağlantısı takılabiliyor; long-polling her yerde güvenilir çalışıyor.
+  // (Otomatik algılamaya geçince telefonda profil hiç yüklenmedi — geri alındı.)
+  experimentalForceLongPolling: true
 });
 export const auth = getAuth(app);
