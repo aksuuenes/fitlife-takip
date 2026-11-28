@@ -20,7 +20,7 @@ export default function WaterTracker() {
   const calculatedGoal = Math.round((weightToUse * 35) / 100) * 100;
   const dailyGoal = calculatedGoal > 0 ? calculatedGoal : 2500;
   
-  const glassSize = 250; // Standard 250ml per glass
+  const glassSize = 200; // 1 su bardağı = 200 ml
   const today = toDateKey(new Date());
 
   useEffect(() => {
@@ -160,7 +160,7 @@ export default function WaterTracker() {
              <button 
                onClick={() => updateWater(amount - glassSize)}
                disabled={pendingUpdate}
-               aria-label="Water decrease"
+               aria-label="1 bardak çıkar"
                className="w-12 h-12 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl flex items-center justify-center hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-100 dark:hover:border-rose-900/40 border border-slate-100 dark:border-slate-800 active:scale-95 transition-all disabled:opacity-40 cursor-pointer"
              >
                <Minus className="w-5 h-5" />
@@ -176,13 +176,13 @@ export default function WaterTracker() {
              >
                <Plus className="w-5 h-5 relative z-10" />
                <span className="text-[8px] font-extrabold uppercase tracking-wider relative z-10">
-                 {isGoalReached ? 'Dolu' : 'Ekle'}
+                 {isGoalReached ? 'Dolu' : `${glassSize} ml`}
                </span>
              </button>
           </div>
 
           <div className="text-right">
-             <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5">Bardak Sayısı</p>
+             <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5">{Math.floor(glasses)} bardak · 1 bardak {glassSize} ml</p>
              <div className="flex gap-1 justify-end flex-wrap max-w-[140px]">
                 {[...Array(Math.max(10, Math.ceil(goalGlasses)))].map((_, i) => (
                   <motion.div 
