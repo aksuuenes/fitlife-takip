@@ -137,7 +137,10 @@ function WeightGoalCard({ body, records, settings, goals, onEditGoal }: {
   const planRate = settings.weeklyRate || 0.5;
   // Kalori alt sınıra dayandıysa gerçek hız daha yavaş
   const rate = goals.direction === 'lose' ? Math.min(planRate, Math.max(0.05, ((goals.tdee - goals.kcal) * 7) / KCAL_PER_KG)) : planRate;
-  const p = projectWeight(body.weight, target, rate, settings.startWeight);
+  const capped = rate < planRate - 0.02;
+  const p = projectWeight(body.weight, target, planRate, settings.startWeight);
+  const pReal = capped ? projectWeight(body.weight, target, rate, settings.startWeight) : null;
+  const fmtRate = (r: number) => String(Math.round(r * 100) / 100).replace('.', ',');
   const start = settings.startWeight ?? body.weight;
   const wantLose = target < start;
   const trendGood = trend !== null && (wantLose ? trend < -0.05 : trend > 0.05);
@@ -167,7 +170,10 @@ function WeightGoalCard({ body, records, settings, goals, onEditGoal }: {
         <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">🎉 Hedefine ulaştın! Kilonu korumak için günlük {goals.kcal} kcal civarında kal.</p>
       ) : (
         <div className="space-y-2 text-sm">
-          <Row icon={wantLose ? TrendingDown : TrendingUp} label={`Plana göre (haftada ${String(Math.round(rate * 100) / 100).replace('.', ',')} kg)`} value={fmt(p.eta)} />
+          <Row icon={wantLose ? TrendingDown : TrendingUp} label={`Plana göre (haftada ${fmtRate(planRate)} kg)`} value={fmt(p.eta)} />
+          {pReal && (
+            <Row icon={TrendingDown} label={`${goals.kcal} kcal ile gerçekçi (haftada ${fmtRate(rate)} kg)`} value={fmt(pReal.eta)} muted />
+          )}
           {trend !== null && (
             <Row icon={trend < 0 ? TrendingDown : TrendingUp}
               label={`Gerçek gidişat: haftada ${trend > 0 ? '+' : ''}${String(trend).replace('.', ',')} kg`}
