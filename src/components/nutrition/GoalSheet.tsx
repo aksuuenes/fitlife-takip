@@ -42,8 +42,13 @@ export default function GoalSheet({ goals, body, settings, onSave, onClose }: {
   const rateCapped = effectiveRate < rate - 0.02;
 
   const projection = mode === 'target' && targetValid && body.weight
-    ? projectWeight(body.weight, targetNum, effectiveRate, settings.targetWeight === targetNum ? settings.startWeight : body.weight)
+    ? projectWeight(body.weight, targetNum, rate, settings.targetWeight === targetNum ? settings.startWeight : body.weight)
     : null;
+  // Alt sınırdaki kaloriyle gerçekçi varış
+  const realistic = projection && rateCapped && body.weight ? projectWeight(body.weight, targetNum, effectiveRate) : null;
+  const neededKcal = preview ? Math.max(0, Math.round((preview.tdee - (rate * KCAL_PER_KG) / 7) / 10) * 10) : 0;
+  const fmtDate = (d: Date) => d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const fmtRate = (r: number) => String(Math.round(r * 10) / 10).replace('.', ',');
 
   const canSave = mode === 'auto' || (mode === 'target' && targetValid && rateValid && !!body.weight) || (mode === 'custom' && kcalValid);
 
@@ -126,9 +131,9 @@ export default function GoalSheet({ goals, body, settings, onSave, onClose }: {
                     ? 'Çok hızlı: haftada 1 kg üstü kas kaybı ve halsizlik yapabilir. Bir doktora ya da diyetisyene danış.'
                     : rate >= 0.75 ? 'Hızlı ama makul.' : 'Önerilen: sürdürülebilir ve kas kaybı riski düşük.'}
               </p>
-              {rateCapped && rateValid && (
+              {rateCapped && rateValid && realistic && !realistic.done && (
                 <p className="mt-1 text-[11px] text-amber-600 dark:text-amber-400">
-                  Günlük kalori güvenli alt sınıra ({preview?.kcal} kcal) dayandı. Bu yüzden tahmini hız haftada yaklaşık {String(Math.round(effectiveRate * 10) / 10).replace('.', ',')} kg.
+                  Haftada {fmtRate(rate)} kg için {neededKcal >= 300 ? `günde yaklaşık ${neededKcal} kcal yemen gerekir` : 'neredeyse hiç yememen gerekir'}; bu güvenli değil. Kalori hedefin {preview?.kcal} kcal'de kalıyor. Bu kaloriyle haftada yaklaşık {fmtRate(effectiveRate)} kg verirsin, hedefe varış {fmtDate(realistic.eta)} olur.
                 </p>
               )}
             </div>
